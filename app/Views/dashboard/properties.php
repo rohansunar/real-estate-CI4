@@ -1,0 +1,286 @@
+<?= $this->extend('layouts/dashboard') ?>
+
+<?= $this->section('content') ?>
+
+<!-- Page Header -->
+<div class="mb-4">
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between">
+        <div>
+            <h2 class="h3 fw-bold text-dark mb-1">Properties Management</h2>
+            <p class="text-muted">Manage all your property listings</p>
+        </div>
+        <div class="mt-3 mt-sm-0">
+            <a href="<?= base_url('properties/create') ?>" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                Add New Property
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filters and Search -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Search</label>
+                <input type="text" 
+                       data-table-search="properties-table"
+                       placeholder="Search properties..." 
+                       class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Type</label>
+                <select class="form-select">
+                    <option value="">All Types</option>
+                    <option value="house">House</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="villa">Villa</option>
+                    <option value="land">Land</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Location</label>
+                <select class="form-select">
+                    <option value="">All Locations</option>
+                    <option value="Dublin">Dublin</option>
+                    <option value="Cork">Cork</option>
+                    <option value="Galway">Galway</option>
+                    <option value="Limerick">Limerick</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-outline-primary w-100">
+                    <i class="fas fa-filter me-2"></i>
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Properties Table -->
+<div class="card">
+    <div class="card-header border-bottom">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <h5 class="card-title mb-1">Properties</h5>
+                <p class="card-text text-muted small mb-0">A list of all properties in your account</p>
+            </div>
+            <div class="text-muted small" data-table-info="properties-table">
+                Showing 1-10 of <?= count($properties ?? []) ?> results
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table id="properties-table" data-table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="sortable" data-sort="0">
+                            Property
+                            <i class="fas fa-sort sort-indicator ms-1"></i>
+                        </th>
+                        <th class="sortable" data-sort="1">
+                            Type
+                            <i class="fas fa-sort sort-indicator ms-1"></i>
+                        </th>
+                        <th class="sortable" data-sort="2">
+                            Location
+                            <i class="fas fa-sort sort-indicator ms-1"></i>
+                        </th>
+                        <th class="sortable" data-sort="3">
+                            Area
+                            <i class="fas fa-sort sort-indicator ms-1"></i>
+                        </th>
+                        <th class="sortable" data-sort="4">
+                            Created
+                            <i class="fas fa-sort sort-indicator ms-1"></i>
+                        </th>
+                        <th class="text-end">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($properties)): ?>
+                        <?php foreach ($properties as $property): ?>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <?php 
+                                        $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
+                                        $propertyImage = !empty($images[0]) ? base_url($images[0]) : base_url('assets/images/default-property.svg');
+                                        ?>
+                                        <img src="<?= $propertyImage ?>" alt="<?= esc($property['title']) ?>" class="property-image me-3">
+                                        <div>
+                                            <div class="fw-medium"><?= esc($property['title']) ?></div>
+                                            <div class="text-muted small"><?= esc(substr($property['description'], 0, 50)) ?>...</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-property-<?= strtolower($property['type']) ?>">
+                                        <?= esc(ucfirst($property['type'])) ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                                        <?= esc($property['location']) ?>
+                                    </div>
+                                </td>
+                                <td>
+                                    <?= $property['area'] ? number_format($property['area']) . ' sq ft' : 'N/A' ?>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        <?= date('M j, Y', strtotime($property['created_at'])) ?>
+                                    </small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <button data-property-quick-view data-property-id="<?= $property['id'] ?>" 
+                                                    class="btn btn-ghost"
+                                                    title="Quick View">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <a href="<?= base_url('dashboard/properties/edit/' . $property['id']) ?>"
+                                               class="btn btn-ghost"
+                                               title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button onclick="deleteProperty(<?= $property['id'] ?>)" 
+                                                    class="btn btn-ghost text-danger"
+                                                    title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center">
+                                    <i class="fas fa-home text-muted mb-3" style="font-size: 4rem;"></i>
+                                    <h5 class="text-dark mb-2">No properties found</h5>
+                                    <p class="text-muted mb-3">Get started by adding your first property.</p>
+                                    <a href="<?= base_url('properties/create') ?>" class="btn btn-primary">
+                                        <i class="fas fa-plus me-2"></i>
+                                        Add Property
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+// Properties page specific functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize data table
+    const table = document.getElementById('properties-table');
+    if (table && window.DataTable) {
+        new window.DataTable(table);
+    }
+});
+
+// Delete property function
+function deleteProperty(propertyId) {
+    // Create confirmation modal
+    const modalHtml = `
+        <div class="modal fade" id="deletePropertyModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Property</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center py-3">
+                            <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 4rem; height: 4rem;">
+                                <i class="fas fa-exclamation-triangle text-danger fs-4"></i>
+                            </div>
+                            <h6 class="mb-2">Are you sure you want to delete this property?</h6>
+                            <p class="text-muted small mb-0">
+                                This action cannot be undone. This will permanently delete the property and remove all associated data.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete(${propertyId})">
+                            <i class="fas fa-trash me-2"></i>Delete Property
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Remove existing modal
+    const existingModal = document.getElementById('deletePropertyModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Add modal to DOM
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('deletePropertyModal'));
+    modal.show();
+
+    // Clean up when modal is hidden
+    document.getElementById('deletePropertyModal').addEventListener('hidden.bs.modal', function() {
+        this.remove();
+    });
+}
+
+// Confirm delete function
+function confirmDelete(propertyId) {
+    // Hide the confirmation modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('deletePropertyModal'));
+    modal.hide();
+
+    // Show loading notification
+    showNotification('Deleting property...', 'info');
+
+    // Make AJAX call to delete property
+    fetch(`<?= base_url('dashboard/properties/') ?>${propertyId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Property deleted successfully', 'success');
+            // Reload page after short delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showNotification(data.message || 'Failed to delete property', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error deleting property', 'danger');
+    });
+}
+</script>
+<?= $this->endSection() ?>
