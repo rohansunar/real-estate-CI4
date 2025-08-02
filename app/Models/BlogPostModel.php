@@ -228,15 +228,16 @@ class BlogPostModel extends Model
     }
 
     /**
-     * Get all categories
+     * Get all categories with post counts
      */
     public function getCategories(): array
     {
-        return $this->select('category')
+        return $this->select('category, COUNT(*) as count')
                    ->where('category IS NOT NULL')
                    ->where('category !=', '')
+                   ->where('status', 'published')
                    ->groupBy('category')
                    ->orderBy('category', 'ASC')
-                   ->findColumn('category');
+                   ->findAll();
     }
 }

@@ -68,7 +68,7 @@
                 <p class="card-text text-muted small mb-0">A list of all properties in your account</p>
             </div>
             <div class="text-muted small" data-table-info="properties-table">
-                Showing 1-10 of <?= count($properties ?? []) ?> results
+                Showing <?= $startRecord ?? 1 ?>-<?= $endRecord ?? count($properties ?? []) ?> of <?= $totalProperties ?? count($properties ?? []) ?> results
             </div>
         </div>
     </div>
@@ -181,6 +181,95 @@
             </table>
         </div>
     </div>
+
+    <!-- Pagination Controls -->
+    <?php if (isset($totalPages) && $totalPages > 1): ?>
+    <div class="card-footer bg-white border-top">
+        <div class="d-flex justify-content-center">
+            <nav aria-label="Properties pagination">
+                <ul class="pagination pagination-sm mb-0">
+                    <!-- Previous Button -->
+                    <?php if ($currentPage > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?= base_url('dashboard/properties?page=' . ($currentPage - 1)) ?>" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </span>
+                        </li>
+                    <?php endif; ?>
+
+                    <!-- Page Numbers -->
+                    <?php
+                    $startPage = max(1, $currentPage - 2);
+                    $endPage = min($totalPages, $currentPage + 2);
+
+                    // Show first page if not in range
+                    if ($startPage > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?= base_url('dashboard/properties?page=1') ?>">1</a>
+                        </li>
+                        <?php if ($startPage > 2): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                    <!-- Current page range -->
+                    <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                        <li class="page-item <?= $i == $currentPage ? 'active' : '' ?>">
+                            <?php if ($i == $currentPage): ?>
+                                <span class="page-link"><?= $i ?></span>
+                            <?php else: ?>
+                                <a class="page-link" href="<?= base_url('dashboard/properties?page=' . $i) ?>"><?= $i ?></a>
+                            <?php endif; ?>
+                        </li>
+                    <?php endfor; ?>
+
+                    <!-- Show last page if not in range -->
+                    <?php if ($endPage < $totalPages): ?>
+                        <?php if ($endPage < $totalPages - 1): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?= base_url('dashboard/properties?page=' . $totalPages) ?>"><?= $totalPages ?></a>
+                        </li>
+                    <?php endif; ?>
+
+                    <!-- Next Button -->
+                    <?php if ($currentPage < $totalPages): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?= base_url('dashboard/properties?page=' . ($currentPage + 1)) ?>" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </span>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Pagination Info -->
+        <div class="text-center mt-3">
+            <small class="text-muted">
+                Page <?= $currentPage ?> of <?= $totalPages ?>
+                (<?= $totalProperties ?> total properties)
+            </small>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 <?= $this->endSection() ?>

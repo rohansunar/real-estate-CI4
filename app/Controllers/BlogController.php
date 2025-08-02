@@ -8,11 +8,25 @@ use CodeIgniter\HTTP\ResponseInterface;
 /**
  * BlogController
  *
- * Handles blog management functionality in the admin dashboard
- * Provides CRUD operations for blog posts with image upload support
+ * Handles blog management functionality in the admin dashboard.
+ * This controller provides comprehensive CRUD operations for blog posts including:
+ * - Blog post listing with statistics
+ * - Blog post creation with Quill.js rich text editor
+ * - Blog post editing with content preservation
+ * - Featured image upload and management
+ * - SEO metadata management
+ * - Draft and published status management
+ *
+ * Key Features:
+ * - Replaced TinyMCE with Quill.js (no API key required)
+ * - Automatic slug generation from titles
+ * - Featured image upload with validation
+ * - Rich text content editing
+ * - SEO-friendly metadata fields
  *
  * @author Real Estate Team
- * @version 1.0
+ * @version 2.0 - Replaced TinyMCE with Quill.js editor
+ * @since 2025-08-02
  */
 
 class BlogController extends BaseController
@@ -222,8 +236,8 @@ class BlogController extends BaseController
 
         if ($this->blogModel->delete($id)) {
             // Delete featured image file if exists
-            if ($post['featured_image'] && file_exists(WRITEPATH . $post['featured_image'])) {
-                unlink(WRITEPATH . $post['featured_image']);
+            if ($post['featured_image'] && file_exists(FCPATH . $post['featured_image'])) {
+                unlink(FCPATH . $post['featured_image']);
             }
 
             return $this->response->setJSON(['success' => true, 'message' => 'Blog post deleted successfully']);
@@ -238,10 +252,16 @@ class BlogController extends BaseController
     private function handleImageUpload()
     {
         $image = $this->request->getFile('featured_image');
-        
+
         if ($image && $image->isValid() && !$image->hasMoved()) {
+            // Create uploads directory if it doesn't exist
+            $uploadPath = FCPATH . 'uploads/blog';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
             $newName = $image->getRandomName();
-            $image->move(WRITEPATH . 'uploads/blog', $newName);
+            $image->move($uploadPath, $newName);
             return 'uploads/blog/' . $newName;
         }
 

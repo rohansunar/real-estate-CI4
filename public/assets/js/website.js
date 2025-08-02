@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializePropertyCards(); // Property card interactions
     initializeForms();         // Form validation and Ajax submissions
     initializeHeroCarousel();  // Modern hero carousel functionality
+    initializeTestimonials();  // Testimonials section functionality
 
     console.log('Real Estate Website loaded successfully');
 });
@@ -216,7 +217,7 @@ function initializeAnimations() {
     }, observerOptions);
 
     // Observe elements for animation
-    const animateElements = document.querySelectorAll('.card, .property-card, .hero-content');
+    const animateElements = document.querySelectorAll('.card, .property-card, .hero-content, .testimonial-card');
     animateElements.forEach(el => {
         observer.observe(el);
     });
@@ -722,9 +723,81 @@ function showFormErrors(form, errors) {
     });
 }
 
+/**
+ * Initialize testimonials section functionality
+ * Handles staggered animations and enhanced interactions
+ */
+function initializeTestimonials() {
+    const testimonialsSection = document.getElementById('testimonials');
+    if (!testimonialsSection) return;
+
+    const testimonialCards = testimonialsSection.querySelectorAll('.testimonial-card');
+
+    // Enhanced intersection observer for testimonials with staggered animation
+    const testimonialObserver = new IntersectionObserver(function(entries) {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                // Add staggered delay for each testimonial card
+                setTimeout(() => {
+                    entry.target.classList.add('animate-fade-in');
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }, index * 150); // 150ms delay between each card
+
+                testimonialObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.2,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    // Set initial state and observe testimonial cards
+    testimonialCards.forEach((card) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        testimonialObserver.observe(card);
+    });
+
+    // Add enhanced hover effects for testimonial avatars
+    testimonialCards.forEach(card => {
+        const avatar = card.querySelector('.testimonial-avatar');
+        if (avatar) {
+            // Add loading state handling
+            avatar.addEventListener('load', function() {
+                this.style.opacity = '1';
+            });
+
+            // Add error handling for avatar images
+            avatar.addEventListener('error', function() {
+                // Fallback to a default avatar if image fails to load
+                this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="%23e2e8f0"/><circle cx="50" cy="35" r="15" fill="%23cbd5e1"/><path d="M20 80 Q20 65 35 65 L65 65 Q80 65 80 80 Z" fill="%23cbd5e1"/></svg>';
+                this.alt = 'Default Avatar';
+            });
+
+            // Set initial loading state
+            avatar.style.opacity = '0';
+            avatar.style.transition = 'opacity 0.3s ease';
+        }
+    });
+
+    // Add smooth scroll to testimonials section functionality
+    const testimonialsLinks = document.querySelectorAll('a[href="#testimonials"]');
+    testimonialsLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            scrollToElement('testimonials');
+        });
+    });
+
+    console.log('Testimonials section initialized successfully');
+}
+
 // Make functions globally available
 window.showPropertyModal = showPropertyModal;
 window.showNotification = showNotification;
 window.scrollToElement = scrollToElement;
 window.clearFormErrors = clearFormErrors;
 window.showFormErrors = showFormErrors;
+window.initializeTestimonials = initializeTestimonials;

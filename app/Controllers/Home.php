@@ -32,14 +32,7 @@ class Home extends BaseController
         return view('home/about', $data);
     }
 
-    public function blog(): string
-    {
-        $data = [
-            'title' => 'Blog | Real Estate'
-        ];
 
-        return view('home/blog', $data);
-    }
 
     public function error()
     {

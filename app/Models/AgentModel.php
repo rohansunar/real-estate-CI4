@@ -24,7 +24,7 @@ class AgentModel extends Model
     // Validation
     protected $validationRules      = [
         'name'          => 'required|max_length[255]',
-        'email'         => 'required|valid_email|is_unique[agents.email,id,{id}]',
+        'email'         => 'required|valid_email',
         'phone'         => 'required|max_length[20]',
         'address'       => 'permit_empty|max_length[1000]',
         'qualification' => 'permit_empty|max_length[255]',
@@ -57,6 +57,34 @@ class AgentModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    /**
+     * Get validation rules for agent update (excludes current agent from email uniqueness check)
+     */
+    public function getUpdateValidationRules($agentId)
+    {
+        return [
+            'name'          => 'required|max_length[255]',
+            'email'         => "required|valid_email|is_unique[agents.email,id,{$agentId}]",
+            'phone'         => 'required|max_length[20]',
+            'address'       => 'permit_empty|max_length[1000]',
+            'qualification' => 'permit_empty|max_length[255]',
+        ];
+    }
+
+    /**
+     * Get validation rules for agent creation
+     */
+    public function getCreateValidationRules()
+    {
+        return [
+            'name'          => 'required|max_length[255]',
+            'email'         => 'required|valid_email|is_unique[agents.email]',
+            'phone'         => 'required|max_length[20]',
+            'address'       => 'permit_empty|max_length[1000]',
+            'qualification' => 'permit_empty|max_length[255]',
+        ];
+    }
 
     /**
      * Get active agents

@@ -330,10 +330,11 @@ function showPropertyQuickView(propertyId) {
 }
 
 /**
- * Show enquiry quick view modal
+ * Show enquiry quick view modal with real data
  */
 function showEnquiryQuickView(enquiryId) {
-    const modalHtml = `
+    // Show loading modal first
+    const loadingModalHtml = `
         <div class="modal fade" id="enquiryQuickViewModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -341,29 +342,11 @@ function showEnquiryQuickView(enquiryId) {
                         <h5 class="modal-title">Enquiry Details</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <strong>Name:</strong> John Doe
-                            </div>
-                            <div class="col-6">
-                                <strong>Email:</strong> john@example.com
-                            </div>
-                            <div class="col-6">
-                                <strong>Phone:</strong> +1 234 567 8900
-                            </div>
-                            <div class="col-6">
-                                <strong>Property Interest:</strong> House
-                            </div>
-                            <div class="col-12">
-                                <strong>Message:</strong>
-                                <p class="mt-1 text-muted">I'm interested in viewing this property. Please contact me to schedule a viewing.</p>
-                            </div>
+                    <div class="modal-body text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success">Mark as Read</button>
+                        <p class="mt-3 text-muted">Loading enquiry details...</p>
                     </div>
                 </div>
             </div>
@@ -376,12 +359,122 @@ function showEnquiryQuickView(enquiryId) {
         existingModal.remove();
     }
 
-    // Add modal to DOM
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-    // Show modal
+    // Add loading modal to DOM
+    document.body.insertAdjacentHTML('beforeend', loadingModalHtml);
     const modal = new bootstrap.Modal(document.getElementById('enquiryQuickViewModal'));
     modal.show();
+
+    // Fetch enquiry details
+    fetch(`/dashboard/enquiries/details/${enquiryId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const enquiry = data.enquiry;
+            const formattedDate = new Date(enquiry.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // Update modal content with real data
+            const modalContent = `
+                <div class="modal-header">
+                    <h5 class="modal-title">Enquiry Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <strong>Name:</strong> ${enquiry.name}
+                        </div>
+                        <div class="col-6">
+                            <strong>Email:</strong>
+                            <a href="mailto:${enquiry.email}" class="text-decoration-none">${enquiry.email}</a>
+                        </div>
+                        <div class="col-6">
+                            <strong>Phone:</strong>
+                            <a href="tel:${enquiry.phone}" class="text-decoration-none">${enquiry.phone}</a>
+                        </div>
+                        <div class="col-6">
+                            <strong>Property Interest:</strong> ${enquiry.properties_in}
+                        </div>
+                        <div class="col-12">
+                            <strong>Enquiry Date:</strong> ${formattedDate}
+                        </div>
+                        <div class="col-12">
+                            <strong>Status:</strong>
+                            <span class="badge ${enquiry.is_read ? 'bg-success' : 'bg-warning'}">
+                                <i class="fas fa-${enquiry.is_read ? 'check-circle' : 'bell'} me-1"></i>
+                                ${enquiry.is_read ? 'Read' : 'Unread'}
+                            </span>
+                        </div>
+                        <div class="col-12">
+                            <strong>Message:</strong>
+                            <div class="mt-2 p-3 bg-light rounded">
+                                <p class="mb-0 text-muted">${enquiry.message}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    ${!enquiry.is_read ? `<button type="button" class="btn btn-success" onclick="markEnquiryAsRead(${enquiry.id}, this)">
+                        <i class="fas fa-check me-2"></i>Mark as Read
+                    </button>` : ''}
+                </div>
+            `;
+
+            document.querySelector('#enquiryQuickViewModal .modal-content').innerHTML = modalContent;
+        } else {
+            // Show error message
+            const errorContent = `
+                <div class="modal-header">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-5">
+                    <div class="text-danger mb-3">
+                        <i class="fas fa-exclamation-triangle fs-1"></i>
+                    </div>
+                    <h6>Failed to load enquiry details</h6>
+                    <p class="text-muted">${data.message || 'Please try again later.'}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            `;
+            document.querySelector('#enquiryQuickViewModal .modal-content').innerHTML = errorContent;
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching enquiry details:', error);
+        // Show error message
+        const errorContent = `
+            <div class="modal-header">
+                <h5 class="modal-title">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-5">
+                <div class="text-danger mb-3">
+                    <i class="fas fa-exclamation-triangle fs-1"></i>
+                </div>
+                <h6>Network Error</h6>
+                <p class="text-muted">Failed to connect to server. Please check your connection and try again.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        `;
+        document.querySelector('#enquiryQuickViewModal .modal-content').innerHTML = errorContent;
+    });
 
     // Clean up when modal is hidden
     document.getElementById('enquiryQuickViewModal').addEventListener('hidden.bs.modal', function() {
@@ -441,7 +534,56 @@ function showNotification(message, type = 'info') {
     }
 }
 
+/**
+ * Mark enquiry as read from modal
+ */
+function markEnquiryAsRead(enquiryId, buttonElement = null) {
+    const button = buttonElement || document.querySelector(`button[onclick="markEnquiryAsRead(${enquiryId})"]`);
+    const originalText = button.innerHTML;
+
+    // Show loading state
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Marking as Read...';
+    button.disabled = true;
+
+    fetch(`/dashboard/enquiries/mark-read/${enquiryId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Hide the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('enquiryQuickViewModal'));
+            modal.hide();
+
+            // Show success notification
+            showNotification('Enquiry marked as read successfully', 'success');
+
+            // Reload page after short delay to update the enquiry list
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            // Restore button state
+            button.innerHTML = originalText;
+            button.disabled = false;
+            showNotification('Failed to mark enquiry as read', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error marking enquiry as read:', error);
+        // Restore button state
+        button.innerHTML = originalText;
+        button.disabled = false;
+        showNotification('Network error. Please try again.', 'danger');
+    });
+}
+
 // Make functions globally available
 window.showPropertyQuickView = showPropertyQuickView;
 window.showEnquiryQuickView = showEnquiryQuickView;
 window.showNotification = showNotification;
+window.markEnquiryAsRead = markEnquiryAsRead;

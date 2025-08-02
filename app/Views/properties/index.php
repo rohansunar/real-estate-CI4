@@ -3,14 +3,16 @@
 <?= $this->section('content') ?>
 
 <!-- Hero Section -->
-<section class="hero-gradient py-5">
-    <div class="container py-5 text-center">
-        <h1 class="display-3 fw-bold text-white mb-4 animate-fade-in">
-            Discover Your Perfect Property
+<section class="hero-gradient py-4">
+    <div class="container py-3 text-center">
+        <!-- <h1 class="display-3 fw-bold text-white mb-3 animate-fade-in">
+            <?= isset($isSearchResults) && $isSearchResults ? 'Search Results' : 'Discover Your Perfect Property' ?>
         </h1>
-        <p class="fs-4 text-light mb-5 mx-auto animate-slide-up" style="max-width: 600px;">
-            Browse through our extensive collection of premium properties and find the one that matches your dreams and budget.
-        </p>
+        <p class="fs-4 text-light mb-4 mx-auto animate-slide-up" style="max-width: 600px;">
+            <?= isset($isSearchResults) && $isSearchResults ?
+                'Found ' . $totalProperties . ' properties matching your criteria.' :
+                'Browse through our extensive collection of premium properties and find the one that matches your dreams and budget.' ?>
+        </p> -->
 
         <!-- Search Bar -->
         <div class="mx-auto animate-slide-up" style="max-width: 800px;">
@@ -20,48 +22,63 @@
                         <label class="form-label fw-semibold text-dark small">Location</label>
                         <select name="location" class="form-select">
                             <option value="">All Locations</option>
-                            <option value="Siliguri">Siliguri</option>
-                            <option value="Champasari">Champasari</option>
-                            <option value="Bagdogra">Bagdogra</option>
-                            <option value="Jalpaiguri">Jalpaiguri</option>
-                            <option value="Pradhan Nagar">Pradhan Nagar</option>
-                            <option value="Milan More">Milan More</option>
-                            <option value="Khaprail">Khaprail</option>
-                            <option value="Matigara">Matigara</option>
+                            <option value="Siliguri" <?= (isset($searchParams['location']) && $searchParams['location'] === 'Siliguri') ? 'selected' : '' ?>>Siliguri</option>
+                            <option value="Champasari" <?= (isset($searchParams['location']) && $searchParams['location'] === 'Champasari') ? 'selected' : '' ?>>Champasari</option>
+                            <option value="Bagdogra" <?= (isset($searchParams['location']) && $searchParams['location'] === 'Bagdogra') ? 'selected' : '' ?>>Bagdogra</option>
+                            <option value="Jalpaiguri" <?= (isset($searchParams['location']) && $searchParams['location'] === 'Jalpaiguri') ? 'selected' : '' ?>>Jalpaiguri</option>
+                            <option value="Pradhan Nagar" <?= (isset($searchParams['location']) && $searchParams['location'] === 'Pradhan Nagar') ? 'selected' : '' ?>>Pradhan Nagar</option>
+                            <option value="Milan More" <?= (isset($searchParams['location']) && $searchParams['location'] === 'Milan More') ? 'selected' : '' ?>>Milan More</option>
+                            <option value="Khaprail" <?= (isset($searchParams['location']) && $searchParams['location'] === 'Khaprail') ? 'selected' : '' ?>>Khaprail</option>
+                            <option value="Matigara" <?= (isset($searchParams['location']) && $searchParams['location'] === 'Matigara') ? 'selected' : '' ?>>Matigara</option>
                         </select>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold text-dark small">Property Type</label>
                         <select name="type" class="form-select">
                             <option value="">All Types</option>
-                            <option value="house">House</option>
-                            <option value="apartment">Apartment</option>
-                            <option value="villa">Villa</option>
-                            <option value="land">Land</option>
+                            <option value="house" <?= (isset($searchParams['type']) && $searchParams['type'] === 'house') ? 'selected' : '' ?>>House</option>
+                            <option value="apartment" <?= (isset($searchParams['type']) && $searchParams['type'] === 'apartment') ? 'selected' : '' ?>>Apartment</option>
+                            <option value="villa" <?= (isset($searchParams['type']) && $searchParams['type'] === 'villa') ? 'selected' : '' ?>>Villa</option>
+                            <option value="land" <?= (isset($searchParams['type']) && $searchParams['type'] === 'land') ? 'selected' : '' ?>>Land</option>
                         </select>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold text-dark small">Min Area (sq ft)</label>
-                        <input type="number" name="min_area" class="form-control" placeholder="Any">
+                        <input type="number" name="min_area" class="form-control" placeholder="Any"
+                               value="<?= isset($searchParams['min_area']) ? esc($searchParams['min_area']) : '' ?>">
                     </div>
                     <div class="col-lg-3 col-md-6 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-search me-2"></i>
-                            Search Properties
+                            Search 
                         </button>
                     </div>
                 </div>
+
+                <!-- Clear Search Button for Search Results -->
+                <?php if (isset($isSearchResults) && $isSearchResults): ?>
+                    <div class="row mt-3">
+                        <div class="col-12 text-center">
+                            <a href="<?= base_url('properties') ?>" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>
+                                Clear Search
+                            </a>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </form>
         </div>
     </div>
 </section>
 
 <!-- Properties Section -->
-<section class="py-5 bg-light">
-    <div class="container py-5">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5">
+<section class="py-4 bg-light">
+    <div class="container py-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="h2 fw-bold text-dark mb-2">Available Properties</h2>
+                <h2 class="h2 fw-bold text-dark mb-2">
+                    <?= isset($isSearchResults) && $isSearchResults ? 'Search Results' : 'Available Properties' ?>
+                </h2>
                 <p class="text-muted">
                     <?= $totalProperties ?> properties found
                     <?php if ($totalPages > 1): ?>
@@ -183,104 +200,91 @@
                 <?php endforeach; ?>
             </div>
 
-            <!-- Pagination -->
+            <!-- Modern Pagination -->
             <?php if ($totalPages > 1): ?>
-                <div class="d-flex justify-content-center mt-5">
-                    <nav aria-label="Properties pagination">
-                        <ul class="pagination pagination-lg">
-                            <!-- Previous Button -->
-                            <?php if ($hasPrevPage): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="<?= base_url('properties?page=' . ($currentPage - 1)) ?>" aria-label="Previous">
-                                        <span aria-hidden="true">
-                                            <i class="fas fa-chevron-left me-1"></i>
-                                            Previous
-                                        </span>
-                                    </a>
-                                </li>
-                            <?php else: ?>
-                                <li class="page-item disabled">
-                                    <span class="page-link" aria-label="Previous">
-                                        <span aria-hidden="true">
-                                            <i class="fas fa-chevron-left me-1"></i>
-                                            Previous
-                                        </span>
-                                    </span>
-                                </li>
-                            <?php endif; ?>
+                <?php
+                // Build base URL for pagination links
+                $baseUrl = isset($isSearchResults) && $isSearchResults ? 'properties/search' : 'properties';
+                $searchQuery = isset($searchQuery) ? $searchQuery : '';
+                ?>
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-5 gap-3">
+                    <!-- Pagination Info -->
+                    <div class="text-muted small">
+                        Showing <strong><?= (($currentPage - 1) * $perPage) + 1 ?></strong> to
+                        <strong><?= min($currentPage * $perPage, $totalProperties) ?></strong> of
+                        <strong><?= $totalProperties ?></strong> properties
+                    </div>
 
-                            <!-- Page Numbers -->
+                    <!-- Pagination Navigation -->
+                    <nav aria-label="Properties pagination" class="d-flex align-items-center gap-2">
+                        <!-- Previous Button -->
+                        <?php if ($hasPrevPage): ?>
+                            <a class="btn btn-outline-primary btn-sm d-flex align-items-center"
+                               href="<?= base_url($baseUrl . '?page=' . ($currentPage - 1) . $searchQuery) ?>"
+                               aria-label="Previous page">
+                                <i class="fas fa-chevron-left me-1"></i>
+                                <span class="d-none d-sm-inline">Previous</span>
+                            </a>
+                        <?php else: ?>
+                            <button class="btn btn-outline-secondary btn-sm d-flex align-items-center" disabled>
+                                <i class="fas fa-chevron-left me-1"></i>
+                                <span class="d-none d-sm-inline">Previous</span>
+                            </button>
+                        <?php endif; ?>
+
+                        <!-- Page Numbers -->
+                        <div class="d-flex align-items-center gap-1">
                             <?php
                             $startPage = max(1, $currentPage - 2);
                             $endPage = min($totalPages, $currentPage + 2);
 
                             // Show first page if not in range
                             if ($startPage > 1): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="<?= base_url('properties?page=1') ?>">1</a>
-                                </li>
+                                <a class="btn btn-outline-primary btn-sm"
+                                   href="<?= base_url($baseUrl . '?page=1' . $searchQuery) ?>">1</a>
                                 <?php if ($startPage > 2): ?>
-                                    <li class="page-item disabled">
-                                        <span class="page-link">...</span>
-                                    </li>
+                                    <span class="text-muted px-2">...</span>
                                 <?php endif; ?>
                             <?php endif; ?>
 
                             <!-- Current page range -->
                             <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
-                                <li class="page-item <?= $i === $currentPage ? 'active' : '' ?>">
-                                    <?php if ($i === $currentPage): ?>
-                                        <span class="page-link">
-                                            <?= $i ?>
-                                            <span class="visually-hidden">(current)</span>
-                                        </span>
-                                    <?php else: ?>
-                                        <a class="page-link" href="<?= base_url('properties?page=' . $i) ?>"><?= $i ?></a>
-                                    <?php endif; ?>
-                                </li>
+                                <?php if ($i === $currentPage): ?>
+                                    <button class="btn btn-primary btn-sm" disabled>
+                                        <?= $i ?>
+                                        <span class="visually-hidden">(current)</span>
+                                    </button>
+                                <?php else: ?>
+                                    <a class="btn btn-outline-primary btn-sm"
+                                       href="<?= base_url($baseUrl . '?page=' . $i . $searchQuery) ?>"><?= $i ?></a>
+                                <?php endif; ?>
                             <?php endfor; ?>
 
                             <!-- Show last page if not in range -->
                             <?php if ($endPage < $totalPages): ?>
                                 <?php if ($endPage < $totalPages - 1): ?>
-                                    <li class="page-item disabled">
-                                        <span class="page-link">...</span>
-                                    </li>
+                                    <span class="text-muted px-2">...</span>
                                 <?php endif; ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="<?= base_url('properties?page=' . $totalPages) ?>"><?= $totalPages ?></a>
-                                </li>
+                                <a class="btn btn-outline-primary btn-sm"
+                                   href="<?= base_url($baseUrl . '?page=' . $totalPages . $searchQuery) ?>"><?= $totalPages ?></a>
                             <?php endif; ?>
+                        </div>
 
-                            <!-- Next Button -->
-                            <?php if ($hasNextPage): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="<?= base_url('properties?page=' . ($currentPage + 1)) ?>" aria-label="Next">
-                                        <span aria-hidden="true">
-                                            Next
-                                            <i class="fas fa-chevron-right ms-1"></i>
-                                        </span>
-                                    </a>
-                                </li>
-                            <?php else: ?>
-                                <li class="page-item disabled">
-                                    <span class="page-link" aria-label="Next">
-                                        <span aria-hidden="true">
-                                            Next
-                                            <i class="fas fa-chevron-right ms-1"></i>
-                                        </span>
-                                    </span>
-                                </li>
-                            <?php endif; ?>
-                        </ul>
+                        <!-- Next Button -->
+                        <?php if ($hasNextPage): ?>
+                            <a class="btn btn-outline-primary btn-sm d-flex align-items-center"
+                               href="<?= base_url($baseUrl . '?page=' . ($currentPage + 1) . $searchQuery) ?>"
+                               aria-label="Next page">
+                                <span class="d-none d-sm-inline">Next</span>
+                                <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
+                        <?php else: ?>
+                            <button class="btn btn-outline-secondary btn-sm d-flex align-items-center" disabled>
+                                <span class="d-none d-sm-inline">Next</span>
+                                <i class="fas fa-chevron-right ms-1"></i>
+                            </button>
+                        <?php endif; ?>
                     </nav>
-                </div>
-
-                <!-- Pagination Info -->
-                <div class="text-center mt-3">
-                    <p class="text-muted mb-0">
-                        Showing <?= (($currentPage - 1) * $perPage) + 1 ?> to <?= min($currentPage * $perPage, $totalProperties) ?> of <?= $totalProperties ?> properties
-                    </p>
                 </div>
             <?php endif; ?>
         <?php endif; ?>
@@ -292,59 +296,84 @@
 <?= $this->section('styles') ?>
 <style>
 /* Modern Pagination Styles */
-.pagination-lg .page-link {
-    padding: 0.75rem 1.25rem;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-    border: 2px solid #e9ecef;
-    color: #495057;
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
     font-weight: 500;
+    transition: all 0.2s ease;
+    min-width: 40px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-outline-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+.btn-primary {
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+
+/* Property card hover effects */
+.card-hover {
     transition: all 0.3s ease;
-    margin: 0 0.25rem;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.pagination-lg .page-item:first-child .page-link,
-.pagination-lg .page-item:last-child .page-link {
-    border-radius: 0.5rem;
+.card-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
-.pagination-lg .page-link:hover {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+.property-image-hover {
+    transition: transform 0.3s ease;
 }
 
-.pagination-lg .page-item.active .page-link {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: white;
-    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+.card-hover:hover .property-image-hover {
+    transform: scale(1.05);
 }
 
-.pagination-lg .page-item.disabled .page-link {
-    color: #6c757d;
-    background-color: #f8f9fa;
-    border-color: #e9ecef;
-    cursor: not-allowed;
+.property-actions {
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-.pagination-lg .page-item.disabled .page-link:hover {
-    transform: none;
-    box-shadow: none;
+.card-hover:hover .property-actions {
+    opacity: 1;
 }
 
-/* Responsive pagination */
-@media (max-width: 576px) {
-    .pagination-lg .page-link {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.875rem;
-        margin: 0 0.125rem;
+/* Search section improvements */
+.hero-gradient {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+        min-width: 36px;
+        height: 32px;
     }
 
-    .pagination-lg .page-item:not(.active):not(:first-child):not(:last-child) {
-        display: none;
+    .d-flex.gap-1 {
+        gap: 0.25rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-gradient .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .property-actions {
+        opacity: 1; /* Always visible on mobile */
     }
 }
 </style>
@@ -385,12 +414,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, true);
 });
 
-// Pagination functionality
-function goToPage(page) {
-    const url = new URL(window.location);
-    url.searchParams.set('page', page);
-    window.location.href = url.toString();
-}
+// Pagination functionality is now handled by direct links for better performance
 
 // Add to favorites function
 function addToFavorites(propertyId) {

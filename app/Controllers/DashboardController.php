@@ -7,6 +7,24 @@ use App\Models\ContactModel;
 use App\Models\NewsletterModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
+/**
+ * DashboardController
+ *
+ * Handles all dashboard-related functionality for authenticated users.
+ * This controller manages the admin interface including:
+ * - Dashboard overview with statistics
+ * - Property management with pagination
+ * - Enquiry management with real-time data
+ * - User profile management
+ * - Subscriber management
+ *
+ * All methods in this controller require authentication via the 'auth' filter.
+ *
+ * @author Real Estate Team
+ * @version 2.0 - Enhanced with pagination and real-time enquiry data
+ * @since 2025-08-02
+ */
+
 class DashboardController extends BaseController
 {
     protected $propertyModel;
@@ -153,16 +171,58 @@ class DashboardController extends BaseController
     }
 
     /**
-     * All properties admin view
+     * Get enquiry details for modal
+     */
+    public function getEnquiryDetails($id)
+    {
+        if ($this->request->isAJAX()) {
+            $enquiry = $this->contactModel->find($id);
+
+            if (!$enquiry) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Enquiry not found'
+                ]);
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'enquiry' => $enquiry
+            ]);
+        }
+
+        return $this->response->setStatusCode(ResponseInterface::HTTP_METHOD_NOT_ALLOWED);
+    }
+
+    /**
+     * All properties admin view with pagination
      */
     public function properties()
     {
+        $perPage = 10; // Number of properties per page
+        $page = (int) ($this->request->getGet('page') ?? 1);
+        $offset = ($page - 1) * $perPage;
+
+        // Get total count for pagination
+        $totalProperties = $this->propertyModel->countAll();
+
+        // Get paginated properties
+        $properties = $this->propertyModel->orderBy('created_at', 'DESC')
+                                         ->limit($perPage, $offset)
+                                         ->findAll();
+
         $data = [
             'title' => 'Properties Management',
             'pageTitle' => 'Properties',
-            'properties' => $this->propertyModel->orderBy('created_at', 'DESC')->findAll(),
+            'properties' => $properties,
             'user' => session()->get('user'),
-            'unreadContacts' => $this->contactModel->getCountByStatus(false)
+            'unreadContacts' => $this->contactModel->getCountByStatus(false),
+            'currentPage' => $page,
+            'totalPages' => ceil($totalProperties / $perPage),
+            'perPage' => $perPage,
+            'totalProperties' => $totalProperties,
+            'startRecord' => $offset + 1,
+            'endRecord' => min($offset + $perPage, $totalProperties)
         ];
 
         return view('dashboard/properties', $data);

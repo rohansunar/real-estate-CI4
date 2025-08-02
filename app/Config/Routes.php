@@ -11,15 +11,15 @@ $routes->get('/', 'Home::index');
 // Error route
 $routes->get('error', 'Home::error');
 
-// About Us and Blog routes
+// About Us route
 $routes->get('about', 'Home::about');
-$routes->get('blog', 'Home::blog');
 
 // Property routes
 // Note: Route order is important! More specific routes must come before general ones
 // to prevent route conflicts where 'details' could be matched as a location segment
 $routes->group('properties', function($routes) {
     $routes->get('/', 'PropertyController::index');
+    $routes->get('search', 'PropertyController::search'); // Property search functionality
     $routes->get('details/(:num)', 'PropertyController::details/$1'); // API endpoint for property details (must be first)
     $routes->get('create', 'PropertyController::create', ['filter' => 'auth']);
     $routes->post('create', 'PropertyController::store', ['filter' => 'auth']);
@@ -40,6 +40,7 @@ $routes->group('dashboard', ['filter' => 'auth'], function($routes) {
 
     // Enquiries management
     $routes->get('enquiries', 'DashboardController::enquiries');
+    $routes->get('enquiries/details/(:num)', 'DashboardController::getEnquiryDetails/$1');
     $routes->post('enquiries/mark-read/(:num)', 'DashboardController::markEnquiryRead/$1');
     $routes->post('enquiries/mark-all-read', 'DashboardController::markAllEnquiriesRead');
     $routes->get('enquiries/(:num)', 'DashboardController::deleteEnquiry/$1');
@@ -87,13 +88,3 @@ $routes->get('blog/(:segment)', 'PublicBlogController::single/$1');
 // Newsletter routes
 $routes->post('newsletter/subscribe', 'NewsletterController::subscribe');
 $routes->post('newsletter/unsubscribe', 'NewsletterController::unsubscribe');
-
-// Test routes (for migration validation)
-$routes->group('test', function($routes) {
-    $routes->get('/', 'TestController::index');
-    $routes->get('database', 'TestController::database');
-    $routes->get('createSampleData', 'TestController::createSampleData');
-    $routes->get('testPropertyCreation', 'TestController::testPropertyCreation');
-    $routes->get('testAgentCreation', 'TestController::testAgentCreation');
-    $routes->get('cleanup', 'TestController::cleanup');
-});

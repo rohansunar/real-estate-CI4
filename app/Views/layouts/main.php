@@ -162,6 +162,163 @@
         <?= $this->renderSection('content') ?>
     </main>
 
+    <!-- Client Testimonials Section -->
+    <section class="testimonials-section py-5" id="testimonials" aria-labelledby="testimonials-heading">
+        <div class="container">
+            <!-- Section Header -->
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8 text-center">
+                    <h2 id="testimonials-heading" class="display-5 fw-bold text-dark mb-4">
+                        What Our <span class="text-primary">Clients Say</span>
+                    </h2>
+                    <p class="lead text-muted mb-0">
+                        Don't just take our word for it. Here's what our satisfied clients have to say about their experience with us.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Testimonials Grid -->
+            <div class="testimonials-grid">
+                <!-- Testimonial 1 -->
+                <article class="testimonial-card animate-fade-in" role="article" aria-labelledby="testimonial-1-author">
+                    <div class="testimonial-stars mb-3" role="img" aria-label="5 out of 5 stars">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                    </div>
+                    <blockquote class="testimonial-quote">
+                        The team at Real Estate helped us find our dream home in Siliguri. Their professionalism and attention to detail made the entire process smooth and stress-free. Highly recommended!
+                    </blockquote>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format&q=80"
+                             alt="Portrait of Rajesh Kumar"
+                             class="testimonial-avatar"
+                             loading="lazy">
+                        <div class="testimonial-info">
+                            <h5 id="testimonial-1-author">Rajesh Kumar</h5>
+                            <p class="testimonial-role mb-0">Property Buyer, Champasari</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Testimonial 2 -->
+                <article class="testimonial-card animate-fade-in" role="article" aria-labelledby="testimonial-2-author">
+                    <div class="testimonial-stars mb-3" role="img" aria-label="5 out of 5 stars">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                    </div>
+                    <blockquote class="testimonial-quote">
+                        Excellent service! They understood exactly what we were looking for and found us the perfect apartment in Bagdogra. The entire team was very supportive throughout the process.
+                    </blockquote>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face&auto=format&q=80"
+                             alt="Portrait of Priya Sharma"
+                             class="testimonial-avatar"
+                             loading="lazy">
+                        <div class="testimonial-info">
+                            <h5 id="testimonial-2-author">Priya Sharma</h5>
+                            <p class="testimonial-role mb-0">First-time Buyer, Bagdogra</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Testimonial 3 -->
+                <article class="testimonial-card animate-fade-in" role="article" aria-labelledby="testimonial-3-author">
+                    <div class="testimonial-stars mb-3" role="img" aria-label="5 out of 5 stars">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                    </div>
+                    <blockquote class="testimonial-quote">
+                        Professional, reliable, and trustworthy. They helped us sell our property in Jalpaiguri at a great price and made the whole transaction seamless. Thank you for the excellent service!
+                    </blockquote>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face&auto=format&q=80"
+                             alt="Portrait of Amit Das"
+                             class="testimonial-avatar"
+                             loading="lazy">
+                        <div class="testimonial-info">
+                            <h5 id="testimonial-3-author">Amit Das</h5>
+                            <p class="testimonial-role mb-0">Property Seller, Jalpaiguri</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Testimonial 4 -->
+                <article class="testimonial-card animate-fade-in" role="article" aria-labelledby="testimonial-4-author">
+                    <div class="testimonial-stars mb-3" role="img" aria-label="5 out of 5 stars">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                    </div>
+                    <blockquote class="testimonial-quote">
+                        Outstanding experience! The team was very knowledgeable about the Pradhan Nagar area and helped us find a beautiful home within our budget. Their customer service is top-notch.
+                    </blockquote>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face&auto=format&q=80"
+                             alt="Portrait of Sneha Roy"
+                             class="testimonial-avatar"
+                             loading="lazy">
+                        <div class="testimonial-info">
+                            <h5 id="testimonial-4-author">Sneha Roy</h5>
+                            <p class="testimonial-role mb-0">Home Buyer, Pradhan Nagar</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Testimonial 5 -->
+                <article class="testimonial-card animate-fade-in" role="article" aria-labelledby="testimonial-5-author">
+                    <div class="testimonial-stars mb-3" role="img" aria-label="5 out of 5 stars">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                    </div>
+                    <blockquote class="testimonial-quote">
+                        From start to finish, the service was exceptional. They guided us through every step of buying our first home in Milan More. Couldn't have asked for a better experience!
+                    </blockquote>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face&auto=format&q=80"
+                             alt="Portrait of Vikash Gupta"
+                             class="testimonial-avatar"
+                             loading="lazy">
+                        <div class="testimonial-info">
+                            <h5 id="testimonial-5-author">Vikash Gupta</h5>
+                            <p class="testimonial-role mb-0">New Homeowner, Milan More</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="row justify-content-center mt-5">
+                <div class="col-lg-6 text-center">
+                    <p class="text-muted mb-4">Ready to join our satisfied clients?</p>
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                        <a href="<?= base_url('properties') ?>" class="btn btn-primary btn-lg">
+                            <i class="fas fa-search me-2"></i>
+                            Browse Properties
+                        </a>
+                        <a href="<?= base_url('contact') ?>" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-phone me-2"></i>
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="bg-dark text-white mt-5">
         <div class="container py-5">

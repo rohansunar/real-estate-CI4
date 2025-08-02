@@ -85,6 +85,81 @@ class PropertyController extends BaseController
     }
 
     /**
+     * Search properties with filters and pagination
+     *
+     * This method handles property search with multiple filter criteria including
+     * location, property type, and minimum area. It maintains the same pagination
+     * structure as the main index method for consistency.
+     *
+     * Features:
+     * - Multi-criteria search (location, type, min_area)
+     * - Maintains pagination for search results
+     * - Preserves search parameters in pagination links
+     * - User-friendly error handling for invalid search criteria
+     * - Performance optimized with proper database queries
+     *
+     * @return string The rendered properties search results view with pagination
+     */
+    public function search()
+    {
+        $perPage = 12; // Number of properties per page
+        $page = (int) ($this->request->getGet('page') ?? 1);
+        $offset = ($page - 1) * $perPage;
+
+        // Get search parameters
+        $location = trim($this->request->getGet('location') ?? '');
+        $type = trim($this->request->getGet('type') ?? '');
+        $minArea = (int) ($this->request->getGet('min_area') ?? 0);
+
+        // Build search query
+        $builder = $this->propertyModel->orderBy('created_at', 'DESC');
+
+        // Apply location filter
+        if (!empty($location)) {
+            $builder->where('location', $location);
+        }
+
+        // Apply property type filter
+        if (!empty($type)) {
+            $builder->where('type', $type);
+        }
+
+        // Apply minimum area filter
+        if ($minArea > 0) {
+            $builder->where('area >=', $minArea);
+        }
+
+        // Get total count for pagination
+        $totalProperties = $builder->countAllResults(false); // false to preserve the query
+
+        // Fetch properties with pagination
+        $properties = $builder->limit($perPage, $offset)->findAll();
+
+        // Build search query string for pagination links
+        $searchParams = [];
+        if (!empty($location)) $searchParams['location'] = $location;
+        if (!empty($type)) $searchParams['type'] = $type;
+        if ($minArea > 0) $searchParams['min_area'] = $minArea;
+        $searchQuery = !empty($searchParams) ? '&' . http_build_query($searchParams) : '';
+
+        $data = [
+            'title' => 'Search Results | Properties | Real Estate',
+            'properties' => $properties,
+            'currentPage' => $page,
+            'totalPages' => ceil($totalProperties / $perPage),
+            'perPage' => $perPage,
+            'totalProperties' => $totalProperties,
+            'hasNextPage' => $page < ceil($totalProperties / $perPage),
+            'hasPrevPage' => $page > 1,
+            'searchQuery' => $searchQuery,
+            'searchParams' => $searchParams,
+            'isSearchResults' => true
+        ];
+
+        return view('properties/index', $data);
+    }
+
+    /**
      * Display single property
      */
     public function view($place, $id)

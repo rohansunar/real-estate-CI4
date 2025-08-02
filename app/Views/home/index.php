@@ -188,7 +188,7 @@
             <div class="text-center mt-5">
                 <a href="<?= base_url('properties') ?>" class="btn btn-outline-primary btn-lg">
                     <i class="fas fa-th-large me-2"></i>
-                    View All Properties
+                    Load More
                 </a>
             </div>
         <?php else: ?>

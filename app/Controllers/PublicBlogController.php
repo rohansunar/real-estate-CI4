@@ -4,6 +4,30 @@ namespace App\Controllers;
 
 use App\Models\BlogPostModel;
 
+/**
+ * PublicBlogController
+ *
+ * Handles public-facing blog functionality for website visitors.
+ * This controller manages:
+ * - Blog post listing with pagination
+ * - Individual blog post display
+ * - Category-based post filtering
+ * - Blog post search functionality
+ * - SEO-optimized URLs and metadata
+ *
+ * Key Features:
+ * - Responsive card-based layout
+ * - Bootstrap 5 pagination
+ * - Category and tag filtering
+ * - Search functionality with highlighting
+ * - Social media sharing integration
+ * - View count tracking
+ * - Related posts suggestions
+ *
+ * @author Real Estate Team
+ * @version 2.0 - Enhanced with full public blog functionality
+ * @since 2025-08-02
+ */
 class PublicBlogController extends BaseController
 {
     protected $blogModel;

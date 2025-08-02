@@ -107,12 +107,8 @@
                     <!-- Content -->
                     <div class="mb-4">
                         <label for="content" class="form-label fw-medium">Content <span class="text-danger">*</span></label>
-                        <textarea class="form-control <?= isset(session()->getFlashdata('errors')['content']) ? 'is-invalid' : '' ?>" 
-                                  id="content" 
-                                  name="content" 
-                                  rows="15"
-                                  placeholder="Write your blog post content here..."
-                                  required><?= old('content') ?></textarea>
+                        <div id="quill-editor" style="height: 400px;"></div>
+                        <textarea id="content" name="content" style="display: none;" required><?= old('content') ?></textarea>
                         <div class="form-text">
                             <i class="fas fa-info-circle me-1"></i>
                             Use the rich text editor to format your content with headings, lists, links, and more.
@@ -282,26 +278,39 @@
 
 <?= $this->endSection() ?>
 
+<?= $this->section('styles') ?>
+<!-- Quill.js CSS -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<?= $this->endSection() ?>
+
 <?= $this->section('scripts') ?>
-<!-- TinyMCE Rich Text Editor -->
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<!-- Quill.js Rich Text Editor -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
 <script>
-// Initialize TinyMCE Rich Text Editor
-tinymce.init({
-    selector: '#content',
-    height: 400,
-    menubar: false,
-    plugins: [
-        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-        'insertdatetime', 'media', 'table', 'help', 'wordcount'
-    ],
-    toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-    content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
-    branding: false,
-    promotion: false
+// Initialize Quill Rich Text Editor
+const quill = new Quill('#quill-editor', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'align': [] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            ['link', 'blockquote', 'code-block'],
+            ['clean']
+        ]
+    },
+    placeholder: 'Write your blog post content here...'
 });
+
+// Set initial content if available
+const initialContent = document.getElementById('content').value;
+if (initialContent) {
+    quill.root.innerHTML = initialContent;
+}
 
 // Blog form functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -341,11 +350,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (submitBtn === publishBtn) {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Publishing...';
         }
-        
+
         submitBtn.disabled = true;
-        
-        // Update TinyMCE content
-        tinymce.triggerSave();
+
+        // Update hidden textarea with Quill content
+        document.getElementById('content').value = quill.root.innerHTML;
     });
 });
 
