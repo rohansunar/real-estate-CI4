@@ -9,15 +9,24 @@ class Home extends BaseController
         $propertyModel = new \App\Models\PropertyModel();
 
         // Get featured properties for carousel (latest 5)
-        $featuredProperties = $propertyModel->orderBy('created_at', 'DESC')->limit(5)->findAll();
+        $featuredProperties = $propertyModel->getFeaturedProperties(5);
 
-        // Get recent properties for the grid
-        $recentProperties = $propertyModel->orderBy('created_at', 'DESC')->limit(6)->findAll();
+        // Get exactly 3 featured properties for the featured section (different from carousel)
+        $featuredPropertiesSection = $propertyModel->getFeaturedProperties(3);
+
+        // Get properties by type with featured properties first (3 per type)
+        $propertyTypes = ['house', 'villa', 'land', 'apartment'];
+        $propertiesByType = [];
+
+        foreach ($propertyTypes as $type) {
+            $propertiesByType[$type] = $propertyModel->getPropertiesByType($type, 3);
+        }
 
         $data = [
             'title' => 'Find Your Dream Home | Real Estate',
             'featuredProperties' => $featuredProperties,
-            'recentProperties' => $recentProperties
+            'featuredPropertiesSection' => $featuredPropertiesSection,
+            'propertiesByType' => $propertiesByType
         ];
 
         return view('home/index', $data);

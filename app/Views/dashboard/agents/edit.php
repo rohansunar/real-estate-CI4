@@ -134,12 +134,133 @@
 
                     <div class="mb-4">
                         <label for="address" class="form-label fw-medium">Address</label>
-                        <textarea class="form-control" 
-                                  id="address" 
-                                  name="address" 
-                                  rows="3" 
+                        <textarea class="form-control"
+                                  id="address"
+                                  name="address"
+                                  rows="3"
                                   placeholder="Enter the agent's address..."><?= old('address', $agent['address']) ?></textarea>
                         <div class="form-text">Complete address including city, state, and postal code (optional)</div>
+                    </div>
+
+                    <!-- Agent IDs and Hierarchy Section -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-id-card text-primary me-2"></i>
+                                Agent IDs & Hierarchy
+                            </h6>
+                        </div>
+                        <div class="card-body pt-3">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="unique_agent_id" class="form-label fw-medium">Unique Agent ID</label>
+                                    <input type="text"
+                                           class="form-control <?= isset(session()->getFlashdata('errors')['unique_agent_id']) ? 'is-invalid' : '' ?>"
+                                           id="unique_agent_id"
+                                           name="unique_agent_id"
+                                           value="<?= old('unique_agent_id', $agent['unique_agent_id']) ?>"
+                                           placeholder="e.g., AGT250804001"
+                                           readonly>
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Auto-generated unique identifier for this agent
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="referral_id" class="form-label fw-medium">Referral ID</label>
+                                    <input type="text"
+                                           class="form-control <?= isset(session()->getFlashdata('errors')['referral_id']) ? 'is-invalid' : '' ?>"
+                                           id="referral_id"
+                                           name="referral_id"
+                                           value="<?= old('referral_id', $agent['referral_id']) ?>"
+                                           placeholder="e.g., REF2024001">
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Optional referral identifier for tracking purposes
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="parent_agent_id" class="form-label fw-medium">Parent Agent</label>
+                                    <select class="form-select" id="parent_agent_id" name="parent_agent_id">
+                                        <option value="">Select Parent Agent (Optional)</option>
+                                        <?php
+                                        $agentModel = new \App\Models\AgentModel();
+                                        $allAgents = $agentModel->where('id !=', $agent['id'])->where('is_active', true)->findAll();
+                                        ?>
+                                        <?php foreach ($allAgents as $parentAgent): ?>
+                                            <option value="<?= $parentAgent['id'] ?>"
+                                                    <?= old('parent_agent_id', $agent['parent_agent_id']) == $parentAgent['id'] ? 'selected' : '' ?>>
+                                                <?= esc($parentAgent['name']) ?> (<?= esc($parentAgent['unique_agent_id']) ?>)
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Set this agent as a sub-agent of another agent
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="is_active" class="form-label fw-medium">Agent Status</label>
+                                    <select class="form-select" id="is_active" name="is_active">
+                                        <option value="1" <?= old('is_active', $agent['is_active']) == '1' ? 'selected' : '' ?>>Active</option>
+                                        <option value="0" <?= old('is_active', $agent['is_active']) == '0' ? 'selected' : '' ?>>Inactive</option>
+                                    </select>
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Active agents can log in and access the system
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Authentication Section -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-key text-warning me-2"></i>
+                                Authentication Settings
+                            </h6>
+                        </div>
+                        <div class="card-body pt-3">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="password" class="form-label fw-medium">New Password</label>
+                                    <input type="password"
+                                           class="form-control <?= isset(session()->getFlashdata('errors')['password']) ? 'is-invalid' : '' ?>"
+                                           id="password"
+                                           name="password"
+                                           placeholder="Enter new password">
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Leave empty to keep current password. Minimum 6 characters.
+                                        <?php if ($agent['password']): ?>
+                                            <br><span class="text-success"><i class="fas fa-check me-1"></i>Agent has login credentials</span>
+                                        <?php else: ?>
+                                            <br><span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>No login credentials set</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="password_confirm" class="form-label fw-medium">Confirm Password</label>
+                                    <input type="password"
+                                           class="form-control"
+                                           id="password_confirm"
+                                           name="password_confirm"
+                                           placeholder="Confirm new password">
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Re-enter the password to confirm
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Form Actions -->
@@ -184,7 +305,13 @@
                     </div>
                     <div class="ms-3">
                         <h6 class="mb-1"><?= esc($agent['name']) ?></h6>
-                        <p class="text-muted small mb-0">Agent ID: #<?= $agent['id'] ?></p>
+                        <p class="text-muted small mb-0">
+                            <?php if ($agent['unique_agent_id']): ?>
+                                Agent ID: <?= esc($agent['unique_agent_id']) ?>
+                            <?php else: ?>
+                                Database ID: #<?= $agent['id'] ?>
+                            <?php endif; ?>
+                        </p>
                     </div>
                 </div>
                 
@@ -208,6 +335,36 @@
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted">Last Updated:</span>
                                 <span><?= date('M j, Y', strtotime($agent['updated_at'])) ?></span>
+                            </div>
+                        </div>
+                        <?php if ($agent['referral_id']): ?>
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Referral ID:</span>
+                                <span class="badge bg-info"><?= esc($agent['referral_id']) ?></span>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($agent['parent_agent_id']): ?>
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Parent Agent:</span>
+                                <span class="text-info">
+                                    <?php
+                                    $agentModel = new \App\Models\AgentModel();
+                                    $parentAgent = $agentModel->find($agent['parent_agent_id']);
+                                    echo $parentAgent ? esc($parentAgent['name']) : 'Not found';
+                                    ?>
+                                </span>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Login Access:</span>
+                                <span class="badge <?= $agent['password'] ? 'bg-success' : 'bg-warning' ?>">
+                                    <?= $agent['password'] ? 'Enabled' : 'Disabled' ?>
+                                </span>
                             </div>
                         </div>
                     </div>

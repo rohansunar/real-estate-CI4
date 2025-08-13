@@ -100,16 +100,16 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label for="area" class="form-label fw-medium">Area (sq ft)</label>
-                            <input type="number" 
-                                   class="form-control <?= isset(session()->getFlashdata('errors')['area']) ? 'is-invalid' : '' ?>" 
-                                   id="area" 
-                                   name="area" 
+                            <input type="number"
+                                   class="form-control <?= isset(session()->getFlashdata('errors')['area']) ? 'is-invalid' : '' ?>"
+                                   id="area"
+                                   name="area"
                                    value="<?= old('area') ?>"
                                    placeholder="e.g., 1200"
                                    min="1">
                             <div class="form-text">Enter the total area in square feet (optional)</div>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <label class="form-label fw-medium">YouTube Video URLs</label>
                             <div id="youtube-videos-container">
@@ -130,6 +130,26 @@
                                 <i class="fas fa-plus me-1"></i>Add Another Video
                             </button>
                             <div class="form-text mt-2">Add YouTube video tours (optional). You can add multiple videos.</div>
+                        </div>
+                    </div>
+
+                    <!-- Featured Property Toggle -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       role="switch"
+                                       id="is_featured"
+                                       name="is_featured"
+                                       value="1"
+                                       <?= old('is_featured') ? 'checked' : '' ?>>
+                                <label class="form-check-label fw-medium" for="is_featured">
+                                    <i class="fas fa-star text-warning me-2"></i>
+                                    Featured Property
+                                </label>
+                            </div>
+                            <div class="form-text">Mark this property as featured to highlight it on the home page and in search results</div>
                         </div>
                     </div>
 

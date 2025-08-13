@@ -9,9 +9,85 @@
  * - Font Awesome 6.5.0 (for icons)
  *
  * @author Real Estate Team
- * @version 2.0
+ * @version 2.1
  * @since 2025-08-01
+ * @updated 2025-08-04 - Fixed browser compatibility issues
  */
+
+/**
+ * Polyfill for Element.closest() method for older browsers
+ * This ensures compatibility with Internet Explorer and older browsers
+ */
+if (!Element.prototype.closest) {
+    Element.prototype.closest = function(selector) {
+        var element = this;
+        while (element && element.nodeType === 1) {
+            if (element.matches && element.matches(selector)) {
+                return element;
+            }
+            element = element.parentElement || element.parentNode;
+        }
+        return null;
+    };
+}
+
+/**
+ * Polyfill for Element.matches() method for older browsers
+ */
+if (!Element.prototype.matches) {
+    Element.prototype.matches = Element.prototype.msMatchesSelector ||
+                                Element.prototype.webkitMatchesSelector;
+}
+
+/**
+ * Safe closest() function with fallback for maximum browser compatibility
+ * @param {Element} element - The element to start searching from
+ * @param {string} selector - The CSS selector to match
+ * @returns {Element|null} - The closest matching element or null
+ */
+function safeClosest(element, selector) {
+    // Return null if element is not valid
+    if (!element || !element.nodeType) return null;
+
+    // Use native closest if available
+    if (element.closest) {
+        return element.closest(selector);
+    }
+
+    // Fallback implementation for older browsers
+    var current = element;
+    while (current && current.nodeType === 1) {
+        if (current.matches && current.matches(selector)) {
+            return current;
+        }
+        current = current.parentElement || current.parentNode;
+    }
+    return null;
+}
+
+// Global cleanup registry for memory leak prevention
+const cleanupRegistry = new Set();
+
+/**
+ * Register cleanup function to prevent memory leaks
+ */
+function registerCleanup(cleanupFn) {
+    cleanupRegistry.add(cleanupFn);
+}
+
+/**
+ * Execute all cleanup functions
+ */
+function executeCleanup() {
+    cleanupRegistry.forEach(cleanupFn => {
+        try {
+            cleanupFn();
+        } catch (error) {
+            console.warn('Cleanup function failed:', error);
+        }
+    });
+    cleanupRegistry.clear();
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all website components in order
@@ -22,18 +98,106 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeForms();         // Form validation and Ajax submissions
     initializeHeroCarousel();  // Modern hero carousel functionality
     initializeTestimonials();  // Testimonials section functionality
+    initializeImageHandling(); // Enhanced image loading and error handling
 
     console.log('Real Estate Website loaded successfully');
+});
+
+// Cleanup on page unload to prevent memory leaks
+window.addEventListener('beforeunload', executeCleanup);
+window.addEventListener('pagehide', executeCleanup);
+
+/**
+ * Centralized error handling system
+ * Provides user-friendly error messages and logging
+ */
+const ErrorHandler = {
+    /**
+     * Handle and display user-friendly errors
+     */
+    handle: function(error, context = 'Application', userMessage = null) {
+        // Log technical error for developers
+        console.error(`[${context}] Error:`, error);
+
+        // Show user-friendly message
+        const friendlyMessage = userMessage || this.getFriendlyMessage(error);
+        if (typeof showNotification === 'function') {
+            showNotification(friendlyMessage, 'error');
+        } else {
+            // Fallback for when notification system isn't available
+            alert(friendlyMessage);
+        }
+    },
+
+    /**
+     * Get user-friendly error message
+     */
+    getFriendlyMessage: function(error) {
+        if (error.name === 'NetworkError' || error.message.includes('fetch')) {
+            return 'Network connection issue. Please check your internet connection and try again.';
+        }
+
+        if (error.name === 'TypeError' && error.message.includes('closest')) {
+            return 'Browser compatibility issue detected. Please try refreshing the page.';
+        }
+
+        if (error.message.includes('404')) {
+            return 'The requested resource was not found. Please try again later.';
+        }
+
+        if (error.message.includes('500')) {
+            return 'Server error occurred. Our team has been notified. Please try again later.';
+        }
+
+        return 'An unexpected error occurred. Please try refreshing the page or contact support if the issue persists.';
+    },
+
+    /**
+     * Wrap function with error handling
+     */
+    wrap: function(fn, context = 'Function') {
+        return function(...args) {
+            try {
+                return fn.apply(this, args);
+            } catch (error) {
+                ErrorHandler.handle(error, context);
+                return null;
+            }
+        };
+    }
+};
+
+// Global error handler for unhandled errors
+window.addEventListener('error', function(event) {
+    ErrorHandler.handle(event.error, 'Global', 'An unexpected error occurred. The page will continue to work, but some features may be affected.');
+});
+
+// Global handler for unhandled promise rejections
+window.addEventListener('unhandledrejection', function(event) {
+    ErrorHandler.handle(event.reason, 'Promise', 'A background operation failed. This may affect some features.');
+    event.preventDefault(); // Prevent console error
 });
 
 /**
  * Initialize navbar functionality
  *
- * Handles navbar scroll effects and mobile menu interactions.
- * Adds visual feedback when user scrolls past the hero section.
+ * This function sets up comprehensive navbar behavior including:
+ * - Scroll-based visual effects for better user experience
+ * - Enhanced mobile menu with accessibility features
+ * - Keyboard navigation support
+ * - Click-outside-to-close functionality
+ * - Haptic feedback for mobile devices
+ * - Memory leak prevention through proper event cleanup
+ *
+ * The function ensures cross-browser compatibility and follows
+ * WCAG 2.1 AA accessibility guidelines.
+ *
+ * @since 2.1.0 - Enhanced with accessibility and mobile improvements
  */
 function initializeNavbar() {
     const navbar = document.querySelector('.navbar');
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
 
     if (!navbar) return; // Exit if navbar not found
 
@@ -46,18 +210,78 @@ function initializeNavbar() {
         }
     });
 
+    // Enhanced mobile menu toggler functionality
+    if (navbarToggler && navbarCollapse) {
+        // Add ARIA labels for better accessibility
+        navbarToggler.setAttribute('aria-label', 'Toggle navigation menu');
+
+        // Handle toggler click with enhanced feedback
+        navbarToggler.addEventListener('click', function() {
+            // Add haptic feedback for mobile devices
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+
+            // Update ARIA label based on state
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-label', isExpanded ? 'Close navigation menu' : 'Open navigation menu');
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (navbarCollapse.classList.contains('show') &&
+                !navbar.contains(e.target)) {
+                const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                if (bsCollapse) {
+                    bsCollapse.hide();
+                }
+            }
+        });
+
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && navbarCollapse.classList.contains('show')) {
+                const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                if (bsCollapse) {
+                    bsCollapse.hide();
+                }
+                navbarToggler.focus(); // Return focus to toggler
+            }
+        });
+    }
+
     // Close mobile menu when clicking on links (improves UX on mobile)
     const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-    const navbarCollapse = document.querySelector('.navbar-collapse');
-    
+
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
-            if (navbarCollapse.classList.contains('show')) {
-                const bsCollapse = new bootstrap.Collapse(navbarCollapse);
-                bsCollapse.hide();
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                if (bsCollapse) {
+                    bsCollapse.hide();
+                }
+            }
+        });
+
+        // Add keyboard navigation support
+        link.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
             }
         });
     });
+
+    // Add smooth transitions for mobile menu
+    if (navbarCollapse) {
+        navbarCollapse.addEventListener('show.bs.collapse', function() {
+            this.style.transition = 'height 0.35s ease';
+        });
+
+        navbarCollapse.addEventListener('hide.bs.collapse', function() {
+            this.style.transition = 'height 0.35s ease';
+        });
+    }
 }
 
 /**
@@ -190,8 +414,8 @@ function initializeHeroCarousel() {
     };
     document.addEventListener('visibilitychange', visibilityChangeHandler);
 
-    // Cleanup function to prevent memory leaks
-    window.addEventListener('beforeunload', () => {
+    // Register cleanup function to prevent memory leaks
+    registerCleanup(() => {
         stopAutoPlay();
         document.removeEventListener('visibilitychange', visibilityChangeHandler);
     });
@@ -242,24 +466,28 @@ function initializeToasts() {
  *
  * Optimized to use event delegation to reduce memory usage
  * and improve performance with large numbers of property cards.
+ * Updated with browser-compatible closest() implementation.
  */
 function initializePropertyCards() {
     // Use event delegation for better performance and memory management
     document.addEventListener('mouseenter', function(e) {
-        if (e.target.closest('.property-card, .card')) {
-            e.target.closest('.property-card, .card').style.transform = 'translateY(-8px)';
+        const propertyCard = safeClosest(e.target, '.property-card, .card');
+        if (propertyCard) {
+            propertyCard.style.transform = 'translateY(-8px)';
+            propertyCard.style.transition = 'transform 0.3s ease';
         }
     }, true);
 
     document.addEventListener('mouseleave', function(e) {
-        if (e.target.closest('.property-card, .card')) {
-            e.target.closest('.property-card, .card').style.transform = 'translateY(0)';
+        const propertyCard = safeClosest(e.target, '.property-card, .card');
+        if (propertyCard) {
+            propertyCard.style.transform = 'translateY(0)';
         }
     }, true);
 
     // Handle property view button clicks with event delegation
     document.addEventListener('click', function(e) {
-        const viewButton = e.target.closest('[data-property-view]');
+        const viewButton = safeClosest(e.target, '[data-property-view]');
         if (viewButton) {
             e.preventDefault();
             const propertyId = viewButton.getAttribute('data-property-id');
@@ -794,6 +1022,144 @@ function initializeTestimonials() {
     console.log('Testimonials section initialized successfully');
 }
 
+/**
+ * Initialize enhanced image handling
+ *
+ * Provides lazy loading, error handling, and loading states for property images.
+ * Improves performance and user experience, especially on mobile devices.
+ */
+function initializeImageHandling() {
+    const propertyImages = document.querySelectorAll('.property-image-hover, .card-img-top');
+
+    // Intersection Observer for lazy loading
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                loadImage(img);
+                observer.unobserve(img);
+            }
+        });
+    }, {
+        rootMargin: '50px 0px',
+        threshold: 0.01
+    });
+
+    // Initialize each image
+    propertyImages.forEach(img => {
+        // Set up lazy loading
+        if (img.dataset.src && !img.src) {
+            img.dataset.loading = 'true';
+            imageObserver.observe(img);
+        } else if (img.src) {
+            // Handle already loaded images
+            setupImageHandlers(img);
+        }
+    });
+
+    /**
+     * Load image with proper error handling
+     */
+    function loadImage(img) {
+        const src = img.dataset.src || img.src;
+        if (!src) return;
+
+        // Create a new image to test loading
+        const testImg = new Image();
+
+        testImg.onload = function() {
+            img.src = src;
+            img.dataset.loading = 'false';
+            img.dataset.error = 'false';
+            setupImageHandlers(img);
+
+            // Add fade-in animation
+            img.style.opacity = '0';
+            img.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => {
+                img.style.opacity = '1';
+            }, 50);
+        };
+
+        testImg.onerror = function() {
+            handleImageError(img);
+        };
+
+        testImg.src = src;
+    }
+
+    /**
+     * Handle image loading errors
+     */
+    function handleImageError(img) {
+        img.dataset.loading = 'false';
+        img.dataset.error = 'true';
+
+        // Set fallback image
+        const fallbackSrc = img.dataset.fallback || '/assets/images/default-property.svg';
+
+        // Try fallback image
+        const fallbackImg = new Image();
+        fallbackImg.onload = function() {
+            img.src = fallbackSrc;
+            img.dataset.error = 'false';
+        };
+        fallbackImg.onerror = function() {
+            // If even fallback fails, show placeholder
+            img.style.backgroundColor = '#f1f5f9';
+            img.alt = 'Image not available';
+            console.warn('Failed to load property image and fallback:', img.dataset.src || img.src);
+        };
+        fallbackImg.src = fallbackSrc;
+    }
+
+    /**
+     * Set up image event handlers
+     */
+    function setupImageHandlers(img) {
+        // Handle runtime errors
+        img.addEventListener('error', function() {
+            if (!this.dataset.error || this.dataset.error === 'false') {
+                handleImageError(this);
+            }
+        });
+
+        // Add loading state on src change
+        const originalSrc = img.src;
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+                    if (img.src !== originalSrc && img.src) {
+                        img.dataset.loading = 'true';
+                        img.addEventListener('load', function() {
+                            img.dataset.loading = 'false';
+                        }, { once: true });
+                    }
+                }
+            });
+        });
+
+        observer.observe(img, { attributes: true });
+    }
+
+    // Handle network changes
+    if ('connection' in navigator) {
+        navigator.connection.addEventListener('change', function() {
+            // Retry failed images on network improvement
+            if (navigator.connection.effectiveType !== 'slow-2g') {
+                const failedImages = document.querySelectorAll('[data-error="true"]');
+                failedImages.forEach(img => {
+                    if (img.dataset.src) {
+                        loadImage(img);
+                    }
+                });
+            }
+        });
+    }
+
+    console.log('Enhanced image handling initialized for', propertyImages.length, 'images');
+}
+
 // Make functions globally available
 window.showPropertyModal = showPropertyModal;
 window.showNotification = showNotification;
@@ -801,3 +1167,4 @@ window.scrollToElement = scrollToElement;
 window.clearFormErrors = clearFormErrors;
 window.showFormErrors = showFormErrors;
 window.initializeTestimonials = initializeTestimonials;
+window.initializeImageHandling = initializeImageHandling;

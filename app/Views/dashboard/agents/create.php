@@ -127,12 +127,107 @@
 
                     <div class="mb-4">
                         <label for="address" class="form-label fw-medium">Address</label>
-                        <textarea class="form-control" 
-                                  id="address" 
-                                  name="address" 
-                                  rows="3" 
+                        <textarea class="form-control"
+                                  id="address"
+                                  name="address"
+                                  rows="3"
                                   placeholder="Enter the agent's address..."><?= old('address') ?></textarea>
                         <div class="form-text">Complete address including city, state, and postal code (optional)</div>
+                    </div>
+
+                    <!-- Agent IDs and Hierarchy Section -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-id-card text-primary me-2"></i>
+                                Agent IDs & Hierarchy
+                            </h6>
+                        </div>
+                        <div class="card-body pt-3">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="referral_id" class="form-label fw-medium">Referral ID</label>
+                                    <input type="text"
+                                           class="form-control <?= isset(session()->getFlashdata('errors')['referral_id']) ? 'is-invalid' : '' ?>"
+                                           id="referral_id"
+                                           name="referral_id"
+                                           value="<?= old('referral_id') ?>"
+                                           placeholder="e.g., REF2024001">
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Optional referral identifier for tracking purposes
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="parent_agent_id" class="form-label fw-medium">Parent Agent</label>
+                                    <select class="form-select" id="parent_agent_id" name="parent_agent_id">
+                                        <option value="">Select Parent Agent (Optional)</option>
+                                        <?php
+                                        $agentModel = new \App\Models\AgentModel();
+                                        $allAgents = $agentModel->where('is_active', true)->findAll();
+                                        ?>
+                                        <?php foreach ($allAgents as $parentAgent): ?>
+                                            <option value="<?= $parentAgent['id'] ?>"
+                                                    <?= old('parent_agent_id') == $parentAgent['id'] ? 'selected' : '' ?>>
+                                                <?= esc($parentAgent['name']) ?>
+                                                <?php if ($parentAgent['unique_agent_id']): ?>
+                                                    (<?= esc($parentAgent['unique_agent_id']) ?>)
+                                                <?php endif; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Set this agent as a sub-agent of another agent
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Note:</strong> A unique agent ID will be automatically generated when the agent is created.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Authentication Section -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-key text-warning me-2"></i>
+                                Authentication Settings
+                            </h6>
+                        </div>
+                        <div class="card-body pt-3">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="password" class="form-label fw-medium">Password</label>
+                                    <input type="password"
+                                           class="form-control <?= isset(session()->getFlashdata('errors')['password']) ? 'is-invalid' : '' ?>"
+                                           id="password"
+                                           name="password"
+                                           placeholder="Enter password">
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Optional. If provided, agent can log in to the system. Minimum 6 characters.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="password_confirm" class="form-label fw-medium">Confirm Password</label>
+                                    <input type="password"
+                                           class="form-control"
+                                           id="password_confirm"
+                                           name="password_confirm"
+                                           placeholder="Confirm password">
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Re-enter the password to confirm
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Form Actions -->

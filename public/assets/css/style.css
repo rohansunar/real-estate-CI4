@@ -844,3 +844,196 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ========================================
+   ENHANCED DASHBOARD MOBILE OPTIMIZATIONS
+   ======================================== */
+
+/* Extra Small Devices (320px - 480px) */
+@media (max-width: 480px) {
+  /* Dashboard header optimizations */
+  .dashboard-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Sidebar optimizations for very small screens */
+  .sidebar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .sidebar .nav-link {
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .sidebar .nav-link i {
+    width: 1.25rem;
+    margin-right: 0.75rem;
+  }
+
+  /* Main content adjustments */
+  .main-content {
+    padding: 1rem;
+  }
+
+  /* Card optimizations */
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  .card-header {
+    padding: 0.875rem 1rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  /* Table optimizations */
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem 0.25rem;
+    vertical-align: middle;
+  }
+
+  /* Button optimizations */
+  .btn {
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+  }
+
+  .btn-sm {
+    min-height: 40px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  /* Form optimizations */
+  .form-control,
+  .form-select {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .form-label {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Stats cards */
+  .stats-card {
+    margin-bottom: 1rem;
+  }
+
+  .stats-card .card-body {
+    padding: 1rem 0.875rem;
+  }
+
+  /* Modal optimizations */
+  .modal-dialog {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1rem;
+  }
+
+  /* Dropdown optimizations */
+  .dropdown-menu {
+    font-size: 0.9rem;
+  }
+
+  .dropdown-item {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Touch-friendly enhancements for dashboard */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  .sidebar .nav-link:hover,
+  .btn:hover,
+  .card:hover {
+    transform: none;
+    background-color: initial;
+  }
+
+  /* Better touch feedback */
+  .sidebar .nav-link:active {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+
+  /* Improve tap highlighting */
+  .sidebar .nav-link,
+  .btn,
+  .dropdown-item {
+    -webkit-tap-highlight-color: rgba(37, 99, 235, 0.1);
+  }
+}
+
+/* Dashboard landscape optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .sidebar {
+    width: 200px;
+    max-width: 200px;
+  }
+
+  .main-content {
+    margin-left: 200px;
+    padding: 1rem;
+  }
+
+  .dashboard-header {
+    padding: 0.5rem 1rem;
+  }
+
+  .modal-dialog {
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+}
+
+/* Accessibility improvements for dashboard mobile */
+@media (max-width: 768px) {
+  /* Larger focus indicators */
+  .sidebar .nav-link:focus,
+  .btn:focus,
+  .form-control:focus {
+    outline: 3px solid rgba(37, 99, 235, 0.5);
+    outline-offset: 2px;
+  }
+
+  /* Skip to content link for mobile */
+  .skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary-color);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000;
+  }
+
+  .skip-to-content:focus {
+    top: 6px;
+  }
+}

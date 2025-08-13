@@ -45,7 +45,7 @@
                 <h1 class="display-2 fw-bold mb-4 lh-1">
                     Find Your
                     <span class="text-gradient d-block">
-                        Dream Home
+                        Dream Property
                     </span>
                 </h1>
                 <p class="fs-4 mb-5 text-light">
@@ -126,72 +126,199 @@
     </div>
 </section>
 
+<!-- Featured Properties Section -->
+<?php if (!empty($featuredPropertiesSection)): ?>
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="text-center mb-5 animate-on-scroll">
+            <div class="d-flex align-items-center justify-content-center mb-3">
+                <div class="bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-star text-warning fs-3"></i>
+                </div>
+                <div>
+                    <h2 class="display-5 fw-bold text-dark mb-1">Featured Properties</h2>
+                    <p class="text-muted mb-0">Handpicked premium properties just for you</p>
+                </div>
+            </div>
+            <p class="fs-5 text-muted mx-auto" style="max-width: 600px;">
+                Discover our carefully selected featured properties that offer exceptional value, prime locations, and outstanding amenities.
+            </p>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <?php foreach ($featuredPropertiesSection as $index => $property): ?>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 shadow-sm card-hover animate-on-scroll position-relative" style="animation-delay: <?= $index * 0.1 ?>s;">
+                        <?php
+                        $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
+                        $propertyImage = !empty($images[0]) ? base_url($images[0]) : base_url('assets/images/default-property.svg');
+                        ?>
+
+                        <!-- Featured Badge -->
+                        <div class="position-absolute top-0 end-0 m-3" style="z-index: 10;">
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-star me-1"></i>Featured
+                            </span>
+                        </div>
+
+                        <!-- Property Image -->
+                        <div class="position-relative overflow-hidden">
+                            <img src="<?= $propertyImage ?>"
+                                 class="card-img-top property-image"
+                                 alt="<?= esc($property['title']) ?>"
+                                 style="height: 250px; object-fit: cover;">
+                            <div class="position-absolute bottom-0 start-0 m-3">
+                                <span class="badge bg-primary">
+                                    <?= esc(ucfirst($property['type'])) ?>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Property Details -->
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold text-dark mb-2"><?= esc($property['title']) ?></h5>
+                            <p class="card-text text-muted mb-3 flex-grow-1">
+                                <?= esc(substr($property['description'], 0, 100)) ?>...
+                            </p>
+
+                            <!-- Property Info -->
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center text-muted">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    <small><?= esc($property['location']) ?></small>
+                                </div>
+                                <?php if ($property['area']): ?>
+                                    <div class="d-flex align-items-center text-muted">
+                                        <i class="fas fa-expand-arrows-alt me-2"></i>
+                                        <small><?= number_format($property['area']) ?> sq ft</small>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- View Details Button -->
+                            <a href="<?= base_url('properties/' . urlencode($property['location']) . '/' . $property['id']) ?>"
+                               class="btn btn-primary">
+                                <i class="fas fa-eye me-2"></i>
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- View All Featured Properties Button -->
+        <div class="text-center animate-on-scroll">
+            <a href="<?= base_url('properties?featured=1') ?>" class="btn btn-outline-warning btn-lg">
+                <i class="fas fa-star me-2"></i>
+                View All Featured Properties
+                <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
 <!-- Properties Section -->
 <section id="properties" class="py-5 bg-light">
     <div class="container py-5">
         <div class="text-center mb-5 animate-on-scroll">
-            <h2 class="display-4 fw-bold text-dark mb-4">Featured Properties</h2>
+            <h2 class="display-4 fw-bold text-dark mb-4">Explore Properties by Type</h2>
             <p class="fs-5 text-muted mx-auto" style="max-width: 600px;">
-                Discover our handpicked selection of premium properties that offer the perfect blend of comfort, style, and location.
+                Discover our diverse collection of properties, from cozy homes to luxury villas, organized by type to help you find exactly what you're looking for.
             </p>
         </div>
-        
-        <?php if (!empty($recentProperties)): ?>
-            <div class="row g-4">
-                <?php foreach ($recentProperties as $property): ?>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card h-100 shadow-sm card-hover animate-on-scroll">
-                            <?php
-                            $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
-                            $propertyImage = !empty($images[0]) ? base_url($images[0]) : base_url('assets/images/default-property.svg');
-                            ?>
 
-                            <div class="position-relative overflow-hidden">
-                                <img src="<?= $propertyImage ?>" alt="<?= esc($property['title']) ?>" class="card-img-top property-image-hover" style="height: 250px; object-fit: cover;">
-                                <div class="position-absolute top-0 start-0 m-3">
-                                    <span class="badge bg-primary fs-6">
-                                        <?= esc(ucfirst($property['type'])) ?>
-                                    </span>
-                                </div>
+        <?php
+        $propertyTypes = [
+            'house' => ['title' => 'Houses', 'icon' => 'fas fa-home', 'description' => 'Comfortable family homes with modern amenities'],
+            'villa' => ['title' => 'Villas', 'icon' => 'fas fa-building', 'description' => 'Luxury villas with premium features and spacious layouts'],
+            'land' => ['title' => 'Land', 'icon' => 'fas fa-map', 'description' => 'Prime land plots for your dream construction projects'],
+            'apartment' => ['title' => 'Apartments', 'icon' => 'fas fa-city', 'description' => 'Modern apartments in convenient urban locations']
+        ];
+        ?>
+
+        <?php foreach ($propertyTypes as $type => $typeInfo): ?>
+            <?php if (!empty($propertiesByType[$type])): ?>
+                <!-- <?= $typeInfo['title'] ?> Section -->
+                <div class="mb-5">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                <i class="<?= $typeInfo['icon'] ?> text-primary fs-4"></i>
                             </div>
-
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title fw-bold text-dark mb-2"><?= esc($property['title']) ?></h5>
-                                <p class="card-text text-muted mb-3"><?= esc(substr($property['description'], 0, 100)) ?>...</p>
-
-                                <div class="d-flex align-items-center text-muted mb-3">
-                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>
-                                    <span><?= esc($property['location']) ?></span>
-                                </div>
-
-                                <?php if ($property['area']): ?>
-                                    <div class="d-flex align-items-center text-muted mb-3">
-                                        <i class="fas fa-ruler-combined me-2 text-primary"></i>
-                                        <span><?= esc($property['area']) ?> sq ft</span>
-                                    </div>
-                                <?php endif; ?>
-
-                                <div class="d-flex justify-content-between align-items-center mt-auto">
-                                    <a href="<?= base_url('properties/' . urlencode($property['location']) . '/' . $property['id']) ?>" class="btn btn-primary">
-                                        View Details
-                                    </a>
-                                    <small class="text-muted">
-                                        <?= date('M j, Y', strtotime($property['created_at'])) ?>
-                                    </small>
-                                </div>
+                            <div>
+                                <h3 class="h3 fw-bold text-dark mb-1"><?= $typeInfo['title'] ?></h3>
+                                <p class="text-muted mb-0"><?= $typeInfo['description'] ?></p>
                             </div>
                         </div>
+                        <a href="<?= base_url('properties?type=' . $type) ?>" class="btn btn-outline-primary">
+                            View All <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
                     </div>
-                <?php endforeach; ?>
-            </div>
 
-            <div class="text-center mt-5">
-                <a href="<?= base_url('properties') ?>" class="btn btn-outline-primary btn-lg">
-                    <i class="fas fa-th-large me-2"></i>
-                    Load More
-                </a>
-            </div>
-        <?php else: ?>
+                    <div class="row g-4">
+                        <?php foreach ($propertiesByType[$type] as $index => $property): ?>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="card h-100 shadow-sm card-hover animate-on-scroll position-relative" style="animation-delay: <?= $index * 0.1 ?>s;">
+                                    <?php
+                                    $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
+                                    $propertyImage = !empty($images[0]) ? base_url($images[0]) : base_url('assets/images/default-property.svg');
+                                    ?>
+
+                                    <!-- Featured Badge -->
+                                    <?php if ($property['is_featured']): ?>
+                                        <div class="position-absolute top-0 end-0 m-3" style="z-index: 10;">
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fas fa-star me-1"></i>Featured
+                                            </span>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div class="position-relative overflow-hidden">
+                                        <img src="<?= $propertyImage ?>" alt="<?= esc($property['title']) ?>" class="card-img-top property-image-hover" style="height: 250px; object-fit: cover;">
+                                        <div class="position-absolute top-0 start-0 m-3">
+                                            <!-- <span class="badge bg-primary fs-6">
+                                                <?= esc(ucfirst($property['type'])) ?>
+                                            </span> -->
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title fw-bold text-dark mb-2"><?= esc($property['title']) ?></h5>
+                                        <p class="card-text text-muted mb-3"><?= esc(substr($property['description'], 0, 100)) ?>...</p>
+
+                                        <div class="d-flex align-items-center text-muted mb-3">
+                                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                            <span><?= esc($property['location']) ?></span>
+                                        </div>
+
+                                        <?php if ($property['area']): ?>
+                                            <div class="d-flex align-items-center text-muted mb-3">
+                                                <i class="fas fa-ruler-combined me-2 text-primary"></i>
+                                                <span><?= esc($property['area']) ?> sq ft</span>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                                            <a href="<?= base_url('properties/' . urlencode($property['location']) . '/' . $property['id']) ?>" class="btn btn-primary">
+                                                View Details
+                                            </a>
+                                            <small class="text-muted">
+                                                <?= date('M j, Y', strtotime($property['created_at'])) ?>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+
+        <!-- Show message if no properties exist -->
+        <?php if (empty($propertiesByType['house']) && empty($propertiesByType['villa']) && empty($propertiesByType['land']) && empty($propertiesByType['apartment'])): ?>
             <div class="text-center py-5">
                 <i class="fas fa-home display-1 text-muted mb-4"></i>
                 <h3 class="h3 fw-semibold text-dark mb-3">No Properties Available</h3>
@@ -204,8 +331,19 @@
                 <?php endif; ?>
             </div>
         <?php endif; ?>
+
+        <!-- View All Properties Button -->
+        <div class="text-center mt-5">
+            <a href="<?= base_url('properties') ?>" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-th-large me-2"></i>
+                View All Properties
+            </a>
+        </div>
     </div>
 </section>
+
+<!-- Newsletter Subscription Section -->
+<?= $this->include('components/newsletter_section') ?>
 
 <?= $this->endSection() ?>
 

@@ -172,6 +172,7 @@ h6, .h6 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
   font-size: 0.875rem;
   z-index: 1051;
   height: 45px;
+  min-height: 45px;
 }
 
 .top-header .hover-opacity {
@@ -180,6 +181,37 @@ h6, .h6 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
 
 .top-header .hover-opacity:hover {
   opacity: 0.7;
+}
+
+/* Mobile optimizations for top header */
+@media (max-width: 767.98px) {
+  .top-header {
+    height: auto;
+    min-height: 40px;
+    padding: 0.5rem 0 !important;
+  }
+
+  .top-header .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .top-header .small {
+    font-size: 0.8rem;
+  }
+
+  .top-header i {
+    font-size: 0.8rem;
+  }
+
+  /* Ensure content is centered and visible on mobile */
+  .top-header .d-flex {
+    gap: 0.5rem;
+  }
+
+  .top-header .me-3 {
+    margin-right: 0.75rem !important;
+  }
 }
 
 /* Enhanced Navigation */
@@ -231,20 +263,105 @@ h6, .h6 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
   width: 80%;
 }
 
-/* Mobile Navigation Improvements */
+/* Enhanced Mobile Navigation */
 .navbar-toggler {
-  border: none;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
+  border: 2px solid transparent;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
   transition: all 0.3s ease;
+  background-color: rgba(37, 99, 235, 0.05);
+  min-width: 48px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .navbar-toggler:focus {
-  box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.3);
+  border-color: var(--primary-color);
+  outline: none;
 }
 
 .navbar-toggler:hover {
   background-color: rgba(37, 99, 235, 0.1);
+  transform: scale(1.05);
+}
+
+.navbar-toggler:active {
+  transform: scale(0.95);
+  background-color: rgba(37, 99, 235, 0.15);
+}
+
+/* Custom hamburger icon */
+.navbar-toggler-icon {
+  background-image: none;
+  width: 24px;
+  height: 18px;
+  position: relative;
+  transform: rotate(0deg);
+  transition: 0.3s ease-in-out;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after,
+.navbar-toggler-icon {
+  display: block;
+  position: absolute;
+  height: 3px;
+  width: 100%;
+  background: var(--primary-color);
+  border-radius: 2px;
+  opacity: 1;
+  left: 0;
+  transform: rotate(0deg);
+  transition: 0.25s ease-in-out;
+}
+
+.navbar-toggler-icon::before {
+  content: "";
+  top: 0px;
+}
+
+.navbar-toggler-icon::after {
+  content: "";
+  bottom: 0px;
+}
+
+/* Animation for hamburger to X */
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+  background: transparent;
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
+  top: 7px;
+  transform: rotate(135deg);
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
+  bottom: 7px;
+  transform: rotate(-135deg);
+}
+
+/* Ripple effect for touch feedback */
+.navbar-toggler::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.navbar-toggler:active::after {
+  width: 60px;
+  height: 60px;
 }
 
 .navbar-collapse {
@@ -369,10 +486,74 @@ h6, .h6 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
   height: 250px;
   object-fit: cover;
   transition: transform 0.3s ease;
+  background-color: #f8fafc;
+  border-radius: 0.5rem 0.5rem 0 0;
+  width: 100%;
+  display: block;
 }
 
 .card:hover .card-img-top {
   transform: scale(1.05);
+}
+
+/* Enhanced property image styles */
+.property-image-hover {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  background-color: #f8fafc;
+  min-height: 250px;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Loading state for images */
+.property-image-hover[data-loading="true"] {
+  opacity: 0.7;
+  background-image: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Error state for images */
+.property-image-hover[data-error="true"] {
+  background-color: #f1f5f9;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 48px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* Mobile optimizations for property images */
+@media (max-width: 768px) {
+  .card-img-top,
+  .property-image-hover {
+    height: 200px;
+    min-height: 200px;
+  }
+
+  /* Disable hover effects on touch devices */
+  .card:hover .card-img-top,
+  .card-hover:hover .property-image-hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-img-top,
+  .property-image-hover {
+    height: 180px;
+    min-height: 180px;
+  }
 }
 
 .card-body {
@@ -1330,5 +1511,261 @@ textarea.form-control {
   .hero-section {
     background: none !important;
     color: black !important;
+  }
+}
+
+/* ========================================
+   ENHANCED MOBILE-FIRST RESPONSIVE DESIGN
+   ======================================== */
+
+/* Extra Small Devices (320px - 480px) */
+@media (max-width: 480px) {
+  /* Typography optimizations for very small screens */
+  .hero-title {
+    font-size: 1.75rem !important;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .display-5, .display-6 {
+    font-size: 1.5rem;
+  }
+
+  /* Container padding for very small screens */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Navigation improvements */
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+
+  /* Button optimizations for touch */
+  .btn {
+    min-height: 44px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .btn-sm {
+    min-height: 40px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-lg {
+    min-height: 48px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+
+  /* Card optimizations */
+  .card {
+    margin-bottom: 1.5rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  /* Property card specific */
+  .property-card .card-body {
+    padding: 1rem 0.875rem;
+  }
+
+  .property-card .card-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Form optimizations */
+  .form-control,
+  .form-select {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0.75rem 1rem;
+  }
+
+  .form-label {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Modal optimizations */
+  .modal-dialog {
+    margin: 1rem;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1rem;
+  }
+
+  /* Footer adjustments */
+  .footer {
+    padding: 2rem 0;
+  }
+
+  .footer .col-lg-3,
+  .footer .col-lg-2 {
+    margin-bottom: 1.5rem;
+  }
+
+  /* Testimonial cards for very small screens */
+  .testimonial-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .testimonial-quote {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .testimonial-author h5 {
+    font-size: 1rem;
+  }
+
+  .testimonial-role {
+    font-size: 0.8rem;
+  }
+}
+
+/* Touch-Friendly Enhancements */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  .btn:hover,
+  .card:hover,
+  .property-card:hover {
+    transform: none;
+  }
+
+  /* Increase touch targets */
+  .nav-link,
+  .btn,
+  .form-control,
+  .form-select {
+    min-height: 44px;
+  }
+
+  /* Improve tap highlighting */
+  .btn,
+  .nav-link,
+  .card-link {
+    -webkit-tap-highlight-color: rgba(0, 123, 255, 0.1);
+  }
+
+  /* Better touch feedback */
+  .btn:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+
+  .property-card:active {
+    transform: scale(0.99);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Landscape orientation optimizations for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .hero-section {
+    height: 50vh;
+    min-height: 400px;
+  }
+
+  .navbar {
+    padding: 0.5rem 0;
+  }
+
+  .modal-dialog {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Optimize testimonials for landscape */
+  .testimonials-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .testimonial-card {
+    padding: 0.875rem;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Optimize images and icons for retina displays */
+  .property-image,
+  .testimonial-avatar,
+  .hero-bg {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Accessibility improvements for mobile */
+@media (max-width: 768px) {
+  /* Larger focus indicators */
+  .btn:focus,
+  .form-control:focus,
+  .nav-link:focus {
+    outline: 3px solid rgba(0, 123, 255, 0.5);
+    outline-offset: 2px;
+  }
+
+  /* Better contrast for small text */
+  .text-muted {
+    color: #6c757d !important;
+  }
+
+  /* Ensure minimum text size */
+  small, .small {
+    font-size: 0.875rem;
+  }
+}
+
+/* Animation optimizations for mobile */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .btn,
+  .card,
+  .property-card {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* Dark mode support for mobile */
+@media (prefers-color-scheme: dark) and (max-width: 768px) {
+  .card {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .form-control,
+  .form-select {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .text-muted {
+    color: #a0aec0 !important;
   }
 }

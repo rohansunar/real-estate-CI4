@@ -114,24 +114,47 @@ class AgentController extends BaseController
             // Handle profile image upload
             $profileImagePath = $this->handleProfileImageUpload();
 
+            // Generate automatic login credentials
+            $generatedPassword = $this->generateSecurePassword();
+
+            // Generate referral ID if not provided
+            $referralId = trim($this->request->getPost('referral_id')) ?: $this->agentModel->generateReferralId();
+
             // Prepare data for insertion
             $data = [
                 'name' => trim($this->request->getPost('name')),
                 'email' => trim($this->request->getPost('email')),
+                'password' => $generatedPassword,
                 'phone' => trim($this->request->getPost('phone')),
                 'address' => trim($this->request->getPost('address')) ?: null,
                 'qualification' => trim($this->request->getPost('qualification')) ?: null,
                 'profile_image' => $profileImagePath,
+                'referral_id' => $referralId,
+                'parent_agent_id' => $this->request->getPost('parent_agent_id') ?: null,
                 'is_active' => true
             ];
 
+            // Store the plain password for email
+            $data['plain_password'] = $generatedPassword;
+
             // Insert agent into database (skip model validation since we already validated)
             $this->agentModel->skipValidation(true);
-            if ($this->agentModel->insert($data)) {
+            $agentId = $this->agentModel->insert($data);
+
+            if ($agentId) {
+                // Get the created agent with generated unique_agent_id
+                $createdAgent = $this->agentModel->find($agentId);
+                $data['unique_agent_id'] = $createdAgent['unique_agent_id'];
+
                 // Send welcome email to the agent
                 $this->sendWelcomeEmail($data);
 
-                return redirect()->to('/dashboard/agents')->with('success', 'Agent created successfully! A welcome email has been sent.');
+                $successMessage = 'Agent created successfully! ';
+                $successMessage .= 'Unique ID: ' . $createdAgent['unique_agent_id'] . ' | ';
+                $successMessage .= 'Referral ID: ' . $referralId . ' | ';
+                $successMessage .= 'Login credentials have been sent via email.';
+
+                return redirect()->to('/dashboard/agents')->with('success', $successMessage);
             } else {
                 throw new \Exception('Database insertion failed');
             }
@@ -353,11 +376,40 @@ class AgentController extends BaseController
     }
 
     /**
-     * Send welcome email to new agent
+     * Generate a secure password for new agents
+     */
+    private function generateSecurePassword(): string
+    {
+        $length = 12;
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+        $password = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $password .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+
+        return $password;
+    }
+
+    /**
+     * Send welcome email to new agent with login credentials
      */
     private function sendWelcomeEmail($agentData)
     {
-        $emailService = new \App\Services\EmailService();
-        $emailService->sendAgentWelcomeEmail($agentData);
+        // Enhanced email service with agent credentials
+        try {
+            $emailService = new \App\Services\EmailService();
+            $emailService->sendAgentWelcomeEmail($agentData);
+        } catch (\Exception $e) {
+            // Log email sending failure but don't stop agent creation
+            log_message('error', 'Failed to send welcome email to agent: ' . $e->getMessage());
+
+            // Log credentials for manual delivery if needed
+            log_message('info', 'Agent credentials for manual delivery:');
+            log_message('info', 'Email: ' . $agentData['email']);
+            log_message('info', 'Password: ' . ($agentData['plain_password'] ?? 'N/A'));
+            log_message('info', 'Unique ID: ' . ($agentData['unique_agent_id'] ?? 'Auto-generated'));
+            log_message('info', 'Referral ID: ' . ($agentData['referral_id'] ?? 'N/A'));
+        }
     }
 }

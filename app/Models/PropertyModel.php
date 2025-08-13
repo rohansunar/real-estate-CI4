@@ -34,7 +34,7 @@ class PropertyModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['title', 'description', 'type', 'location', 'area', 'images', 'youtube_video'];
+    protected $allowedFields    = ['title', 'description', 'type', 'location', 'area', 'is_featured', 'images', 'youtube_video'];
 
     // Dates
     protected $useTimestamps = true;
@@ -180,5 +180,41 @@ class PropertyModel extends Model
                    ->orderBy('created_at', 'DESC')
                    ->limit($limit)
                    ->findAll();
+    }
+
+    /**
+     * Get featured properties
+     */
+    public function getFeaturedProperties(int $limit = 10)
+    {
+        return $this->where('is_featured', true)
+                   ->orderBy('created_at', 'DESC')
+                   ->limit($limit)
+                   ->findAll();
+    }
+
+    /**
+     * Get properties by type with featured properties first
+     */
+    public function getPropertiesByType(string $type, int $limit = 3)
+    {
+        return $this->where('type', $type)
+                   ->orderBy('is_featured', 'DESC')
+                   ->orderBy('created_at', 'DESC')
+                   ->limit($limit)
+                   ->findAll();
+    }
+
+    /**
+     * Toggle featured status of a property
+     */
+    public function toggleFeatured(int $id)
+    {
+        $property = $this->find($id);
+        if ($property) {
+            $newStatus = !$property['is_featured'];
+            return $this->update($id, ['is_featured' => $newStatus]);
+        }
+        return false;
     }
 }

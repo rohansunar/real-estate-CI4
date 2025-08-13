@@ -106,10 +106,22 @@
                             <i class="fas fa-sort sort-indicator ms-1"></i>
                         </th>
                         <th class="sortable" data-sort="2">
-                            Qualification
+                            Agent IDs
                             <i class="fas fa-sort sort-indicator ms-1"></i>
                         </th>
                         <th class="sortable" data-sort="3">
+                            Hierarchy
+                            <i class="fas fa-sort sort-indicator ms-1"></i>
+                        </th>
+                        <th class="sortable" data-sort="4">
+                            Qualification
+                            <i class="fas fa-sort sort-indicator ms-1"></i>
+                        </th>
+                        <th class="sortable" data-sort="5">
+                            Status
+                            <i class="fas fa-sort sort-indicator ms-1"></i>
+                        </th>
+                        <th class="sortable" data-sort="6">
                             Joined Date
                             <i class="fas fa-sort sort-indicator ms-1"></i>
                         </th>
@@ -139,7 +151,17 @@
                                         </div>
                                         <div class="ms-3">
                                             <div class="fw-medium"><?= esc($agent['name']) ?></div>
-                                            <div class="text-muted small">ID: #<?= $agent['id'] ?></div>
+                                            <div class="text-muted small">
+                                                <?php if ($agent['is_active']): ?>
+                                                    <span class="badge bg-success bg-opacity-10 text-success">
+                                                        <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>Active
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger">
+                                                        <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>Inactive
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -150,11 +172,78 @@
                                     </div>
                                 </td>
                                 <td>
+                                    <div class="small">
+                                        <?php if ($agent['unique_agent_id']): ?>
+                                            <div class="fw-medium text-primary">
+                                                <i class="fas fa-id-card me-1"></i><?= esc($agent['unique_agent_id']) ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <?php if ($agent['referral_id']): ?>
+                                            <div class="text-muted mt-1">
+                                                <i class="fas fa-link me-1"></i>Ref: <?= esc($agent['referral_id']) ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <?php if (!$agent['unique_agent_id'] && !$agent['referral_id']): ?>
+                                            <span class="text-muted">No IDs set</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        <?php if ($agent['parent_agent_id']): ?>
+                                            <?php
+                                            // Get parent agent info
+                                            $agentModel = new \App\Models\AgentModel();
+                                            $parentAgent = $agentModel->find($agent['parent_agent_id']);
+                                            ?>
+                                            <?php if ($parentAgent): ?>
+                                                <div class="text-info">
+                                                    <i class="fas fa-level-up-alt me-1"></i>
+                                                    Sub-agent of: <?= esc($parentAgent['name']) ?>
+                                                </div>
+                                            <?php else: ?>
+                                                <div class="text-warning">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                                    Parent not found
+                                                </div>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <div class="text-success">
+                                                <i class="fas fa-crown me-1"></i>
+                                                Primary Agent
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                                <td>
                                     <?php if ($agent['qualification']): ?>
                                         <span class="badge bg-secondary"><?= esc($agent['qualification']) ?></span>
                                     <?php else: ?>
                                         <span class="text-muted">Not specified</span>
                                     <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <?php if ($agent['is_active']): ?>
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>Active
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times-circle me-1"></i>Inactive
+                                            </span>
+                                        <?php endif; ?>
+
+                                        <?php if ($agent['password']): ?>
+                                            <span class="badge bg-info ms-2" title="Agent has login credentials">
+                                                <i class="fas fa-key"></i>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-warning ms-2" title="No login credentials set">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td>
                                     <small class="text-muted">

@@ -18,7 +18,6 @@ class CreateNewsletterTable extends Migration
             'email' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
-                'unique'     => true,
             ],
             'created_at' => [
                 'type' => 'DATETIME',

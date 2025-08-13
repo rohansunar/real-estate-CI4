@@ -18,31 +18,37 @@
     <link href="<?= base_url('assets/css/website.css') ?>" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <!-- Top Header Section -->
+    <!-- Top Header Section - Mobile Optimized -->
     <div class="top-header bg-primary text-white py-2 fixed-top">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-md-8">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-phone me-2"></i>
-                        <span class="me-4">+91 98765 43210</span>
-                        <i class="fas fa-envelope me-2"></i>
-                        <span>info@realestate.com</span>
+                <!-- Contact Info - Full width on mobile, 8 cols on desktop -->
+                <div class="col-12 col-md-8">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start flex-wrap">
+                        <div class="d-flex align-items-center me-3 me-md-4">
+                            <i class="fas fa-phone me-1 me-md-2"></i>
+                            <span class="small">+91 98765 43210</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-envelope me-1 me-md-2"></i>
+                            <span class="small">info@realestate.com</span>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <!-- Social Links - Hidden on mobile, visible on desktop -->
+                <div class="col-md-4 d-none d-md-block">
                     <div class="d-flex justify-content-end align-items-center gap-2">
                         <span class="small me-2">Follow Us:</span>
-                        <a href="#" class="text-white hover-opacity" title="Facebook">
+                        <a href="#" class="text-white hover-opacity" title="Facebook" aria-label="Facebook">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="#" class="text-white hover-opacity ms-2" title="Instagram">
+                        <a href="#" class="text-white hover-opacity ms-2" title="Instagram" aria-label="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="#" class="text-white hover-opacity ms-2" title="YouTube">
+                        <a href="#" class="text-white hover-opacity ms-2" title="YouTube" aria-label="YouTube">
                             <i class="fab fa-youtube"></i>
                         </a>
-                        <a href="#" class="text-white hover-opacity ms-2" title="LinkedIn">
+                        <a href="#" class="text-white hover-opacity ms-2" title="LinkedIn" aria-label="LinkedIn">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
                     </div>
@@ -162,7 +168,47 @@
         <?= $this->renderSection('content') ?>
     </main>
 
-    <!-- Client Testimonials Section -->
+    <!-- Client Testimonials Section - Only displayed on home page -->
+    <?php
+    /**
+     * Testimonials Section Display Logic
+     *
+     * This section is conditionally displayed only on the home page to improve
+     * user experience and reduce content repetition across the site.
+     *
+     * The logic checks if the current URL matches the base URL (home page)
+     * by comparing various URL formats to ensure accurate detection.
+     *
+     * Modified: 2025-08-04 - Limited to exactly 3 testimonials and home page only
+     * Fixed: 2025-08-04 - Improved URL detection logic for better reliability
+     */
+    // Simple and reliable home page detection using CodeIgniter's router
+    $router = service('router');
+    $controllerName = $router->controllerName();
+    $methodName = $router->methodName();
+
+    // Check if we're on Home controller's index method (most reliable method)
+    $isHomePage = ($controllerName === '\App\Controllers\Home' && $methodName === 'index');
+
+    // Fallback URL-based detection for additional reliability
+    if (!$isHomePage) {
+        $currentUrl = current_url();
+        $baseUrl = base_url();
+        $currentPath = parse_url($currentUrl, PHP_URL_PATH);
+        $basePath = parse_url($baseUrl, PHP_URL_PATH);
+
+        $isHomePage = (
+            $currentUrl === $baseUrl ||
+            $currentUrl === $baseUrl . '/' ||
+            $currentPath === $basePath ||
+            $currentPath === $basePath . '/' ||
+            $currentPath === '/' ||
+            $currentPath === '' ||
+            $currentPath === '/index.php'
+        );
+    }
+    ?>
+    <?php if ($isHomePage): ?>
     <section class="testimonials-section py-5" id="testimonials" aria-labelledby="testimonials-heading">
         <div class="container">
             <!-- Section Header -->
@@ -177,7 +223,7 @@
                 </div>
             </div>
 
-            <!-- Testimonials Grid -->
+            <!-- Testimonials Grid - Limited to exactly 3 testimonials -->
             <div class="testimonials-grid">
                 <!-- Testimonial 1 -->
                 <article class="testimonial-card animate-fade-in" role="article" aria-labelledby="testimonial-1-author">
@@ -250,54 +296,6 @@
                         </div>
                     </div>
                 </article>
-
-                <!-- Testimonial 4 -->
-                <article class="testimonial-card animate-fade-in" role="article" aria-labelledby="testimonial-4-author">
-                    <div class="testimonial-stars mb-3" role="img" aria-label="5 out of 5 stars">
-                        <i class="fas fa-star" aria-hidden="true"></i>
-                        <i class="fas fa-star" aria-hidden="true"></i>
-                        <i class="fas fa-star" aria-hidden="true"></i>
-                        <i class="fas fa-star" aria-hidden="true"></i>
-                        <i class="fas fa-star" aria-hidden="true"></i>
-                    </div>
-                    <blockquote class="testimonial-quote">
-                        Outstanding experience! The team was very knowledgeable about the Pradhan Nagar area and helped us find a beautiful home within our budget. Their customer service is top-notch.
-                    </blockquote>
-                    <div class="testimonial-author">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face&auto=format&q=80"
-                             alt="Portrait of Sneha Roy"
-                             class="testimonial-avatar"
-                             loading="lazy">
-                        <div class="testimonial-info">
-                            <h5 id="testimonial-4-author">Sneha Roy</h5>
-                            <p class="testimonial-role mb-0">Home Buyer, Pradhan Nagar</p>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Testimonial 5 -->
-                <article class="testimonial-card animate-fade-in" role="article" aria-labelledby="testimonial-5-author">
-                    <div class="testimonial-stars mb-3" role="img" aria-label="5 out of 5 stars">
-                        <i class="fas fa-star" aria-hidden="true"></i>
-                        <i class="fas fa-star" aria-hidden="true"></i>
-                        <i class="fas fa-star" aria-hidden="true"></i>
-                        <i class="fas fa-star" aria-hidden="true"></i>
-                        <i class="fas fa-star" aria-hidden="true"></i>
-                    </div>
-                    <blockquote class="testimonial-quote">
-                        From start to finish, the service was exceptional. They guided us through every step of buying our first home in Milan More. Couldn't have asked for a better experience!
-                    </blockquote>
-                    <div class="testimonial-author">
-                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face&auto=format&q=80"
-                             alt="Portrait of Vikash Gupta"
-                             class="testimonial-avatar"
-                             loading="lazy">
-                        <div class="testimonial-info">
-                            <h5 id="testimonial-5-author">Vikash Gupta</h5>
-                            <p class="testimonial-role mb-0">New Homeowner, Milan More</p>
-                        </div>
-                    </div>
-                </article>
             </div>
 
             <!-- Call to Action -->
@@ -318,6 +316,7 @@
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- Footer -->
     <footer class="bg-dark text-white mt-5">
@@ -373,16 +372,21 @@
                         <?php if (!isset($user) || !$user): ?>
                             <li class="mb-2">
                                 <a href="<?= base_url('auth/login') ?>" class="text-light text-decoration-none hover-primary transition-all">
-                                    <i class="fas fa-sign-in-alt me-2 small"></i>Login
+                                    <i class="fas fa-sign-in-alt me-2 small"></i>Admin Login
                                 </a>
                             </li>
                         <?php else: ?>
                             <li class="mb-2">
                                 <a href="<?= base_url('dashboard') ?>" class="text-light text-decoration-none hover-primary transition-all">
-                                    <i class="fas fa-tachometer-alt me-2 small"></i>Dashboard
+                                    <i class="fas fa-tachometer-alt me-2 small"></i>Admin Dashboard
                                 </a>
                             </li>
                         <?php endif; ?>
+                        <li class="mb-2">
+                            <a href="<?= base_url('agent/login') ?>" class="text-light text-decoration-none hover-primary transition-all">
+                                <i class="fas fa-user-tie me-2 small"></i>Agent Login
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
@@ -413,18 +417,28 @@
                 </div>
 
                 <div class="col-lg-4 col-md-6">
-                    <h5 class="fw-semibold mb-4">Newsletter</h5>
-                    <p class="text-light mb-4">Subscribe to get updates on new properties and market insights.</p>
-                    <form id="newsletterForm" action="<?= base_url('newsletter/subscribe') ?>" method="post" class="newsletter-form">
-                        <?= csrf_field() ?>
-                        <div class="input-group mb-3">
-                            <input type="email" name="email" class="form-control bg-secondary border-0 text-white"
-                                   placeholder="Enter your email" required>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
+                    <h5 class="fw-semibold mb-4">Contact Information</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-map-marker-alt text-primary me-3"></i>
+                        <div>
+                            <div class="fw-semibold">Address</div>
+                            <div class="text-light small">Siliguri, West Bengal, India</div>
                         </div>
-                    </form>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-phone text-primary me-3"></i>
+                        <div>
+                            <div class="fw-semibold">Phone</div>
+                            <div class="text-light small">+91 98765 43210</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-envelope text-primary me-3"></i>
+                        <div>
+                            <div class="fw-semibold">Email</div>
+                            <div class="text-light small">info@realestate.com</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

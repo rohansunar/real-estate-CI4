@@ -97,6 +97,107 @@
     </div>
 </div>
 
+<!-- Agent Management Widget -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card border-success agent-management-widget">
+            <div class="card-header bg-success-light border-0">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-1 text-success">
+                            <i class="fas fa-user-tie me-2"></i>
+                            Agent Management
+                        </h5>
+                        <p class="card-text text-muted small mb-0">Manage your real estate agents</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Agent Statistics -->
+                    <div class="col-lg-8">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <div class="h3 fw-bold text-success mb-1"><?= number_format($totalAgents) ?></div>
+                                    <div class="small text-muted">Total Agents</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <div class="h3 fw-bold text-primary mb-1"><?= number_format($activeAgents) ?></div>
+                                    <div class="small text-muted">Active Agents</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <div class="h3 fw-bold text-warning mb-1"><?= number_format($agentStats['inactive']) ?></div>
+                                    <div class="small text-muted">Inactive Agents</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <div class="h3 fw-bold text-info mb-1"><?= number_format($recentAgents) ?></div>
+                                    <div class="small text-muted">New This Week</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="col-lg-4">
+                        <div class="d-flex flex-column gap-2">
+                            <a href="<?= base_url('dashboard/agents') ?>" class="btn btn-outline-success">
+                                <i class="fas fa-list me-2"></i>
+                                View All Agents
+                            </a>
+                            <a href="<?= base_url('dashboard/agents/create') ?>" class="btn btn-success">
+                                <i class="fas fa-plus me-2"></i>
+                                Add New Agent
+                            </a>
+                            <!-- <a href="<?= base_url('agent/login') ?>" class="btn btn-outline-primary" target="_blank">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Agent Login Portal
+                            </a> -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Agents -->
+                <!-- <?php if (!empty($recentAgentsList)): ?>
+                    <div class="mt-4 pt-3 border-top">
+                        <h6 class="fw-semibold mb-3">Recent Agents</h6>
+                        <div class="row g-2">
+                            <?php foreach ($recentAgentsList as $agent): ?>
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded">
+                                        <div class="flex-shrink-0">
+                                            <div class="agent-avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                                <?= strtoupper(substr($agent['name'], 0, 1)) ?>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <div class="fw-medium small"><?= esc($agent['name']) ?></div>
+                                            <div class="text-muted" style="font-size: 0.75rem;"><?= esc($agent['unique_agent_id']) ?></div>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <?php if ($agent['is_active']): ?>
+                                                <span class="badge bg-success" style="font-size: 0.6rem;">Active</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary" style="font-size: 0.6rem;">Inactive</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?> -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Content Grid -->
 <div class="row g-4">
     <!-- Recent Properties -->
@@ -278,12 +379,80 @@
 
 <?= $this->endSection() ?>
 
+<?= $this->section('styles') ?>
+<style>
+/* Agent Management Widget Styles */
+.bg-success-light {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+}
+
+.agent-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.card.border-success {
+    border-color: rgba(25, 135, 84, 0.3) !important;
+}
+
+.card.border-success .card-header {
+    border-bottom-color: rgba(25, 135, 84, 0.2) !important;
+}
+
+/* Hover effects for agent cards */
+.agent-management-widget .btn {
+    transition: all 0.3s ease;
+}
+
+.agent-management-widget .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Statistics cards hover effect */
+.agent-management-widget .bg-light.rounded {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.agent-management-widget .bg-light.rounded:hover {
+    background-color: #e9ecef !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Recent agents list styling */
+.agent-management-widget .d-flex.align-items-center.p-2 {
+    transition: all 0.3s ease;
+}
+
+.agent-management-widget .d-flex.align-items-center.p-2:hover {
+    background-color: #e9ecef !important;
+    transform: translateX(5px);
+}
+</style>
+<?= $this->endSection() ?>
+
 <?= $this->section('scripts') ?>
 <script>
 // Dashboard specific functionality
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize any dashboard-specific features
     console.log('Dashboard loaded');
+
+    // Add click handlers for agent statistics
+    document.querySelectorAll('.agent-management-widget .bg-light.rounded').forEach(function(card) {
+        card.addEventListener('click', function() {
+            // Navigate to agents page when clicking on statistics
+            window.location.href = '<?= base_url('dashboard/agents') ?>';
+        });
+    });
 });
 </script>
 <?= $this->endSection() ?>

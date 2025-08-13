@@ -98,6 +98,10 @@
                             Created
                             <i class="fas fa-sort sort-indicator ms-1"></i>
                         </th>
+                        <th class="sortable" data-sort="5">
+                            Featured
+                            <i class="fas fa-sort sort-indicator ms-1"></i>
+                        </th>
                         <th class="text-end">
                             Actions
                         </th>
@@ -140,6 +144,16 @@
                                     </small>
                                 </td>
                                 <td>
+                                    <div class="d-flex align-items-center">
+                                        <button onclick="toggleFeatured(<?= $property['id'] ?>)"
+                                                class="btn btn-sm <?= $property['is_featured'] ? 'btn-warning' : 'btn-outline-secondary' ?>"
+                                                title="<?= $property['is_featured'] ? 'Remove from Featured' : 'Mark as Featured' ?>">
+                                            <i class="fas fa-star"></i>
+                                            <?= $property['is_featured'] ? 'Featured' : 'Feature' ?>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
                                     <div class="d-flex align-items-center justify-content-end">
                                         <div class="btn-group btn-group-sm">
                                             <button data-property-quick-view data-property-id="<?= $property['id'] ?>" 
@@ -164,7 +178,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="text-center py-5">
+                            <td colspan="7" class="text-center py-5">
                                 <div class="d-flex flex-column align-items-center">
                                     <i class="fas fa-home text-muted mb-3" style="font-size: 4rem;"></i>
                                     <h5 class="text-dark mb-2">No properties found</h5>
@@ -369,6 +383,37 @@ function confirmDelete(propertyId) {
     .catch(error => {
         console.error('Error:', error);
         showNotification('Error deleting property', 'danger');
+    });
+}
+
+// Toggle featured status function
+function toggleFeatured(propertyId) {
+    // Show loading notification
+    showNotification('Updating featured status...', 'info');
+
+    // Make AJAX call to toggle featured status
+    fetch(`<?= base_url('dashboard/properties/toggle-featured/') ?>${propertyId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message || 'Featured status updated successfully', 'success');
+            // Reload page after short delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showNotification(data.message || 'Failed to update featured status', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error updating featured status', 'danger');
     });
 }
 </script>

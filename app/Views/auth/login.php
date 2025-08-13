@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 
 <!-- Login Section -->
-<section class="min-vh-100 d-flex align-items-center justify-content-center bg-light position-relative" style="margin-top: 76px;">
+<section class="d-flex align-items-center justify-content-center bg-light position-relative py-5" style="margin-top: 76px; min-height: 80vh;">
     <!-- Animated Background -->
     <div class="position-absolute top-0 start-0 w-100 h-100 overflow-hidden">
         <div class="position-absolute bg-primary opacity-10 rounded-circle" style="width: 300px; height: 300px; top: -150px; right: -150px; animation: float 6s ease-in-out infinite;"></div>
@@ -14,7 +14,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-5 col-md-7">
                 <!-- Header -->
-                <div class="text-center mb-5 animate-fade-in-down">
+                <div class="text-center mb-4 animate-fade-in-down">
                     <div class="bg-primary rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center shadow-lg" style="width: 80px; height: 80px;">
                         <i class="fas fa-building text-white fs-2"></i>
                     </div>
@@ -90,7 +90,7 @@
                                         Remember me
                                     </label>
                                 </div>
-                                <a href="#" class="text-primary text-decoration-none small">
+                                <a href="<?= base_url('auth/forgot-password') ?>" class="text-primary text-decoration-none small">
                                     Forgot password?
                                 </a>
                             </div>

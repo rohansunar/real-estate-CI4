@@ -31,6 +31,41 @@ $routes->group('auth', function($routes) {
     $routes->get('login', 'AuthController::loginForm');
     $routes->post('login', 'AuthController::login');
     $routes->get('logout', 'AuthController::logout');
+    $routes->get('forgot-password', 'AuthController::forgotPasswordForm');
+    $routes->post('forgot-password', 'AuthController::forgotPassword');
+    $routes->get('reset-password', 'AuthController::resetPasswordForm');
+    $routes->post('reset-password', 'AuthController::resetPassword');
+});
+
+// Agent Authentication routes
+$routes->group('agent', function($routes) {
+    $routes->get('login', 'AgentAuthController::loginForm');
+    $routes->post('login', 'AgentAuthController::login');
+    $routes->get('logout', 'AgentAuthController::logout');
+
+    // Agent Dashboard routes (protected by agent_auth filter)
+    $routes->group('/', ['filter' => 'agent_auth'], function($routes) {
+        $routes->get('dashboard', 'AgentAuthController::dashboard');
+        $routes->get('profile', 'AgentAuthController::profile');
+        $routes->post('profile', 'AgentAuthController::updateProfile');
+
+        // Sub-agent management
+        $routes->get('sub-agents', 'AgentAuthController::subAgents');
+        $routes->get('sub-agents/create', 'AgentAuthController::createSubAgent');
+        $routes->post('sub-agents/create', 'AgentAuthController::storeSubAgent');
+        $routes->get('sub-agents/edit/(:num)', 'AgentAuthController::editSubAgent/$1');
+        $routes->post('sub-agents/edit/(:num)', 'AgentAuthController::updateSubAgent/$1');
+        $routes->get('sub-agents/view/(:num)', 'AgentAuthController::viewSubAgent/$1');
+        $routes->post('sub-agents/delete/(:num)', 'AgentAuthController::deleteSubAgent/$1');
+        $routes->delete('sub-agents/delete/(:num)', 'AgentAuthController::deleteSubAgent/$1');
+
+        // Multi-level hierarchy management
+        $routes->get('hierarchy', 'AgentAuthController::hierarchyTree');
+        $routes->get('downline', 'AgentAuthController::downlineManagement');
+
+        // Commission management
+        $routes->get('commissions', 'AgentAuthController::commissionDashboard');
+    });
 });
 
 // Dashboard routes (all protected by auth filter)
@@ -53,6 +88,12 @@ $routes->group('dashboard', ['filter' => 'auth'], function($routes) {
     $routes->delete('properties/(:num)', 'DashboardController::deleteProperty/$1');
     $routes->get('properties/edit/(:num)', 'DashboardController::editProperty/$1');
     $routes->post('properties/edit/(:num)', 'DashboardController::updateProperty/$1');
+
+    // Property sales and commission management
+    $routes->get('properties/sale/(:num)', 'PropertyController::processSale/$1');
+    $routes->post('properties/sale/(:num)', 'PropertyController::processSale/$1');
+    $routes->get('properties/commission/(:num)', 'PropertyController::commissionSummary/$1');
+    $routes->post('properties/toggle-featured/(:num)', 'DashboardController::toggleFeatured/$1');
 
     // Agent management
     $routes->get('agents', 'AgentController::index');

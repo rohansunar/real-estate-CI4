@@ -62,13 +62,48 @@ class PropertyController extends BaseController
         $page = (int) ($this->request->getGet('page') ?? 1);
         $offset = ($page - 1) * $perPage;
 
+        // Get filter parameters
+        $location = trim($this->request->getGet('location') ?? '');
+        $type = trim($this->request->getGet('type') ?? '');
+        $minArea = (int) ($this->request->getGet('min_area') ?? 0);
+        $featured = $this->request->getGet('featured') ? 1 : 0;
+
+        // Build query with filters
+        $builder = $this->propertyModel->orderBy('created_at', 'DESC');
+
+        // Apply location filter
+        if (!empty($location)) {
+            $builder->where('location', $location);
+        }
+
+        // Apply property type filter
+        if (!empty($type)) {
+            $builder->where('type', $type);
+        }
+
+        // Apply minimum area filter
+        if ($minArea > 0) {
+            $builder->where('area >=', $minArea);
+        }
+
+        // Apply featured filter
+        if ($featured) {
+            $builder->where('is_featured', 1);
+        }
+
         // Get total count for pagination
-        $totalProperties = $this->propertyModel->countAll();
+        $totalProperties = $builder->countAllResults(false); // false to preserve the query
 
         // Fetch properties with pagination
-        $properties = $this->propertyModel->orderBy('created_at', 'DESC')
-                                         ->limit($perPage, $offset)
-                                         ->findAll();
+        $properties = $builder->limit($perPage, $offset)->findAll();
+
+        // Build search query string for pagination links
+        $searchParams = [];
+        if (!empty($location)) $searchParams['location'] = $location;
+        if (!empty($type)) $searchParams['type'] = $type;
+        if ($minArea > 0) $searchParams['min_area'] = $minArea;
+        if ($featured) $searchParams['featured'] = 1;
+        $searchQuery = !empty($searchParams) ? '&' . http_build_query($searchParams) : '';
 
         $data = [
             'title' => 'Properties | Real Estate',
@@ -78,7 +113,10 @@ class PropertyController extends BaseController
             'perPage' => $perPage,
             'totalProperties' => $totalProperties,
             'hasNextPage' => $page < ceil($totalProperties / $perPage),
-            'hasPrevPage' => $page > 1
+            'hasPrevPage' => $page > 1,
+            'searchQuery' => $searchQuery,
+            'searchParams' => $searchParams,
+            'isSearchResults' => !empty($searchParams) // Show as search results if any filters are applied
         ];
 
         return view('properties/index', $data);
@@ -275,6 +313,7 @@ class PropertyController extends BaseController
                 'type' => $this->request->getPost('type'),
                 'location' => trim($this->request->getPost('location')),
                 'area' => $this->request->getPost('area') ?: null,
+                'is_featured' => $this->request->getPost('is_featured') ? 1 : 0,
                 'images' => $this->handleImageUpload(),
                 'youtube_video' => $this->handleYouTubeVideoUpload()
             ];
@@ -406,6 +445,135 @@ class PropertyController extends BaseController
         // Regex pattern to match various YouTube URL formats
         $pattern = '/^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/)|youtu\.be\/)[\w\-]+/';
         return preg_match($pattern, $url);
+    }
+
+    /**
+     * Process property sale and commission distribution
+     */
+    public function processSale($propertyId)
+    {
+        // Check if user is authenticated (admin or agent)
+        if (!session()->get('isLoggedIn') && !session()->get('agent_id')) {
+            return redirect()->to('/login')->with('error', 'Please login to process property sales.');
+        }
+
+        $propertyId = (int) $propertyId;
+        $property = $this->propertyModel->find($propertyId);
+
+        if (!$property) {
+            return redirect()->back()->with('error', 'Property not found.');
+        }
+
+        if ($property['status'] === 'sold') {
+            return redirect()->back()->with('error', 'Property is already sold.');
+        }
+
+        // Handle POST request (form submission)
+        if ($this->request->getMethod() === 'POST') {
+            return $this->handleSaleSubmission($propertyId);
+        }
+
+        // Show sale form
+        $data = [
+            'title' => 'Process Property Sale | Real Estate',
+            'property' => $property,
+            'agents' => $this->getActiveAgents()
+        ];
+
+        return view('admin/properties/process_sale', $data);
+    }
+
+    /**
+     * Handle property sale form submission
+     */
+    private function handleSaleSubmission($propertyId)
+    {
+        try {
+            // Validate form data
+            $validationRules = [
+                'selling_agent_id' => 'required|integer',
+                'sale_amount' => 'required|decimal|greater_than[0]',
+                'buyer_name' => 'required|max_length[255]',
+                'buyer_contact' => 'required|max_length[20]',
+                'sale_date' => 'required|valid_date'
+            ];
+
+            if (!$this->validate($validationRules)) {
+                return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            }
+
+            // Get form data
+            $sellingAgentId = (int) $this->request->getPost('selling_agent_id');
+            $saleAmount = (float) $this->request->getPost('sale_amount');
+            $buyerName = trim($this->request->getPost('buyer_name'));
+            $buyerContact = trim($this->request->getPost('buyer_contact'));
+            $saleDate = $this->request->getPost('sale_date');
+
+            // Additional sale data
+            $additionalData = [
+                'buyer_name' => $buyerName,
+                'buyer_contact' => $buyerContact,
+                'sale_date' => $saleDate,
+                'processed_by' => session()->get('user_id') ?? session()->get('agent_id'),
+                'processed_by_type' => session()->get('isLoggedIn') ? 'admin' : 'agent'
+            ];
+
+            // Process the sale using PropertySaleService
+            $saleService = new \App\Services\PropertySaleService();
+            $result = $saleService->processSale($propertyId, $sellingAgentId, $saleAmount, $additionalData);
+
+            if ($result['success']) {
+                $message = 'Property sale processed successfully! Commission has been distributed to the agent hierarchy.';
+                return redirect()->to('/admin/properties')->with('success', $message);
+            } else {
+                return redirect()->back()->withInput()->with('error', $result['message']);
+            }
+
+        } catch (\Exception $e) {
+            log_message('error', 'Property sale submission failed: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Failed to process property sale. Please try again.');
+        }
+    }
+
+    /**
+     * Get active agents for sale assignment
+     */
+    private function getActiveAgents()
+    {
+        $agentModel = new \App\Models\AgentModel();
+        return $agentModel->where('is_active', true)
+                         ->orderBy('name', 'ASC')
+                         ->findAll();
+    }
+
+    /**
+     * View commission summary for a property
+     */
+    public function commissionSummary($propertyId)
+    {
+        // Check if user is authenticated
+        if (!session()->get('isLoggedIn') && !session()->get('agent_id')) {
+            return redirect()->to('/login')->with('error', 'Please login to view commission details.');
+        }
+
+        $propertyId = (int) $propertyId;
+        $property = $this->propertyModel->find($propertyId);
+
+        if (!$property) {
+            return redirect()->back()->with('error', 'Property not found.');
+        }
+
+        // Get commission summary
+        $saleService = new \App\Services\PropertySaleService();
+        $commissionSummary = $saleService->getCommissionSummary($propertyId);
+
+        $data = [
+            'title' => 'Commission Summary | Real Estate',
+            'property' => $property,
+            'commissionSummary' => $commissionSummary
+        ];
+
+        return view('admin/properties/commission_summary', $data);
     }
 
     /**

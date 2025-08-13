@@ -161,6 +161,9 @@
     </div>
 </section>
 
+<!-- Newsletter Subscription Section -->
+<?= $this->include('components/newsletter_section') ?>
+
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>

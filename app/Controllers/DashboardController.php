@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\PropertyModel;
 use App\Models\ContactModel;
 use App\Models\NewsletterModel;
+use App\Models\AgentModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 /**
@@ -30,12 +31,14 @@ class DashboardController extends BaseController
     protected $propertyModel;
     protected $contactModel;
     protected $newsletterModel;
+    protected $agentModel;
 
     public function __construct()
     {
         $this->propertyModel = new PropertyModel();
         $this->contactModel = new ContactModel();
         $this->newsletterModel = new NewsletterModel();
+        $this->agentModel = new AgentModel();
     }
 
     /**
@@ -43,14 +46,22 @@ class DashboardController extends BaseController
      */
     public function index()
     {
+        // Get agent statistics
+        $agentStats = $this->agentModel->getStatistics();
+
         $data = [
             'title' => 'Dashboard | Real Estate',
             'totalProperties' => $this->propertyModel->countAllResults(),
             'totalContacts' => $this->contactModel->countAllResults(),
             'unreadContacts' => $this->contactModel->getCountByStatus(false),
             'totalSubscribers' => $this->newsletterModel->getSubscriberCount(),
+            'totalAgents' => $agentStats['total'],
+            'activeAgents' => $agentStats['active'],
+            'recentAgents' => $agentStats['recent'],
+            'agentStats' => $agentStats,
             'recentProperties' => $this->propertyModel->orderBy('created_at', 'DESC')->limit(5)->findAll(),
-            'recentContacts' => $this->contactModel->getRecent(5)
+            'recentContacts' => $this->contactModel->getRecent(5),
+            'recentAgentsList' => $this->agentModel->getRecent(5)
         ];
 
         return view('dashboard/index', $data);
@@ -270,6 +281,44 @@ class DashboardController extends BaseController
     }
 
     /**
+     * Toggle featured status of a property
+     */
+    public function toggleFeatured($id)
+    {
+        if ($this->request->getMethod() === 'POST') {
+            $property = $this->propertyModel->find($id);
+
+            if (!$property) {
+                if ($this->request->isAJAX()) {
+                    return $this->response->setJSON(['success' => false, 'message' => 'Property not found']);
+                }
+                return redirect()->to('/dashboard/properties')->with('error', 'Property not found');
+            }
+
+            $newStatus = !$property['is_featured'];
+            $statusText = $newStatus ? 'featured' : 'unfeatured';
+
+            if ($this->propertyModel->update($id, ['is_featured' => $newStatus])) {
+                if ($this->request->isAJAX()) {
+                    return $this->response->setJSON([
+                        'success' => true,
+                        'message' => "Property marked as {$statusText} successfully",
+                        'is_featured' => $newStatus
+                    ]);
+                }
+                return redirect()->to('/dashboard/properties')->with('success', "Property marked as {$statusText} successfully");
+            } else {
+                if ($this->request->isAJAX()) {
+                    return $this->response->setJSON(['success' => false, 'message' => 'Failed to update featured status']);
+                }
+                return redirect()->to('/dashboard/properties')->with('error', 'Failed to update featured status');
+            }
+        }
+
+        return redirect()->to('/dashboard/properties');
+    }
+
+    /**
      * Edit property form
      */
     public function editProperty($id)
@@ -349,7 +398,8 @@ class DashboardController extends BaseController
                 'description' => trim($this->request->getPost('description')),
                 'type' => $this->request->getPost('type'),
                 'location' => trim($this->request->getPost('location')),
-                'area' => $this->request->getPost('area') ?: null
+                'area' => $this->request->getPost('area') ?: null,
+                'is_featured' => $this->request->getPost('is_featured') ? 1 : 0
             ];
 
             // Handle image management (existing + new - removed)

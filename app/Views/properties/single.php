@@ -2,7 +2,7 @@
 
 <?= $this->section('content') ?>
 
-<!-- Property Hero Section -->
+<!-- Breadcrumb Section -->
 <section class="bg-light py-3">
     <div class="container">
         <!-- Breadcrumb -->
@@ -26,6 +26,88 @@
                 </li>
             </ol>
         </nav>
+    </div>
+</section>
+
+<!-- Property Hero Section -->
+<section class="property-hero-section position-relative overflow-hidden">
+    <?php
+    // Get the first image for hero background
+    $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
+    $heroImage = !empty($images[0]) ? base_url($images[0]) : base_url('assets/images/default-property.svg');
+    ?>
+
+    <!-- Hero Background Image -->
+    <div class="hero-background position-absolute top-0 start-0 w-100 h-100">
+        <img src="<?= $heroImage ?>"
+             alt="<?= esc($property['title']) ?>"
+             class="w-100 h-100 object-fit-cover">
+        <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"></div>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="hero-content position-relative d-flex align-items-center" style="min-height: 60vh; z-index: 2;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-8">
+                    <div class="text-center text-white animate__animated animate__fadeInUp">
+                        <!-- Property Title -->
+                        <h1 class="display-4 fw-bold mb-4 text-shadow">
+                            <?= esc($property['title']) ?>
+                        </h1>
+
+                        <!-- Location -->
+                        <div class="d-flex justify-content-center align-items-center mb-4">
+                            <i class="fas fa-map-marker-alt me-2 text-warning fs-5"></i>
+                            <span class="fs-4 fw-medium"><?= esc($property['location']) ?></span>
+                        </div>
+
+                        <!-- Property Details -->
+                        <div class="d-flex flex-wrap justify-content-center gap-4 mb-5">
+                            <div class="hero-detail-item">
+                                <i class="fas fa-home text-primary fs-5 mb-2 d-block"></i>
+                                <span class="fw-semibold"><?= ucfirst(esc($property['type'])) ?></span>
+                            </div>
+                            <?php if ($property['area']): ?>
+                                <div class="hero-detail-item">
+                                    <i class="fas fa-ruler-combined text-success fs-5 mb-2 d-block"></i>
+                                    <span class="fw-semibold"><?= number_format($property['area']) ?> sq ft</span>
+                                </div>
+                            <?php endif; ?>
+                            <div class="hero-detail-item">
+                                <i class="fas fa-calendar text-info fs-5 mb-2 d-block"></i>
+                                <span class="fw-semibold">Listed <?= date('M j, Y', strtotime($property['created_at'])) ?></span>
+                            </div>
+                            <?php if (isset($property['is_featured']) && $property['is_featured']): ?>
+                                <div class="hero-detail-item">
+                                    <i class="fas fa-star text-warning fs-5 mb-2 d-block"></i>
+                                    <span class="fw-semibold">Featured</span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Call to Action -->
+                        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                            <button class="btn btn-primary btn-lg px-4 py-3 rounded-pill" onclick="scrollToContact()">
+                                <i class="fas fa-phone me-2"></i>
+                                Contact Agent
+                            </button>
+                            <button class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill" onclick="scrollToGallery()">
+                                <i class="fas fa-images me-2"></i>
+                                View Gallery
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll Down Indicator -->
+    <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4 animate__animated animate__bounce animate__infinite">
+        <button class="btn btn-link text-white p-0" onclick="scrollToGallery()" aria-label="Scroll to gallery">
+            <i class="fas fa-chevron-down fs-3"></i>
+        </button>
     </div>
 </section>
 
@@ -257,13 +339,6 @@
                                 <span class="fs-5"><?= esc($property['location']) ?></span>
                             </div>
                         </div>
-                        <div class="text-md-end mt-3 mt-md-0">
-                            <div class="display-6 fw-bold text-primary mb-2">₹25,00,000</div>
-                            <div class="text-muted">
-                                <i class="fas fa-handshake me-1"></i>
-                                Negotiable
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Property Badges -->
@@ -282,25 +357,19 @@
                             <i class="fas fa-calendar me-2"></i>
                             Listed <?= date('M j, Y', strtotime($property['created_at'])) ?>
                         </span>
-                        <span class="badge bg-warning bg-opacity-10 text-warning fs-6 px-3 py-2 rounded-pill">
-                            <i class="fas fa-eye me-2"></i>
-                            1,234 Views
-                        </span>
+
                     </div>
 
-                    <!-- Quick Actions -->
+                    <!-- Quick Actions - Simplified to only include essential actions -->
+                    <!--
+                        Modified: 2025-08-04
+                        Removed: "Save to Favorites" and "Print Details" buttons as per requirements
+                        Kept: Share Property functionality for social sharing
+                    -->
                     <div class="d-flex flex-wrap gap-2">
                         <button class="btn btn-outline-primary btn-sm rounded-pill" onclick="shareProperty()">
                             <i class="fas fa-share-alt me-2"></i>
                             Share Property
-                        </button>
-                        <button class="btn btn-outline-success btn-sm rounded-pill" onclick="saveProperty()">
-                            <i class="fas fa-heart me-2"></i>
-                            Save to Favorites
-                        </button>
-                        <button class="btn btn-outline-info btn-sm rounded-pill" onclick="printProperty()">
-                            <i class="fas fa-print me-2"></i>
-                            Print Details
                         </button>
                     </div>
                 </div>
@@ -357,19 +426,7 @@
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-center p-3 bg-light rounded-3">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-info bg-opacity-10 rounded-circle p-2">
-                                                <i class="fas fa-map-marker-alt text-info"></i>
-                                            </div>
-                                        </div>
-                                        <div class="ms-3">
-                                            <div class="fw-medium">Location</div>
-                                            <div class="text-muted small"><?= esc($property['location']) ?></div>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-center p-3 bg-light rounded-3">
                                         <div class="flex-shrink-0">
@@ -530,14 +587,15 @@
                                 </button>
                             </div>
 
-                            <!-- Contact Info -->
+                            <!-- Contact Info - Simplified contact options -->
+                            <!--
+                                Modified: 2025-08-04
+                                Removed: "Call" button as per requirements
+                                Kept: WhatsApp contact for modern communication preference
+                            -->
                             <div class="text-center mt-4 pt-3 border-top">
                                 <div class="small text-muted mb-2">Or contact us directly:</div>
                                 <div class="d-flex justify-content-center gap-3">
-                                    <a href="tel:+919876543210" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-phone me-1"></i>
-                                        Call
-                                    </a>
                                     <a href="https://wa.me/919876543210" class="btn btn-outline-success btn-sm" target="_blank">
                                         <i class="fab fa-whatsapp me-1"></i>
                                         WhatsApp
@@ -558,25 +616,20 @@
                     </div>
                     <div class="card-body p-4">
                         <div class="row g-3 text-center">
-                            <div class="col-6">
-                                <div class="border rounded-3 p-3">
-                                    <div class="h4 fw-bold text-primary mb-1">1,234</div>
-                                    <div class="small text-muted">Views</div>
-                                </div>
-                            </div>
-                            <div class="col-6">
+
+                            <div class="col-4">
                                 <div class="border rounded-3 p-3">
                                     <div class="h4 fw-bold text-success mb-1">45</div>
                                     <div class="small text-muted">Inquiries</div>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="border rounded-3 p-3">
                                     <div class="h6 fw-bold text-info mb-1"><?= date('M j', strtotime($property['created_at'])) ?></div>
                                     <div class="small text-muted">Listed</div>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="border rounded-3 p-3">
                                     <div class="h6 fw-bold text-warning mb-1">#<?= $property['id'] ?></div>
                                     <div class="small text-muted">Property ID</div>
@@ -590,42 +643,82 @@
     </div>
 </section>
 
-<!-- Similar Properties -->
-<?php if (!empty($similarProperties)): ?>
-<section class="py-16 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-gray-900 mb-8">Similar Properties in <?= esc($property['location']) ?></h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Similar Properties Section - Fixed with Bootstrap 5 classes -->
+<?php
+/**
+ * Similar Properties Display Section
+ *
+ * This section displays related properties from the same location to help users
+ * discover other options. The layout has been updated to use Bootstrap 5 classes
+ * instead of Tailwind CSS for consistency with the rest of the application.
+ *
+ * Features:
+ * - Responsive grid layout (1 column on mobile, 2 on tablet, 3 on desktop)
+ * - Property image with type badge overlay
+ * - Truncated description with "View Details" call-to-action
+ * - Consistent card styling with hover effects
+ *
+ * Modified: 2025-08-04 - Converted from Tailwind CSS to Bootstrap 5
+ */
+if (!empty($similarProperties)): ?>
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <h2 class="display-6 fw-bold text-dark mb-4">
+                    Similar Properties in <span class="text-primary"><?= esc($property['location']) ?></span>
+                </h2>
+                <p class="text-muted">Discover other amazing properties in the same area</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
             <?php foreach ($similarProperties as $similarProperty): ?>
-                <div class="card card-hover">
-                    <?php 
-                    $similarImages = is_string($similarProperty['images']) ? json_decode($similarProperty['images'], true) : $similarProperty['images'];
-                    $similarImage = !empty($similarImages[0]) ? base_url($similarImages[0]) : base_url('assets/images/default-property.svg');
-                    ?>
-                    
-                    <div class="relative overflow-hidden">
-                        <img src="<?= $similarImage ?>" alt="<?= esc($similarProperty['title']) ?>" 
-                             class="w-full h-48 object-cover transition-transform duration-300 hover:scale-110">
-                        <div class="absolute top-4 left-4">
-                            <span class="property-badge badge-<?= $similarProperty['type'] ?>">
-                                <?= esc(ucfirst($similarProperty['type'])) ?>
-                            </span>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 shadow-sm border-0 property-card">
+                        <?php
+                        $similarImages = is_string($similarProperty['images']) ? json_decode($similarProperty['images'], true) : $similarProperty['images'];
+                        $similarImage = !empty($similarImages[0]) ? base_url($similarImages[0]) : base_url('assets/images/default-property.svg');
+                        ?>
+
+                        <!-- Property Image -->
+                        <div class="position-relative overflow-hidden">
+                            <img src="<?= $similarImage ?>"
+                                 alt="<?= esc($similarProperty['title']) ?>"
+                                 class="card-img-top property-image"
+                                 style="height: 200px; object-fit: cover;">
+
+                            <!-- Property Type Badge -->
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-primary rounded-pill px-3 py-2">
+                                    <?= esc(ucfirst($similarProperty['type'])) ?>
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2"><?= esc($similarProperty['title']) ?></h3>
-                        <p class="text-gray-600 mb-4"><?= esc(substr($similarProperty['description'], 0, 80)) ?>...</p>
-                        
-                        <div class="flex items-center text-gray-500 mb-4">
-                            <i class="fas fa-map-marker-alt mr-2"></i>
-                            <span><?= esc($similarProperty['location']) ?></span>
+
+                        <!-- Property Details -->
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold text-dark mb-2">
+                                <?= esc($similarProperty['title']) ?>
+                            </h5>
+
+                            <p class="card-text text-muted mb-3 flex-grow-1">
+                                <?= esc(substr($similarProperty['description'], 0, 80)) ?>...
+                            </p>
+
+                            <!-- Location -->
+                            <div class="d-flex align-items-center text-muted mb-3">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                <span class="small"><?= esc($similarProperty['location']) ?></span>
+                            </div>
+
+                            <!-- View Details Button -->
+                            <a href="<?= base_url('properties/' . urlencode($similarProperty['location']) . '/' . $similarProperty['id']) ?>"
+                               class="btn btn-primary w-100 mt-auto">
+                                <i class="fas fa-eye me-2"></i>
+                                View Details
+                            </a>
                         </div>
-                        
-                        <a href="<?= base_url('properties/' . urlencode($similarProperty['location']) . '/' . $similarProperty['id']) ?>" 
-                           class="btn-primary w-full text-center">
-                            View Details
-                        </a>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -641,6 +734,95 @@
 <?= $this->section('styles') ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 <style>
+/* Property Hero Section Styles */
+.property-hero-section {
+    position: relative;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero-background img {
+    object-fit: cover;
+    filter: brightness(0.7);
+    transition: all 0.3s ease;
+}
+
+.hero-overlay {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+.text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.hero-detail-item {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.hero-detail-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.hero-content .btn {
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.hero-content .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.hero-content .btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--bs-dark);
+}
+
+/* Responsive adjustments for hero section */
+@media (max-width: 768px) {
+    .property-hero-section {
+        min-height: 50vh;
+    }
+
+    .display-4 {
+        font-size: 2.5rem;
+    }
+
+    .hero-detail-item {
+        min-width: 100px;
+        padding: 0.75rem;
+    }
+
+    .fs-4 {
+        font-size: 1.25rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .property-hero-section {
+        min-height: 45vh;
+    }
+
+    .display-4 {
+        font-size: 2rem;
+    }
+
+    .hero-detail-item {
+        min-width: 80px;
+        padding: 0.5rem;
+    }
+}
+
 /* Custom animations and styles for property single view */
 .thumbnail-hover {
     transition: all 0.3s ease;
@@ -980,32 +1162,58 @@ function shareProperty() {
     };
 
     if (navigator.share) {
-        navigator.share(shareData).catch(console.error);
+        navigator.share(shareData).catch((error) => {
+            console.error('Share failed:', error);
+            showToast('⚠️ Sharing not available. Property link copied to clipboard instead!', 'info');
+            // Fallback to clipboard copy
+            copyToClipboard(propertyUrl);
+        });
     } else {
         // Fallback - copy to clipboard
-        navigator.clipboard.writeText(propertyUrl).then(() => {
-            showToast('Property link copied to clipboard!', 'success');
-        }).catch(() => {
-            // Manual copy fallback
-            const textArea = document.createElement('textarea');
-            textArea.value = propertyUrl;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            showToast('Property link copied to clipboard!', 'success');
-        });
+        copyToClipboard(propertyUrl);
     }
 }
 
-function saveProperty() {
-    // Add to favorites functionality
-    showToast('Property saved to favorites!', 'success');
+// Helper function for clipboard operations with better error handling
+function copyToClipboard(text) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('📋 Property link copied to clipboard!', 'success');
+        }).catch(() => {
+            // Manual copy fallback for older browsers
+            manualCopyFallback(text);
+        });
+    } else {
+        // Manual copy fallback for browsers without clipboard API
+        manualCopyFallback(text);
+    }
 }
 
-function printProperty() {
-    window.print();
+// Manual copy fallback with user-friendly messaging
+function manualCopyFallback(text) {
+    try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+
+        if (successful) {
+            showToast('📋 Property link copied to clipboard!', 'success');
+        } else {
+            showToast('❌ Unable to copy link. Please copy the URL from your browser address bar.', 'error');
+        }
+    } catch (error) {
+        console.error('Manual copy failed:', error);
+        showToast('❌ Copy failed. Please manually copy the URL from your browser address bar.', 'error');
+    }
 }
+
+// Removed unused functions: saveProperty() and printProperty()
+// These functions were removed as the corresponding UI elements were removed
 
 // Contact form enhancements
 document.addEventListener('DOMContentLoaded', function() {
@@ -1032,15 +1240,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showToast('Your inquiry has been sent successfully!', 'success');
+                        showToast('✅ Your inquiry has been sent successfully! We\'ll get back to you soon.', 'success');
                         contactForm.reset();
                     } else {
-                        showToast('Failed to send inquiry. Please try again.', 'error');
+                        // More specific error message based on response
+                        const errorMsg = data.message || 'Unable to send your inquiry at the moment. Please try again or contact us directly via WhatsApp.';
+                        showToast('❌ ' + errorMsg, 'error');
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    showToast('An error occurred. Please try again.', 'error');
+                    console.error('Contact form submission error:', error);
+                    showToast('⚠️ Network error occurred. Please check your internet connection and try again, or contact us via WhatsApp.', 'error');
                 })
                 .finally(() => {
                     // Restore button state
@@ -1142,19 +1352,59 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(el);
     });
 
-    // Cleanup function to prevent memory leaks
+    // Hero Section Functions
+    window.scrollToGallery = function() {
+        const gallerySection = document.querySelector('.py-4');
+        if (gallerySection) {
+            gallerySection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    };
+
+    window.scrollToContact = function() {
+        const contactSection = document.querySelector('#contactForm') ||
+                              document.querySelector('.contact-section') ||
+                              document.querySelector('[id*="contact"]');
+        if (contactSection) {
+            contactSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        } else {
+            // If no contact section found, scroll to bottom of page
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    // Enhanced cleanup function to prevent memory leaks
     window.addEventListener('beforeunload', function() {
+        // Disconnect intersection observer to prevent memory leaks
         if (observer) {
             observer.disconnect();
+            observer = null;
         }
+
         // Remove any dynamically created elements
         const lightbox = document.getElementById('propertyLightbox');
         if (lightbox) {
             lightbox.remove();
         }
+
         const toastContainer = document.getElementById('toastContainer');
         if (toastContainer) {
             toastContainer.remove();
+        }
+
+        // Clear any remaining timeouts or intervals
+        // Note: This helps prevent memory leaks from unclosed timers
+        const highestTimeoutId = setTimeout(";");
+        for (let i = 0; i < highestTimeoutId; i++) {
+            clearTimeout(i);
         }
     });
 });
