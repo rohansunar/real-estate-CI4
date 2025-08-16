@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title) ?></title>
-    
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    
+
     <style>
         :root {
             --primary-color: #0d6efd;
@@ -149,12 +149,12 @@
             .login-container {
                 padding: 1rem;
             }
-            
+
             .login-header,
             .login-body {
                 padding: 1.5rem;
             }
-            
+
             .login-header h1 {
                 font-size: 1.5rem;
             }
@@ -204,12 +204,12 @@
                 <!-- Login Form -->
                 <form action="<?= base_url('agent/login') ?>" method="post" id="loginForm">
                     <?= csrf_field() ?>
-                    
+
                     <div class="form-floating">
-                        <input type="email" 
-                               class="form-control" 
-                               id="email" 
-                               name="email" 
+                        <input type="email"
+                               class="form-control"
+                               id="email"
+                               name="email"
                                placeholder="name@example.com"
                                value="<?= old('email') ?>"
                                required>
@@ -219,10 +219,10 @@
                     </div>
 
                     <div class="form-floating">
-                        <input type="password" 
-                               class="form-control" 
-                               id="password" 
-                               name="password" 
+                        <input type="password"
+                               class="form-control"
+                               id="password"
+                               name="password"
                                placeholder="Password"
                                required>
                         <label for="password">
@@ -234,6 +234,8 @@
                         <i class="fas fa-sign-in-alt me-2"></i>
                         Login to Dashboard
                     </button>
+                <?php echo view('agent/auth/_links'); ?>
+
                 </form>
 
                 <!-- Back to Site -->
@@ -253,17 +255,17 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         // Form validation and enhancement
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
-            
+
             // Show loading state
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Logging in...';
             submitBtn.disabled = true;
-            
+
             // Re-enable button after 5 seconds as fallback
             setTimeout(() => {
                 submitBtn.innerHTML = originalText;

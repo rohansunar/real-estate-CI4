@@ -93,18 +93,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <?php if ($subAgent['referral_id']): ?>
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="fas fa-link text-muted me-2" style="width: 20px;"></i>
-                                <div>
-                                    <small class="text-muted d-block">Referral ID</small>
-                                    <span class="font-monospace"><?= esc($subAgent['referral_id']) ?></span>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
                 </div>
             </div>
 

@@ -145,21 +145,7 @@
                         </div>
                         <div class="card-body pt-3">
                             <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <label for="referral_id" class="form-label fw-medium">Referral ID</label>
-                                    <input type="text"
-                                           class="form-control <?= isset(session()->getFlashdata('errors')['referral_id']) ? 'is-invalid' : '' ?>"
-                                           id="referral_id"
-                                           name="referral_id"
-                                           value="<?= old('referral_id') ?>"
-                                           placeholder="e.g., REF2024001">
-                                    <div class="form-text">
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        Optional referral identifier for tracking purposes
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <label for="parent_agent_id" class="form-label fw-medium">Parent Agent</label>
                                     <select class="form-select" id="parent_agent_id" name="parent_agent_id">
                                         <option value="">Select Parent Agent (Optional)</option>

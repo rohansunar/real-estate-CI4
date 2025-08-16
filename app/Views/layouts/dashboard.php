@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($title) ? esc($title) : 'Dashboard' ?> | Real Estate Admin</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?= base_url('favicon.ico') ?>">
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
+
     <!-- Custom Styles -->
     <link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet">
 
@@ -203,6 +203,16 @@
                         </a>
                     </li>
                 </ul>
+                        <li class="nav-item">
+                            <a href="<?= base_url('dashboard/agents/hierarchy') ?>"
+                               class="nav-link <?= strpos(uri_string(), 'agents/hierarchy') !== false ? 'active' : '' ?>">
+                                <div class="nav-icon">
+                                    <i class="fas fa-sitemap"></i>
+                                </div>
+                                <span class="nav-text">Agents Hierarchy</span>
+                            </a>
+                        </li>
+
             </div>
 
             <!-- Blog Management Section -->
@@ -339,7 +349,7 @@
                     <div class="toast-body"><?= esc($error) ?></div>
                 </div>
             <?php endif; ?>
-            
+
             <?php if (isset($success) && $success): ?>
                 <div class="toast show" role="alert">
                     <div class="toast-header bg-success text-white">
@@ -360,10 +370,10 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Custom JavaScript -->
     <script src="<?= base_url('assets/js/dashboard.js') ?>"></script>
-    
+
     <?= $this->renderSection('scripts') ?>
 </body>
 </html>

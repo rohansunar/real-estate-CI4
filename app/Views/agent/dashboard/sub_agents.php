@@ -214,12 +214,6 @@
                                                 <?= esc($subAgent['unique_agent_id']) ?>
                                             </div>
                                         <?php endif; ?>
-                                        <?php if ($subAgent['referral_id']): ?>
-                                            <div class="font-monospace">
-                                                <i class="fas fa-link me-1 text-muted"></i>
-                                                <?= esc($subAgent['referral_id']) ?>
-                                            </div>
-                                        <?php endif; ?>
                                     </div>
                                 </td>
                                 <td>

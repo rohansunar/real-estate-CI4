@@ -67,6 +67,70 @@ class DashboardController extends BaseController
         return view('dashboard/index', $data);
     }
 
+    /**
+     * Admin: View full agents hierarchy tree
+     */
+    public function agentsHierarchy()
+    {
+        $logger = new \App\Services\HierarchyLogger();
+        $logger->log('access', 'Admin viewed full agents hierarchy', [
+            'user_id' => session()->get('user_id'),
+            'email' => session()->get('user_email'),
+        ]);
+
+        // Server-side pagination params (defaults chosen for performance)
+        $perPage = (int) ($this->request->getGet('perPage') ?? 10);
+        $perPage = max(5, min(50, $perPage)); // Clamp between 5 and 50
+        $page = (int) ($this->request->getGet('page') ?? 1);
+
+        try {
+            // Fetch only current page of root agents to keep memory low
+            $paged = $this->agentModel->getFullHierarchyTreePaginated($perPage, $page, 10);
+            $stats = $this->agentModel->getStatistics();
+        } catch (\Throwable $e) {
+            log_message('error', 'Failed to build full hierarchy tree: ' . $e->getMessage());
+            return redirect()->to('/dashboard')->with('error', 'Unable to load hierarchy data right now. Please try again later.');
+        }
+
+        $totalPages = (int) ceil(($paged['total'] ?: 0) / $paged['perPage']);
+
+        $data = [
+            'title' => 'Agents Hierarchy | Dashboard',
+            // Maintain existing variable name for partial compatibility
+            'tree' => $paged['roots'],
+            'stats' => $stats,
+            'pagination' => [
+                'page' => $paged['page'],
+                'perPage' => $paged['perPage'],
+                'total' => $paged['total'],
+                'totalPages' => max(1, $totalPages),
+                'baseUrl' => base_url('dashboard/agents/hierarchy'),
+            ],
+        ];
+
+        return view('dashboard/agents/hierarchy', $data);
+    }
+
+    /**
+     * Admin: Fetch recent hierarchy logs for an agent (AJAX)
+     */
+    public function agentLogs(int $agentId)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_METHOD_NOT_ALLOWED);
+        }
+
+        $logger = new \App\Services\HierarchyLogger();
+        $lines = $logger->getRecentByAgent($agentId, 50);
+
+        return view('dashboard/agents/partials/agent_logs', [
+            'agentId' => $agentId,
+            'lines' => $lines,
+        ]);
+    }
+
+
+
 
 
 

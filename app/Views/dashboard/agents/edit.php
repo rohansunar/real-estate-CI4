@@ -166,20 +166,7 @@
                                         Auto-generated unique identifier for this agent
                                     </div>
                                 </div>
-
-                                <div class="col-md-6">
-                                    <label for="referral_id" class="form-label fw-medium">Referral ID</label>
-                                    <input type="text"
-                                           class="form-control <?= isset(session()->getFlashdata('errors')['referral_id']) ? 'is-invalid' : '' ?>"
-                                           id="referral_id"
-                                           name="referral_id"
-                                           value="<?= old('referral_id', $agent['referral_id']) ?>"
-                                           placeholder="e.g., REF2024001">
-                                    <div class="form-text">
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        Optional referral identifier for tracking purposes
-                                    </div>
-                                </div>
+                            </div>
                             </div>
 
                             <div class="row g-3">
@@ -337,14 +324,6 @@
                                 <span><?= date('M j, Y', strtotime($agent['updated_at'])) ?></span>
                             </div>
                         </div>
-                        <?php if ($agent['referral_id']): ?>
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between">
-                                <span class="text-muted">Referral ID:</span>
-                                <span class="badge bg-info"><?= esc($agent['referral_id']) ?></span>
-                            </div>
-                        </div>
-                        <?php endif; ?>
                         <?php if ($agent['parent_agent_id']): ?>
                         <div class="col-12">
                             <div class="d-flex justify-content-between">

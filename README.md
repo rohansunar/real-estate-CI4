@@ -314,3 +314,11 @@ FLUSH PRIVILEGES;
 EXIT;
 
 
+$resend = Resend::client('re_FKwhK6Tf_EPDyQzi3vgEgv78zFummjSHH');
+
+$resend->emails->send([
+  'from' => 'Acme <onboarding@realestate.com>',
+  'to' => ['rohansunar89@gmail.com'],
+  'subject' => 'hello world',
+  'html' => '<p>it works!</p>'
+]);

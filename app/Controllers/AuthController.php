@@ -126,13 +126,13 @@ class AuthController extends BaseController
             return redirect()->back()->with('error', 'Unable to generate reset token. Please try again.');
         }
 
-        // Send reset email (simplified - in production, use proper email service)
+        // Build reset link and send via EmailService (Resend)
         $resetLink = base_url("auth/reset-password?token={$token}&email=" . urlencode($email));
+        // log_message('info', 'Reset link: ' . $resetLink);
+        $emailService = new \App\Services\EmailService();
+        $emailService->sendPasswordResetEmail($email, $resetLink, $user['name'] ?? null);
 
-        // For now, we'll just show the reset link (in production, send via email)
-        log_message('info', "Password reset link for {$email}: {$resetLink}");
-
-        return redirect()->back()->with('success', 'Password reset instructions have been sent to your email address.');
+        return redirect()->back()->with('success', 'If your email is registered, you will receive password reset instructions shortly.');
     }
 
     /**

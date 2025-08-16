@@ -177,14 +177,8 @@
                                             <div class="fw-medium text-primary">
                                                 <i class="fas fa-id-card me-1"></i><?= esc($agent['unique_agent_id']) ?>
                                             </div>
-                                        <?php endif; ?>
-                                        <?php if ($agent['referral_id']): ?>
-                                            <div class="text-muted mt-1">
-                                                <i class="fas fa-link me-1"></i>Ref: <?= esc($agent['referral_id']) ?>
-                                            </div>
-                                        <?php endif; ?>
-                                        <?php if (!$agent['unique_agent_id'] && !$agent['referral_id']): ?>
-                                            <span class="text-muted">No IDs set</span>
+                                        <?php else: ?>
+                                            <span class="text-muted">No ID set</span>
                                         <?php endif; ?>
                                     </div>
                                 </td>

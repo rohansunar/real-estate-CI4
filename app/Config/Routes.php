@@ -43,6 +43,13 @@ $routes->group('agent', function($routes) {
     $routes->post('login', 'AgentAuthController::login');
     $routes->get('logout', 'AgentAuthController::logout');
 
+    // Agent password reset
+    $routes->get('forgot-password', 'AgentAuthController::forgotPasswordForm');
+    $routes->post('forgot-password', 'AgentAuthController::forgotPassword');
+    $routes->get('reset-password', 'AgentAuthController::resetPasswordForm');
+    $routes->post('reset-password', 'AgentAuthController::resetPassword');
+
+
     // Agent Dashboard routes (protected by agent_auth filter)
     $routes->group('/', ['filter' => 'agent_auth'], function($routes) {
         $routes->get('dashboard', 'AgentAuthController::dashboard');
@@ -62,6 +69,11 @@ $routes->group('agent', function($routes) {
         // Multi-level hierarchy management
         $routes->get('hierarchy', 'AgentAuthController::hierarchyTree');
         $routes->get('downline', 'AgentAuthController::downlineManagement');
+
+
+            // AJAX endpoints for level-based hierarchy UI
+            $routes->get('hierarchy/children/(:num)', 'AgentAuthController::ajaxChildrenRow/$1');
+            $routes->get('hierarchy/summary/(:num)', 'AgentAuthController::ajaxAgentSummary/$1');
 
         // Commission management
         $routes->get('commissions', 'AgentAuthController::commissionDashboard');
@@ -103,6 +115,12 @@ $routes->group('dashboard', ['filter' => 'auth'], function($routes) {
     $routes->post('agents/edit/(:num)', 'AgentController::update/$1');
     $routes->delete('agents/(:num)', 'AgentController::delete/$1');
 
+        // Admin hierarchy tree
+        $routes->get('agents/hierarchy', 'DashboardController::agentsHierarchy');
+        // Agent logs (admin)
+        $routes->get('agents/logs/(:num)', 'DashboardController::agentLogs/$1');
+
+
 
     // Subscribers management
     $routes->get('subscribers', 'DashboardController::subscribers');
@@ -114,6 +132,16 @@ $routes->group('dashboard', ['filter' => 'auth'], function($routes) {
     $routes->get('blog/edit/(:num)', 'BlogController::edit/$1');
     $routes->post('blog/edit/(:num)', 'BlogController::update/$1');
     $routes->delete('blog/(:num)', 'BlogController::delete/$1');
+});
+
+// MLM routes (public/demo) - use CDN JS
+$routes->group('mlm', function($routes) {
+    $routes->get('/', 'MLMController::index');
+    $routes->get('tree/(:num)', 'MLMApiController::tree/$1');
+    $routes->get('levels-summary', 'MLMApiController::levelsSummary');
+    $routes->get('levels-summary.csv', 'MLMApiController::levelsSummaryCsv');
+    $routes->get('search', 'MLMApiController::search');
+    $routes->get('member/(:num)/details', 'MLMApiController::memberDetails/$1');
 });
 
 // Contact routes

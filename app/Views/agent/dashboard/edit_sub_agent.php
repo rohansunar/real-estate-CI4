@@ -233,13 +233,6 @@
                     <p class="mb-0 font-monospace"><?= esc($subAgent['unique_agent_id']) ?></p>
                 </div>
 
-                <?php if ($subAgent['referral_id']): ?>
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold text-muted">Referral ID</label>
-                        <p class="mb-0 font-monospace"><?= esc($subAgent['referral_id']) ?></p>
-                    </div>
-                <?php endif; ?>
-
                 <div class="mb-3">
                     <label class="form-label small fw-semibold text-muted">Account Status</label>
                     <p class="mb-0">

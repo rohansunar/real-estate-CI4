@@ -41,10 +41,12 @@ use App\Models\AgentModel;
 class AgentAuthController extends BaseController
 {
     protected $agentModel;
+    protected $passwordResetModel;
 
     public function __construct()
     {
         $this->agentModel = new AgentModel();
+        $this->passwordResetModel = new \App\Models\PasswordResetModel();
     }
 
     /**
@@ -65,12 +67,124 @@ class AgentAuthController extends BaseController
     }
 
     /**
+     * Show agent forgot password form
+     */
+    public function forgotPasswordForm()
+    {
+        // If already logged in, redirect to dashboard
+        if (session()->get('agent_logged_in')) {
+            return redirect()->to('/agent/dashboard');
+        }
+
+        $data = [
+            'title' => 'Agent Forgot Password | Real Estate'
+        ];
+        return view('agent/auth/forgot_password', $data);
+    }
+
+    /**
+     * Handle agent forgot password request
+     */
+    public function forgotPassword()
+    {
+        $validation = \Config\Services::validation();
+        $validation->setRules(['email' => 'required|valid_email']);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+        }
+
+        $email = trim($this->request->getPost('email'));
+        $agent = $this->agentModel->findByEmail($email);
+
+        // Always respond with success to avoid email enumeration
+        if (!$agent) {
+            return redirect()->back()->with('success', 'If your email is registered, you will receive password reset instructions shortly.');
+        }
+
+        $token = $this->passwordResetModel->createResetToken($email);
+        if (!$token) {
+            return redirect()->back()->with('error', 'Unable to process your request at the moment. Please try again later.');
+        }
+
+        $resetLink = base_url("agent/reset-password?token={$token}&email=" . urlencode($email));
+        $emailService = new \App\Services\EmailService();
+        $emailService->sendPasswordResetEmail($email, $resetLink, $agent['name'] ?? null);
+
+        return redirect()->back()->with('success', 'If your email is registered, you will receive password reset instructions shortly.');
+    }
+
+    /**
+     * Show agent reset password form
+     */
+    public function resetPasswordForm()
+    {
+        $token = $this->request->getGet('token');
+        $email = $this->request->getGet('email');
+
+        if (!$token || !$email) {
+            return redirect()->to('/agent/login')->with('error', 'Invalid reset link.');
+        }
+
+        if (!$this->passwordResetModel->validateToken($token, $email)) {
+            return redirect()->to('/agent/login')->with('error', 'Invalid or expired reset token.');
+        }
+
+        $data = [
+            'title' => 'Agent Reset Password | Real Estate',
+            'token' => $token,
+            'email' => $email,
+        ];
+        return view('agent/auth/reset_password', $data);
+    }
+
+    /**
+     * Handle agent password reset submission
+     */
+    public function resetPassword()
+    {
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'token' => 'required',
+            'email' => 'required|valid_email',
+            'password' => 'required|min_length[6]',
+            'password_confirm' => 'required|matches[password]'
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+        }
+
+        $token = $this->request->getPost('token');
+        $email = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
+
+        if (!$this->passwordResetModel->validateToken($token, $email)) {
+            return redirect()->to('/agent/login')->with('error', 'Invalid or expired reset token.');
+        }
+
+        $agent = $this->agentModel->findByEmail($email);
+        if (!$agent) {
+            return redirect()->to('/agent/login')->with('error', 'Agent not found.');
+        }
+
+        if (!$this->agentModel->update($agent['id'], ['password' => $password])) {
+            return redirect()->back()->with('error', 'Failed to update password. Please try again.');
+        }
+
+        $this->passwordResetModel->markTokenAsUsed($token, $email);
+
+        return redirect()->to('/agent/login')->with('success', 'Password has been reset successfully. You can now log in with your new password.');
+    }
+
+
+    /**
      * Process agent login
      */
     public function login()
     {
         $validation = \Config\Services::validation();
-        
+
         $validation->setRules([
             'email' => 'required|valid_email',
             'password' => 'required'
@@ -109,7 +223,6 @@ class AgentAuthController extends BaseController
             'agent_name' => $agent['name'],
             'agent_email' => $agent['email'],
             'agent_unique_id' => $agent['unique_agent_id'],
-            'agent_referral_id' => $agent['referral_id'],
             'agent_parent_id' => $agent['parent_agent_id'],
             'agent_logged_in' => true
         ];
@@ -125,8 +238,8 @@ class AgentAuthController extends BaseController
     public function logout()
     {
         // Clear agent session data
-        session()->remove(['agent_id', 'agent_name', 'agent_email', 'agent_unique_id', 'agent_referral_id', 'agent_parent_id', 'agent_logged_in']);
-        
+        session()->remove(['agent_id', 'agent_name', 'agent_email', 'agent_unique_id', 'agent_parent_id', 'agent_logged_in']);
+
         return redirect()->to('/agent/login')->with('success', 'Successfully logged out');
     }
 
@@ -347,9 +460,6 @@ class AgentAuthController extends BaseController
             // Generate automatic login credentials
             $generatedPassword = $this->generateSecurePassword();
 
-            // Generate referral ID
-            $referralId = $this->agentModel->generateReferralId();
-
             // Prepare data for insertion
             $data = [
                 'name' => trim($this->request->getPost('name')),
@@ -358,7 +468,6 @@ class AgentAuthController extends BaseController
                 'phone' => trim($this->request->getPost('phone')),
                 'address' => trim($this->request->getPost('address')) ?: null,
                 'qualification' => trim($this->request->getPost('qualification')) ?: null,
-                'referral_id' => $referralId,
                 'parent_agent_id' => $parentAgentId,
                 'is_active' => true
             ];
@@ -379,7 +488,6 @@ class AgentAuthController extends BaseController
 
                 $successMessage = 'Sub-agent created successfully! ';
                 $successMessage .= 'Unique ID: ' . $createdAgent['unique_agent_id'] . ' | ';
-                $successMessage .= 'Referral ID: ' . $referralId . ' | ';
                 $successMessage .= 'Login credentials have been sent via email.';
 
                 return redirect()->to('/agent/sub-agents')->with('success', $successMessage);
@@ -610,14 +718,33 @@ class AgentAuthController extends BaseController
                 return redirect()->to('/agent/dashboard')->with('error', 'Unable to load hierarchy data. Please try again later.');
             }
 
+            // Server-side pagination for immediate children of current agent
+            $perPage = (int) ($this->request->getGet('perPage') ?? 10);
+            $perPage = max(5, min(50, $perPage));
+            $page = (int) ($this->request->getGet('page') ?? 1);
+
+            try {
+                $paged = $this->agentModel->getHierarchyTreePaginated($agentId, $perPage, $page, 10);
+            } catch (\Throwable $e) {
+                log_message('error', 'Failed to build paginated hierarchy for agent ' . $agentId . ': ' . $e->getMessage());
+                $paged = ['nodes' => [], 'total' => 0, 'perPage' => $perPage, 'page' => $page];
+            }
+
             $data = [
                 'title' => 'Agent Hierarchy | Agent Dashboard',
-                'hierarchyTree' => $hierarchyTree,
+                'hierarchyTree' => !empty($hierarchyTree) ? $hierarchyTree : $paged['nodes'],
                 'hierarchyPosition' => $hierarchyPosition,
                 'totalDownline' => $totalDownline,
                 'hasErrors' => $hasErrors,
                 'errorMessages' => $errorMessages,
-                'currentAgent' => $currentAgent
+                'currentAgent' => $currentAgent,
+                'pagination' => [
+                    'page' => $paged['page'],
+                    'perPage' => $paged['perPage'],
+                    'total' => $paged['total'],
+                    'totalPages' => max(1, (int) ceil(($paged['total'] ?: 0) / $paged['perPage'])),
+                    'baseUrl' => base_url('agent/hierarchy'),
+                ],
             ];
 
             return view('agent/dashboard/hierarchy_tree', $data);
@@ -631,33 +758,33 @@ class AgentAuthController extends BaseController
     /**
      * Commission dashboard
      */
-    public function commissionDashboard()
-    {
-        $agentId = session()->get('agent_id');
-        $commissionModel = new \App\Models\CommissionTransactionModel();
+    // public function commissionDashboard()
+    // {
+    //     $agentId = session()->get('agent_id');
+    //     $commissionModel = new \App\Models\CommissionTransactionModel();
 
-        // Get commission statistics
-        $commissionStats = $commissionModel->getAgentCommissionStats($agentId);
+    //     // Get commission statistics
+    //     $commissionStats = $commissionModel->getAgentCommissionStats($agentId);
 
-        // Get recent commission transactions
-        $recentTransactions = $commissionModel->getRecentTransactions(20, $agentId);
+    //     // Get recent commission transactions
+    //     $recentTransactions = $commissionModel->getRecentTransactions(20, $agentId);
 
-        // Get downline commission earnings
-        $downlineEarnings = $commissionModel->getDownlineCommissionEarnings($agentId);
+    //     // Get downline commission earnings
+    //     $downlineEarnings = $commissionModel->getDownlineCommissionEarnings($agentId);
 
-        // Get monthly commission data for charts
-        $monthlyCommissions = $this->getMonthlyCommissionData($agentId, $commissionModel);
+    //     // Get monthly commission data for charts
+    //     $monthlyCommissions = $this->getMonthlyCommissionData($agentId, $commissionModel);
 
-        $data = [
-            'title' => 'Commission Dashboard | Agent Dashboard',
-            'commissionStats' => $commissionStats,
-            'recentTransactions' => $recentTransactions,
-            'downlineEarnings' => $downlineEarnings,
-            'monthlyCommissions' => $monthlyCommissions
-        ];
+    //     $data = [
+    //         'title' => 'Commission Dashboard | Agent Dashboard',
+    //         'commissionStats' => $commissionStats,
+    //         'recentTransactions' => $recentTransactions,
+    //         'downlineEarnings' => $downlineEarnings,
+    //         'monthlyCommissions' => $monthlyCommissions
+    //     ];
 
-        return view('agent/dashboard/commission_dashboard', $data);
-    }
+    //     return view('agent/dashboard/commission_dashboard', $data);
+    // }
 
     /**
      * Get monthly commission data for charts
@@ -747,6 +874,96 @@ class AgentAuthController extends BaseController
         return view('agent/dashboard/downline_management', $data);
     }
 
+/**
+ * AJAX: Return a new horizontal row (Level N) of direct sub-agents for the given parent.
+ * Security: Only the logged-in agent can request rows for self or for agents within their downline.
+ * Returns an HTML partial so the frontend can directly insert/replace the row.
+ */
+    public function ajaxChildrenRow(int $parentId)
+    {
+        // Only allow AJAX requests
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(405, 'Method Not Allowed');
+        }
+
+        // Authentication check
+        $currentAgentId = (int) (session()->get('agent_id') ?? 0);
+        if (!$currentAgentId) {
+            return $this->response->setStatusCode(401, 'Unauthorized');
+        }
+
+        // Authorization: ensure requested parent is self or a descendant of current agent
+        if ($parentId !== $currentAgentId) {
+            $isAllowed = $this->agentModel->isDescendant($currentAgentId, $parentId);
+            if (!$isAllowed) {
+                // Return a small, user-friendly error block
+                return $this->response->setStatusCode(403, 'Forbidden')
+                    ->setBody('<div class="text-center text-danger small py-3">Not allowed to view this hierarchy branch.</div>');
+            }
+        }
+
+        // Pagination params (server-side)
+        $perPage = max(5, min(50, (int) ($this->request->getGet('perPage') ?? 12)));
+        $page    = max(1, (int) ($this->request->getGet('page') ?? 1));
+        $level   = max(2, (int) ($this->request->getGet('level') ?? 2));
+
+        try {
+            $paged = $this->agentModel->getDirectChildrenPaginated($parentId, $perPage, $page);
+        } catch (\Throwable $e) {
+            log_message('error', 'ajaxChildrenRow failed: ' . $e->getMessage());
+            return $this->response->setStatusCode(500)
+                ->setBody('<div class="text-center text-danger small py-3">Unable to load agents right now. Please try again.</div>');
+        }
+
+        // Render partial row
+        return view('agent/dashboard/partials/hierarchy_row', [
+            'agents' => $paged['items'] ?? [],
+            'level' => $level,
+            'parentId' => $parentId,
+            'pagination' => $paged,
+        ]);
+    }
+
+    /**
+     * AJAX: Return an HTML snippet with agent name and downline level counts.
+     * Used by popovers/tooltips on hover, must be lightweight and fast.
+     */
+    public function ajaxAgentSummary(int $agentId)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(405, 'Method Not Allowed');
+        }
+
+        $currentAgentId = (int) (session()->get('agent_id') ?? 0);
+        if (!$currentAgentId) {
+            return $this->response->setStatusCode(401, 'Unauthorized');
+        }
+
+        // Authorization: allow current agent or any descendant
+        if ($agentId !== $currentAgentId && !$this->agentModel->isDescendant($currentAgentId, $agentId)) {
+            return $this->response->setStatusCode(403, 'Forbidden')
+                ->setBody('<div class="small text-danger">Access denied.</div>');
+        }
+
+        $agent = $this->agentModel->find($agentId);
+        if (!$agent) {
+            return $this->response->setStatusCode(404, 'Not Found')
+                ->setBody('<div class="small text-muted">Agent not found.</div>');
+        }
+
+        try {
+            $levels = $this->agentModel->getDownlineLevelCountsRelative($agentId, 10);
+        } catch (\Throwable $e) {
+            log_message('error', 'ajaxAgentSummary failed: ' . $e->getMessage());
+            $levels = ['counts' => [], 'total_levels' => 0, 'total_agents' => 0];
+        }
+
+        return view('agent/dashboard/partials/agent_summary', [
+            'agent' => $agent,
+            'levels' => $levels,
+        ]);
+    }
+
     /**
      * Send welcome email to newly created agent with login credentials
      */
@@ -759,7 +976,6 @@ class AgentAuthController extends BaseController
             log_message('info', 'Email: ' . $agentData['email']);
             log_message('info', 'Password: ' . ($agentData['plain_password'] ?? 'N/A'));
             log_message('info', 'Unique ID: ' . ($agentData['unique_agent_id'] ?? 'Auto-generated'));
-            log_message('info', 'Referral ID: ' . ($agentData['referral_id'] ?? 'N/A'));
 
             // TODO: Implement actual email sending
         } catch (\Exception $e) {

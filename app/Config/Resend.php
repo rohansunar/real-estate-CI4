@@ -16,20 +16,20 @@ class Resend extends BaseConfig
      * Default sender email address
      * Must be a verified domain in your Resend account
      */
-    public string $fromEmail = 'noreply@yourdomain.com';
+    public string $fromEmail = 'onboarding@realestate.com';
 
     /**
      * Default sender name
      */
-    public string $fromName = 'Real Estate Admin';
+    public string $fromName = 'Real Estate';
 
     /**
      * Admin email address for notifications
      */
-    public string $adminEmail = 'admin@yourdomain.com';
+    public string $adminEmail = 'admin@realestate.com';
 
     /**
-     * Resend API endpoint
+     * Resend API endpoint (used only for cURL fallback)
      */
     public string $apiEndpoint = 'https://api.resend.com/emails';
 
@@ -44,6 +44,19 @@ class Resend extends BaseConfig
         'contact_notification' => [
             'subject' => 'New Contact Form Submission',
             'template' => 'emails/contact_notification'
-        ]
+        ],
+        'password_reset' => [
+            'subject' => 'Password Reset Instructions',
+            'template' => 'emails/password_reset'
+        ],
     ];
+
+    public function __construct()
+    {
+        // Read configuration from environment variables when available
+        $this->apiKey     = (string) (env('RESEND_API_KEY') ?? $this->apiKey);
+        $this->fromEmail  = (string) (env('RESEND_FROM_EMAIL') ?? $this->fromEmail);
+        $this->fromName   = (string) (env('RESEND_FROM_NAME') ?? $this->fromName);
+        $this->adminEmail = (string) (env('ADMIN_EMAIL') ?? $this->adminEmail);
+    }
 }

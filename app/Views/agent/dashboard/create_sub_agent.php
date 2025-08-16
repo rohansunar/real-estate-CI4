@@ -192,7 +192,6 @@
                     <p class="mb-0">When you create a sub-agent:</p>
                     <ul class="mb-0 mt-2">
                         <li>A unique Agent ID will be generated automatically</li>
-                        <li>A unique Referral ID will be created</li>
                         <li>Login credentials will be generated and sent via email</li>
                         <li>The sub-agent will be linked to your account</li>
                     </ul>

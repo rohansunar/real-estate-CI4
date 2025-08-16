@@ -53,18 +53,6 @@
                                 </button>
                             </div>
                         </div>
-                        
-                        <?php if ($agent['referral_id']): ?>
-                            <div class="mb-3">
-                                <label class="form-label small fw-semibold text-muted">Referral ID</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" value="<?= esc($agent['referral_id']) ?>" readonly>
-                                    <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('<?= esc($agent['referral_id']) ?>')">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        <?php endif; ?>
                     </div>
                     
                     <div class="col-md-6">

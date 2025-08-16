@@ -70,7 +70,7 @@
                         </div>
                     </div>
                 <?php endif; ?>
-                
+
                 <div class="row g-3 mt-3">
                     <div class="col-md-4">
                         <div class="text-center p-3 bg-light rounded">
@@ -94,7 +94,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-lg-4">
         <div class="card">
             <div class="card-header bg-transparent border-0 pb-0">
@@ -113,10 +113,10 @@
                         <i class="fas fa-users me-2"></i>
                         Manage Downline
                     </a>
-                    <a href="<?= base_url('agent/commissions') ?>" class="btn btn-outline-info">
+                    <!-- <a href="<?= base_url('agent/commissions') ?>" class="btn btn-outline-info">
                         <i class="fas fa-dollar-sign me-2"></i>
                         View Commissions
-                    </a>
+                    </a> -->
                 </div>
             </div>
         </div>
@@ -137,10 +137,19 @@
             <?php endif; ?>
         </h5>
     </div>
+        <?= view('agent/dashboard/partials/hierarchy_row.css.php') ?>
+
     <div class="card-body">
         <?php if (isset($hierarchyTree) && !empty($hierarchyTree)): ?>
-            <div class="hierarchy-tree" id="hierarchyTreeContainer">
-                <?= $this->include('agent/dashboard/partials/hierarchy_node', ['nodes' => $hierarchyTree, 'level' => 1]) ?>
+            <!-- Level 1 row: render as grid of cards -->
+            <div id="levelRows">
+              <?= view('agent/dashboard/partials/hierarchy_row', [
+                // For the level-based view, use current page's nodes as Level 1
+                'agents' => $hierarchyTree,
+                'level' => 1,
+                'parentId' => (int)($currentAgent['id'] ?? session()->get('agent_id')),
+                'pagination' => $pagination ?? null,
+              ]) ?>
             </div>
         <?php elseif (isset($hasErrors) && $hasErrors): ?>
             <div class="text-center py-5">
@@ -169,6 +178,210 @@
                 </a>
             </div>
         <?php endif; ?>
+    <?php if (isset($pagination)): ?>
+        <nav aria-label="Downline pagination" class="mt-3">
+            <ul class="pagination pagination-sm justify-content-center">
+                <?php $current = (int) ($pagination['page'] ?? 1); $totalPages = (int) ($pagination['totalPages'] ?? 1); ?>
+                <li class="page-item <?= $current <= 1 ? 'disabled' : '' ?>">
+                    <a class="page-link" href="<?= esc($pagination['baseUrl']) ?>?page=<?= max(1, $current-1) ?>&perPage=<?= (int)$pagination['perPage'] ?>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="visually-hidden">Previous</span>
+                    </a>
+                </li>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="page-item <?= $i === $current ? 'active' : '' ?>">
+                        <a class="page-link" href="<?= esc($pagination['baseUrl']) ?>?page=<?= $i ?>&perPage=<?= (int)$pagination['perPage'] ?>"><?= $i ?></a>
+                    </li>
+                <?php endfor; ?>
+                <li class="page-item <?= $current >= $totalPages ? 'disabled' : '' ?>">
+                    <a class="page-link" href="<?= esc($pagination['baseUrl']) ?>?page=<?= min($totalPages, $current+1) ?>&perPage=<?= (int)$pagination['perPage'] ?>" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+
+<script>
+// Level-based interactions for hierarchy
+(function(){
+  const rowsContainer = document.getElementById('levelRows');
+
+  // Bootstrap 5 tooltips/popovers for hover summaries (desktop) and focus (accessibility)
+  async function fetchSummary(agentId) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+      const res = await fetch('<?= base_url('agent/hierarchy/summary/') ?>'+agentId, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        console.warn('Failed to fetch agent summary:', res.status, res.statusText);
+        return '<div class="small text-muted">Unable to load details</div>';
+      }
+
+      return await res.text();
+    } catch(e) {
+      console.error('Error fetching agent summary:', e);
+      if (e.name === 'AbortError') {
+        return '<div class="small text-muted">Request timed out</div>';
+      }
+      return '<div class="small text-muted">No details available</div>';
+    }
+  }
+
+  // Delegate hover/focus to show popover
+  rowsContainer?.addEventListener('mouseover', async (e) => {
+    const card = e.target.closest('.agent-card');
+    if (!card || card.getAttribute('data-popover-loaded')) return;
+    const id = card.getAttribute('data-agent-id');
+    const content = await fetchSummary(id);
+
+    // Add close button to the content
+    const contentWithCloseBtn = `
+      <div class="d-flex justify-content-between align-items-start">
+        <div class="flex-grow-1">${content}</div>
+        <button type="button" class="btn-close btn-close-sm ms-2" aria-label="Close tooltip" onclick="this.closest('.popover').style.display='none'"></button>
+      </div>
+    `;
+
+    card.setAttribute('data-bs-toggle','popover');
+    card.setAttribute('data-bs-html','true');
+    card.setAttribute('data-bs-placement','top');
+    card.setAttribute('title','Details');
+    card.setAttribute('data-bs-content', contentWithCloseBtn);
+
+    const pop = bootstrap.Popover.getOrCreateInstance(card, {
+      trigger: 'hover focus',
+      delay: { show: 300, hide: 100 },
+      customClass: 'hierarchy-popover'
+    });
+
+    // Clean up any existing event listeners to prevent memory leaks
+    card.removeEventListener('shown.bs.popover', card._popoverShownHandler);
+
+    // Add event listener for when popover is shown
+    card._popoverShownHandler = () => {
+      const popoverElement = document.querySelector('.popover.show');
+      if (popoverElement) {
+        const closeBtn = popoverElement.querySelector('.btn-close');
+        if (closeBtn && !closeBtn._clickHandlerAdded) {
+          closeBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            pop.hide();
+          });
+          closeBtn._clickHandlerAdded = true;
+        }
+      }
+    };
+
+    card.addEventListener('shown.bs.popover', card._popoverShownHandler);
+
+    // Add cleanup when popover is hidden to prevent memory leaks
+    card.addEventListener('hidden.bs.popover', () => {
+      const popoverElement = document.querySelector('.popover');
+      if (popoverElement) {
+        const closeBtn = popoverElement.querySelector('.btn-close');
+        if (closeBtn && closeBtn._clickHandlerAdded) {
+          closeBtn._clickHandlerAdded = false;
+        }
+      }
+    });
+
+    pop.show();
+    card.setAttribute('data-popover-loaded','1');
+  });
+
+  // Expand/collapse next level on button click
+  rowsContainer?.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.expand-btn, .pagination .page-link');
+    if (!btn) return;
+
+    // Handle pagination inside a level row
+    if (btn.classList.contains('page-link')) {
+      e.preventDefault();
+      const row = btn.closest('[data-level-row]');
+      const parentId = row?.getAttribute('data-parent-id');
+      const level = row?.getAttribute('data-level-row');
+      const page = btn.getAttribute('data-page') || 1;
+      const per = btn.getAttribute('data-per-page') || 12;
+      if (!parentId || !level) return;
+      row.classList.add('opacity-50');
+      try {
+        const url = `<?= base_url('agent/hierarchy/children/') ?>${parentId}?level=${level}&page=${page}&perPage=${per}`;
+        const html = await (await fetch(url, { headers: { 'X-Requested-With':'XMLHttpRequest' } })).text();
+        row.outerHTML = html; // replace current row with paged version
+      } finally {
+        // no-op; row replaced
+      }
+      return;
+    }
+
+    // Expand to show children row under clicked card
+    e.preventDefault();
+    const parentId = btn.getAttribute('data-parent-id');
+    const nextLevel = btn.getAttribute('data-target-level');
+    if (!parentId || !nextLevel) return;
+
+    const levelRow = btn.closest('[data-level-row]');
+
+    // Check if children row already exists for this parent to prevent duplicates
+    const existingChildrenRow = levelRow.nextElementSibling;
+    if (existingChildrenRow && existingChildrenRow.getAttribute('data-level-row') === nextLevel &&
+        existingChildrenRow.getAttribute('data-parent-id') === parentId) {
+      // Children row already exists, toggle visibility instead of creating duplicate
+      if (existingChildrenRow.style.display === 'none') {
+        existingChildrenRow.style.display = '';
+        btn.innerHTML = '<i class="fas fa-chevron-up me-1"></i> Close';
+        btn.setAttribute('aria-expanded', 'true');
+      } else {
+        existingChildrenRow.style.display = 'none';
+        btn.innerHTML = '<i class="fas fa-chevron-down me-1"></i> Open';
+        btn.setAttribute('aria-expanded', 'false');
+      }
+      return;
+    }
+
+    // Disable button to prevent multiple clicks while loading
+    btn.disabled = true;
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Loading...';
+
+    // Show loading placeholder row
+    const loadingRow = document.createElement('div');
+    loadingRow.className = 'text-center py-3';
+    loadingRow.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+    levelRow.after(loadingRow);
+
+    try {
+      const url = `<?= base_url('agent/hierarchy/children/') ?>${parentId}?level=${nextLevel}`;
+      const html = await (await fetch(url, { headers: { 'X-Requested-With':'XMLHttpRequest' } })).text();
+      loadingRow.outerHTML = html; // insert next level row
+
+      // Update button to show "Close" state
+      btn.innerHTML = '<i class="fas fa-chevron-up me-1"></i> Close';
+      btn.setAttribute('aria-expanded', 'true');
+    } catch (err) {
+      console.error('Error loading children:', err);
+      loadingRow.outerHTML = '<div class="text-center text-danger small py-3">Failed to load. Please try again.</div>';
+
+      // Reset button to original state on error
+      btn.innerHTML = originalContent;
+      btn.setAttribute('aria-expanded', 'false');
+    } finally {
+      // Re-enable button
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
+
+                        <span class="visually-hidden">Next</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    <?php endif; ?>
     </div>
 </div>
 
@@ -183,6 +396,42 @@
     background: #f8f9fa;
     border-radius: 0.5rem;
     border-left: 4px solid #0d6efd;
+}
+
+/* Enhanced popover styles */
+.hierarchy-popover {
+    max-width: 300px;
+    font-size: 0.875rem;
+}
+
+.hierarchy-popover .popover-body {
+    padding: 0.75rem;
+}
+
+.hierarchy-popover .btn-close {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.hierarchy-popover .btn-close:hover {
+    opacity: 1;
+}
+
+/* Improve button states for expand/collapse */
+.expand-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.expand-btn .fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .hierarchy-item {
@@ -238,65 +487,63 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem;
-    background: white;
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
-    margin-left: 1rem;
-    transition: all 0.2s ease;
 }
 
-.tree-node-content:hover {
-    border-color: #0d6efd;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+/* Simplified interactive tree styles to mirror admin page, mobile-friendly */
+.hierarchy-tree { position: relative; padding-left: 0.5rem; }
+.hierarchy-tree .tree-node { position: relative; margin: 0.25rem 0 0.5rem 0.5rem; }
+.hierarchy-tree .tree-node::before { content: ''; position: absolute; left: -0.5rem; top: 0.9rem; width: 0.5rem; height: 1px; background: #e5e7eb; }
+.hierarchy-tree .tree-children { border-left: 1px solid #e5e7eb; margin-left: 1.1rem; padding-left: 0.75rem; }
+.hierarchy-tree .tree-node-content { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.5rem; border-radius: 8px; transition: background-color .2s ease; }
+.hierarchy-tree .tree-node-content:hover { background-color: #f8fafc; }
+.hierarchy-tree .tree-node-avatar { width: 28px; height: 28px; border-radius: 50%; background: #e0ecff; color: #1d4ed8; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+.hierarchy-tree .tree-node-title { cursor: pointer; user-select: none; }
+.hierarchy-tree .toggle-children { padding: 0.1rem 0.35rem; }
+@media (max-width: 576px) {
+  .hierarchy-tree .tree-node-content { padding: 0.35rem 0.5rem; }
 }
 
-.tree-node-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #0d6efd;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.1rem;
-}
+<script>
+// Collapse/expand behavior for hierarchy nodes
+(function(){
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('.toggle-children');
+    if (btn) {
+      const node = btn.closest('.tree-node');
+      const children = node?.querySelector(':scope > .tree-children');
+      if (children) {
+        children.classList.toggle('show');
+        children.classList.toggle('collapse');
+        const icon = btn.querySelector('i');
+        if (icon) icon.classList.toggle('fa-chevron-right');
+        if (icon) icon.classList.toggle('fa-chevron-down');
+        // Accessibility: reflect expanded state
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      }
+    }
+  });
+})();
+</script>
 
-.tree-node-info {
-    flex: 1;
-}
-
-.tree-node-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.level-indicator {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    background: #e9ecef;
-    border-radius: 1rem;
-    color: #6c757d;
-}
 
 @media (max-width: 768px) {
     .hierarchy-path {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .tree-node {
         padding-left: 1rem;
     }
-    
+
     .tree-node-content {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
-    
+
     .tree-node-actions {
         width: 100%;
         justify-content: center;

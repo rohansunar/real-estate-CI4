@@ -276,7 +276,7 @@
             </div>
 
             <!-- Commission Section -->
-            <div class="nav-section">
+            <!-- <div class="nav-section">
                 <div class="nav-section-title">Commission</div>
                 <a href="<?= base_url('agent/commissions') ?>"
                    class="nav-link <?= strpos(uri_string(), 'agent/commissions') !== false ? 'active' : '' ?>">
@@ -285,7 +285,7 @@
                     </div>
                     <span class="nav-text">Commission Dashboard</span>
                 </a>
-            </div>
+            </div> -->
 
             <!-- Logout Section -->
             <div class="nav-section nav-section-bottom">

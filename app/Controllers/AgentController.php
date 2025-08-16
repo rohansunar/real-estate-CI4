@@ -117,9 +117,6 @@ class AgentController extends BaseController
             // Generate automatic login credentials
             $generatedPassword = $this->generateSecurePassword();
 
-            // Generate referral ID if not provided
-            $referralId = trim($this->request->getPost('referral_id')) ?: $this->agentModel->generateReferralId();
-
             // Prepare data for insertion
             $data = [
                 'name' => trim($this->request->getPost('name')),
@@ -129,7 +126,6 @@ class AgentController extends BaseController
                 'address' => trim($this->request->getPost('address')) ?: null,
                 'qualification' => trim($this->request->getPost('qualification')) ?: null,
                 'profile_image' => $profileImagePath,
-                'referral_id' => $referralId,
                 'parent_agent_id' => $this->request->getPost('parent_agent_id') ?: null,
                 'is_active' => true
             ];
@@ -151,7 +147,6 @@ class AgentController extends BaseController
 
                 $successMessage = 'Agent created successfully! ';
                 $successMessage .= 'Unique ID: ' . $createdAgent['unique_agent_id'] . ' | ';
-                $successMessage .= 'Referral ID: ' . $referralId . ' | ';
                 $successMessage .= 'Login credentials have been sent via email.';
 
                 return redirect()->to('/dashboard/agents')->with('success', $successMessage);
@@ -409,7 +404,6 @@ class AgentController extends BaseController
             log_message('info', 'Email: ' . $agentData['email']);
             log_message('info', 'Password: ' . ($agentData['plain_password'] ?? 'N/A'));
             log_message('info', 'Unique ID: ' . ($agentData['unique_agent_id'] ?? 'Auto-generated'));
-            log_message('info', 'Referral ID: ' . ($agentData['referral_id'] ?? 'N/A'));
         }
     }
 }

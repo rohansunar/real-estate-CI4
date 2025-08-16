@@ -58,7 +58,7 @@ class AgentAuthFilter implements FilterInterface
             
             if (!$agent || !$agent['is_active']) {
                 // Agent account is inactive, clear session and redirect
-                session()->remove(['agent_id', 'agent_name', 'agent_email', 'agent_unique_id', 'agent_referral_id', 'agent_parent_id', 'agent_logged_in']);
+                session()->remove(['agent_id', 'agent_name', 'agent_email', 'agent_unique_id', 'agent_parent_id', 'agent_logged_in']);
                 return redirect()->to('/agent/login')->with('error', 'Your agent account has been deactivated. Please contact the administrator.');
             }
         }

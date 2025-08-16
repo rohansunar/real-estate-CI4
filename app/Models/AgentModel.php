@@ -12,14 +12,14 @@ use CodeIgniter\Model;
  * - Agent CRUD operations with enhanced validation
  * - Agent authentication with password hashing
  * - Agent hierarchy system (parent-child relationships)
- * - Unique ID generation for agents and referrals
+ * - Unique ID generation for agents
  * - Agent profile image handling
  * - Agent status management and statistics
  *
  * Key Features:
  * - Comprehensive validation rules with unique constraints
  * - Automatic password hashing via callbacks
- * - Unique agent ID and referral ID generation
+ * - Unique agent ID generation
  * - Agent hierarchy support for sub-agents
  * - Profile image upload support
  * - Status-based filtering and statistical reporting
@@ -27,7 +27,6 @@ use CodeIgniter\Model;
  *
  * Database Schema:
  * - id: Primary key (auto-increment)
- * - referral_id: Unique referral identifier (nullable, indexed)
  * - unique_agent_id: Auto-generated unique agent ID (required, indexed)
  * - name: Agent full name (required)
  * - email: Agent email address (required, unique)
@@ -52,7 +51,22 @@ class AgentModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['profile_image', 'name', 'email', 'password', 'phone', 'address', 'qualification', 'is_active', 'referral_id', 'unique_agent_id', 'parent_agent_id'];
+    protected $allowedFields    = ['profile_image', 'name', 'email', 'password', 'phone', 'address', 'qualification', 'is_active', 'unique_agent_id', 'parent_agent_id'];
+
+    /**
+     * Minimal column set used for hierarchy queries to reduce memory footprint.
+     * Avoids selecting large/unneeded columns when building trees.
+     */
+    protected array $hierarchySelect = [
+        // Include qualification for /agent/downline table (avoids undefined index)
+        'id', 'name', 'email', 'phone', 'unique_agent_id', 'qualification', 'is_active', 'parent_agent_id', 'created_at'
+    ];
+
+    /**
+     * Simple per-request cache for downline counts to avoid repeated recursion.
+     * Keyed by agent ID.
+     */
+    protected array $downlineCountCache = [];
 
     // Dates
     protected $useTimestamps = true;
@@ -69,7 +83,6 @@ class AgentModel extends Model
         'phone'           => 'required|max_length[20]',
         'address'         => 'permit_empty|max_length[1000]',
         'qualification'   => 'permit_empty|max_length[255]',
-        'referral_id'     => 'permit_empty|max_length[50]|is_unique[agents.referral_id]',
         'unique_agent_id' => 'permit_empty|max_length[50]|is_unique[agents.unique_agent_id]',
         'parent_agent_id' => 'permit_empty|integer',
     ];
@@ -89,10 +102,6 @@ class AgentModel extends Model
         'phone' => [
             'required' => 'Phone number is required.',
             'max_length' => 'Phone number cannot exceed 20 characters.'
-        ],
-        'referral_id' => [
-            'is_unique' => 'This referral ID is already in use.',
-            'max_length' => 'Referral ID cannot exceed 50 characters.'
         ],
         'unique_agent_id' => [
             'required' => 'Unique agent ID is required.',
@@ -129,7 +138,6 @@ class AgentModel extends Model
             'phone'           => 'required|max_length[20]',
             'address'         => 'permit_empty|max_length[1000]',
             'qualification'   => 'permit_empty|max_length[255]',
-            'referral_id'     => "permit_empty|max_length[50]|is_unique[agents.referral_id,id,{$agentId}]",
             'unique_agent_id' => "required|max_length[50]|is_unique[agents.unique_agent_id,id,{$agentId}]",
             'parent_agent_id' => 'permit_empty|integer',
         ];
@@ -147,7 +155,6 @@ class AgentModel extends Model
             'phone'           => 'required|max_length[20]',
             'address'         => 'permit_empty|max_length[1000]',
             'qualification'   => 'permit_empty|max_length[255]',
-            'referral_id'     => 'permit_empty|max_length[50]|is_unique[agents.referral_id]',
             'unique_agent_id' => 'permit_empty|max_length[50]|is_unique[agents.unique_agent_id]',
             'parent_agent_id' => 'permit_empty|integer',
         ];
@@ -160,11 +167,11 @@ class AgentModel extends Model
     {
         $builder = $this->where('is_active', true)
                        ->orderBy('created_at', 'DESC');
-        
+
         if ($limit) {
             $builder->limit($limit);
         }
-        
+
         return $builder->findAll();
     }
 
@@ -251,17 +258,7 @@ class AgentModel extends Model
         return $uniqueId;
     }
 
-    /**
-     * Generate a unique referral ID
-     */
-    public function generateReferralId(): string
-    {
-        do {
-            $referralId = 'REF' . date('ymd') . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
-        } while ($this->where('referral_id', $referralId)->first());
 
-        return $referralId;
-    }
 
     /**
      * Verify password
@@ -287,13 +284,7 @@ class AgentModel extends Model
         return $this->where('unique_agent_id', $uniqueId)->first();
     }
 
-    /**
-     * Find agent by referral ID
-     */
-    public function findByReferralId(string $referralId)
-    {
-        return $this->where('referral_id', $referralId)->first();
-    }
+
 
     /**
      * Get sub-agents for a parent agent
@@ -338,7 +329,9 @@ class AgentModel extends Model
             return; // Prevent infinite recursion
         }
 
-        $directSubAgents = $this->where('parent_agent_id', $parentId)
+        // Select only minimal columns to reduce memory usage
+        $directSubAgents = $this->select($this->hierarchySelect)
+                               ->where('parent_agent_id', $parentId)
                                ->where('is_active', true)
                                ->orderBy('created_at', 'DESC')
                                ->findAll();
@@ -361,6 +354,229 @@ class AgentModel extends Model
     }
 
     /**
+     * Get full hierarchy tree for all top-level agents (admin view)
+     * Returns an array of root agents with nested children
+     */
+    public function getFullHierarchyTree(int $maxDepth = 10): array
+    {
+        // Fetch top-level agents (no parent) that are active
+        $roots = $this->groupStart()
+                      ->where('parent_agent_id', null)
+                      ->orWhere('parent_agent_id', 0)
+                      ->groupEnd()
+                      ->where('is_active', true)
+                      ->orderBy('name', 'ASC')
+                      ->findAll();
+
+        foreach ($roots as &$root) {
+            $root['hierarchy_depth'] = 1;
+            $root['children'] = $this->buildHierarchyTree($root['id'], 1, $maxDepth);
+            $root['has_children'] = !empty($root['children']);
+            $root['total_downline'] = $this->countTotalDownline($root['id']);
+        }
+        unset($root);
+
+        return $roots;
+    }
+
+    /**
+     * Get full hierarchy tree (admin) with server-side pagination of root agents.
+     *
+     * This keeps memory usage low by fetching only the requested page of root
+     * agents, while still building children recursively for each root.
+     *
+     * @param int $perPage  Number of root agents per page
+     * @param int $page     Current page (1-based)
+     * @param int $maxDepth Maximum depth of children to include
+     * @return array{roots: array<int, array>, total: int, perPage: int, page: int}
+     */
+    public function getFullHierarchyTreePaginated(int $perPage = 10, int $page = 1, int $maxDepth = 10): array
+    {
+        $page = max(1, $page);
+        $offset = ($page - 1) * $perPage;
+
+        // Count total number of root agents (no parent)
+        $totalRoots = $this->groupStart()
+            ->where('parent_agent_id', null)
+            ->orWhere('parent_agent_id', 0)
+            ->groupEnd()
+            ->where('is_active', true)
+            ->countAllResults(false);
+
+        // Fetch only the current page of root agents
+        $roots = $this->groupStart()
+            ->where('parent_agent_id', null)
+            ->orWhere('parent_agent_id', 0)
+            ->groupEnd()
+            ->where('is_active', true)
+            ->orderBy('name', 'ASC')
+            ->limit($perPage, $offset)
+            ->findAll();
+
+        foreach ($roots as &$root) {
+            $root['hierarchy_depth'] = 1;
+            $root['children'] = $this->buildHierarchyTree((int) $root['id'], 1, $maxDepth);
+            $root['has_children'] = !empty($root['children']);
+            $root['total_downline'] = $this->countTotalDownline((int) $root['id']);
+        }
+        unset($root); // Avoid leaking reference
+
+        return [
+            'roots'   => $roots,
+            'total'   => (int) $totalRoots,
+            'perPage' => $perPage,
+            'page'    => $page,
+        ];
+    }
+
+    /**
+     * Get an agent's hierarchy tree with server-side pagination for direct children (level 1).
+     *
+     * The immediate children of the given agent are paginated; deeper levels remain fully
+     * expanded for those children to keep the UI useful while controlling total node count.
+     *
+     * @param int $agentId The parent/owner agent ID
+     * @param int $perPage Number of direct children per page
+     * @param int $page    Current page (1-based)
+     * @param int $maxDepth Maximum depth of children to include
+     * @return array{nodes: array<int, array>, total: int, perPage: int, page: int}
+     */
+    public function getHierarchyTreePaginated(int $agentId, int $perPage = 10, int $page = 1, int $maxDepth = 10): array
+    {
+        $page = max(1, $page);
+        $offset = ($page - 1) * $perPage;
+
+        // Total count of direct sub-agents to compute pages
+        $total = $this->where('parent_agent_id', $agentId)
+            ->where('is_active', true)
+            ->countAllResults(false);
+
+        // Fetch current page of direct children
+        $directChildren = $this->select($this->hierarchySelect)
+            ->where('parent_agent_id', $agentId)
+            ->where('is_active', true)
+            ->orderBy('name', 'ASC')
+            ->limit($perPage, $offset)
+            ->findAll();
+
+        $nodes = [];
+        foreach ($directChildren as $child) {
+            $child['hierarchy_depth'] = 1; // relative to current agent
+            $child['children'] = $this->buildHierarchyTree((int) $child['id'], 1, $maxDepth);
+            $child['has_children'] = !empty($child['children']);
+            $child['total_downline'] = $this->countTotalDownline((int) $child['id']);
+            $nodes[] = $child;
+        }
+
+        return [
+            'nodes'   => $nodes,
+            'total'   => (int) $total,
+            'perPage' => $perPage,
+            'page'    => $page,
+        ];
+    }
+
+    /**
+     * Check if $descendantId belongs to the downline of $ancestorId.
+     * Walks up the parent chain to the root; O(depth) and memory-safe.
+     */
+    public function isDescendant(int $ancestorId, int $descendantId, int $maxDepth = 50): bool
+    {
+        $currentId = $descendantId;
+        $depth = 0;
+        while ($currentId && $depth < $maxDepth) {
+            if ($currentId === $ancestorId) {
+                return true; // Same agent considered descendant (useful when ancestor clicks self)
+            }
+            $agent = $this->select(['id', 'parent_agent_id'])->find($currentId);
+            if (!$agent || empty($agent['parent_agent_id'])) {
+                return false;
+            }
+            if ((int)$agent['parent_agent_id'] === $ancestorId) {
+                return true; // Direct child
+            }
+            $currentId = (int)$agent['parent_agent_id'];
+            $depth++;
+        }
+        return false;
+    }
+
+    /**
+     * Return direct children for a given parent with server-side pagination.
+     * @return array{items: array<int, array>, total: int, perPage: int, page: int}
+     */
+    public function getDirectChildrenPaginated(int $parentId, int $perPage = 10, int $page = 1): array
+    {
+        $page = max(1, $page);
+        $offset = ($page - 1) * $perPage;
+
+        $total = $this->where('parent_agent_id', $parentId)
+            ->where('is_active', true)
+            ->countAllResults(false);
+
+        $items = $this->select($this->hierarchySelect)
+            ->where('parent_agent_id', $parentId)
+            ->where('is_active', true)
+            ->orderBy('name', 'ASC')
+            ->limit($perPage, $offset)
+            ->findAll();
+
+        // Augment minimal metadata used by UI
+        foreach ($items as &$item) {
+            $item['hierarchy_depth'] = 1; // relative to parent
+            // Quick check for children presence
+            $item['has_children'] = $this->where('parent_agent_id', $item['id'])->countAllResults(false) > 0;
+        }
+        unset($item);
+
+        return [
+            'items' => $items,
+            'total' => (int)$total,
+            'perPage' => $perPage,
+            'page' => $page,
+        ];
+    }
+
+    /**
+     * Get counts of downline grouped by level distance from a given agent.
+     * Level 1 = direct children, Level 2 = grandchildren, etc.
+     * Returns ['counts' => [1=>x,2=>y,...], 'total_levels' => n, 'total_agents' => m]
+     */
+    public function getDownlineLevelCountsRelative(int $agentId, int $maxDepth = 10): array
+    {
+        $counts = [];
+        $currentLevelIds = [$agentId];
+        $totalAgents = 0;
+
+        for ($level = 1; $level <= $maxDepth; $level++) {
+            // Find all agents whose parent_agent_id is in currentLevelIds
+            if (empty($currentLevelIds)) {
+                break;
+            }
+            $children = $this->select(['id'])
+                ->whereIn('parent_agent_id', $currentLevelIds)
+                ->where('is_active', true)
+                ->findAll();
+            $ids = array_map(fn($row) => (int)$row['id'], $children);
+            $count = count($ids);
+            if ($count === 0) {
+                break;
+            }
+            $counts[$level] = $count;
+            $totalAgents += $count;
+            $currentLevelIds = $ids; // advance
+        }
+
+        return [
+            'counts' => $counts,
+            'total_levels' => count($counts),
+            'total_agents' => $totalAgents,
+        ];
+    }
+
+
+
+    /**
      * Build hierarchy tree with nested structure
      */
     private function buildHierarchyTree(int $parentId, int $currentDepth, int $maxDepth): array
@@ -369,7 +585,9 @@ class AgentModel extends Model
             return [];
         }
 
-        $directSubAgents = $this->where('parent_agent_id', $parentId)
+        // Select only minimal columns to reduce memory usage
+        $directSubAgents = $this->select($this->hierarchySelect)
+                               ->where('parent_agent_id', $parentId)
                                ->where('is_active', true)
                                ->orderBy('name', 'ASC')
                                ->findAll();
@@ -391,38 +609,36 @@ class AgentModel extends Model
      */
     public function countTotalDownline(int $agentId): int
     {
+        // Use simple per-request cache to avoid recomputing for the same agent
+        if (isset($this->downlineCountCache[$agentId])) {
+            return $this->downlineCountCache[$agentId];
+        }
+
         $allSubAgents = $this->getAllSubAgentsInHierarchy($agentId);
-        return count($allSubAgents);
+        $count = count($allSubAgents);
+        $this->downlineCountCache[$agentId] = $count;
+        return $count;
     }
 
     /**
-     * Get upline hierarchy (parent chain)
+     * Get upline hierarchy (direct parent only - Level 1)
+     * Modified to show only direct parent instead of full parent chain
      */
     public function getUplineHierarchy(int $agentId): array
     {
         $upline = [];
-        $currentAgentId = $agentId;
-        $maxLevels = 20; // Prevent infinite loops
-        $level = 0;
+        $agent = $this->find($agentId);
 
-        while ($currentAgentId && $level < $maxLevels) {
-            $agent = $this->find($currentAgentId);
-            if (!$agent || !$agent['parent_agent_id']) {
-                break;
-            }
-
+        // Only get direct parent (Level 1)
+        if ($agent && $agent['parent_agent_id']) {
             $parentAgent = $this->find($agent['parent_agent_id']);
             if ($parentAgent) {
-                $parentAgent['hierarchy_level'] = $level + 1;
+                $parentAgent['hierarchy_level'] = 1;
                 $upline[] = $parentAgent;
-                $currentAgentId = $parentAgent['id'];
-                $level++;
-            } else {
-                break;
             }
         }
 
-        return array_reverse($upline); // Return from top-level down
+        return $upline;
     }
 
     /**

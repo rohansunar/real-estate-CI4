@@ -64,6 +64,16 @@ class DatabaseSeeder extends Seeder
             echo "❌ Error seeding agents: " . $e->getMessage() . "\n\n";
         }
 
+        // 3b. Seed Deep Agent Hierarchy (10 levels)
+        echo "🌳 Step 3b: Seeding 10-level Agent Hierarchy...\n";
+        echo str_repeat("-", 40) . "\n";
+        try {
+            $this->call('AgentHierarchySeeder');
+            echo "✅ Agent hierarchy seeded successfully!\n\n";
+        } catch (\Exception $e) {
+            echo "❌ Error seeding agent hierarchy: " . $e->getMessage() . "\n\n";
+        }
+
         // 4. Seed Blog Posts (if table exists)
         echo "📝 Step 4: Seeding Blog Posts...\n";
         echo str_repeat("-", 40) . "\n";

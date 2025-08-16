@@ -87,7 +87,7 @@ class AddReferralFieldsToAgents extends Migration
         $this->db->query('ALTER TABLE agents DROP INDEX unique_agent_id_key');
         $this->db->query('ALTER TABLE agents DROP INDEX idx_parent_agent_id');
 
-        // Drop the added columns
+        // Drop the added columns (keeping unique_agent_id, password, parent_agent_id but removing referral_id)
         $this->forge->dropColumn('agents', ['referral_id', 'unique_agent_id', 'password', 'parent_agent_id']);
     }
 }

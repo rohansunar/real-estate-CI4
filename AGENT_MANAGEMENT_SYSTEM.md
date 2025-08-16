@@ -65,7 +65,6 @@ app/
 ### Agents Table
 ```sql
 - id (Primary Key)
-- referral_id (Unique, nullable)
 - unique_agent_id (Unique, auto-generated)
 - name (Required)
 - email (Unique, required)
