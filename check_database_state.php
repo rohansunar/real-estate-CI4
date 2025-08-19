@@ -43,7 +43,7 @@ try {
     }
     echo "\n";
 
-    // Check existing indexes
+    // Check existing indexes with detailed information
     echo "=== EXISTING INDEXES ===\n";
     $indexes = $db->query("SHOW INDEX FROM agents")->getResultArray();
     $indexNames = [];
@@ -51,8 +51,22 @@ try {
         if (!in_array($index['Key_name'], $indexNames)) {
             $indexNames[] = $index['Key_name'];
             $unique = $index['Non_unique'] == 0 ? ' (UNIQUE)' : '';
-            echo "- {$index['Key_name']}{$unique}\n";
+            $subPart = $index['Sub_part'] ? "({$index['Sub_part']})" : '';
+            echo "- {$index['Key_name']}{$unique}{$subPart}\n";
         }
+    }
+    echo "\n";
+
+    // Check for potential key length issues
+    echo "=== KEY LENGTH ANALYSIS ===\n";
+    $emailColumn = $db->query("SHOW COLUMNS FROM agents WHERE Field = 'email'")->getRowArray();
+    if ($emailColumn) {
+        preg_match('/varchar\((\d+)\)/i', $emailColumn['Type'], $matches);
+        $emailLength = $matches[1] ?? 0;
+        $maxEmailBytes = $emailLength * 4; // UTF8MB4 max bytes per character
+        echo "Email column: {$emailColumn['Type']} (max {$maxEmailBytes} bytes in UTF8MB4)\n";
+        echo "Full email + is_active index would be: " . ($maxEmailBytes + 1) . " bytes\n";
+        echo "Partial email(191) + is_active index: " . (191 * 4 + 1) . " bytes ✅\n";
     }
     echo "\n";
 

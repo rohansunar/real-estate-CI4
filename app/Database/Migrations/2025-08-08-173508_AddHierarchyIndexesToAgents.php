@@ -52,8 +52,10 @@ class AddHierarchyIndexesToAgents extends Migration
         }
 
         if (!$indexExists('idx_email_active')) {
-            $this->db->query('ALTER TABLE agents ADD INDEX idx_email_active (email, is_active)');
-            echo "Created index: idx_email_active\n";
+            // Use partial index on email (191 chars) to stay within MySQL 1000-byte key limit
+            // 191 chars × 4 bytes (UTF8MB4) + 1 byte (is_active) = 765 bytes (well under 1000)
+            $this->db->query('ALTER TABLE agents ADD INDEX idx_email_active (email(191), is_active)');
+            echo "Created index: idx_email_active (with partial email index)\n";
         } else {
             echo "Index idx_email_active already exists, skipping...\n";
         }
