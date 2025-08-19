@@ -263,27 +263,6 @@ Incorporate a sticky top navbar with logo and smooth-scrolling anchors.
 Design must follow accessibility best practices (WCAG 2.1 AA).
 All UI elements must use a consistent design system (typography scale, button variants, spacing units).
 
-ssh -p 21098 whiteczu@whiterockrealtor.in
-
-2tzwqSR~)#6{
-
-DB - whiteczu_estate
-
-DB User - whiteczu_shiv	
-
-DB Pass - sQM9(=MUNya2
-
-0152e004c9
-dc09892bb3
-6f3e85708f
-435e50b54f
-40a1a5f3b9
-58ff205723
-cf072ec990
-0b91b909f6
-39f1e9497f
-5449771cf4
-
 ## Property Page Enhancements
 1. **Add Hero Section**: Create a modern hero section above search and filter section for the property page with:
    - High-quality property image
