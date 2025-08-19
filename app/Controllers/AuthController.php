@@ -27,7 +27,7 @@ class AuthController extends BaseController
         }
 
         $data = [
-            'title' => 'Login | Real Estate'
+            'title' => 'Login | White Rock Realtor'
         ];
 
         return view('auth/login', $data);
@@ -90,7 +90,7 @@ class AuthController extends BaseController
     public function forgotPasswordForm()
     {
         $data = [
-            'title' => 'Forgot Password | Real Estate'
+            'title' => 'Forgot Password | White Rock Realtor'
         ];
 
         return view('auth/forgot_password', $data);
@@ -153,7 +153,7 @@ class AuthController extends BaseController
         }
 
         $data = [
-            'title' => 'Reset Password | Real Estate',
+            'title' => 'Reset Password | White Rock Realtor',
             'token' => $token,
             'email' => $email
         ];

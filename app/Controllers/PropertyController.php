@@ -21,7 +21,7 @@ use App\Models\PropertyModel;
  * - Lightbox with video playback support
  * - Mobile-first responsive design
  *
- * @author Real Estate Team
+ * @author White Rock Realtor Team
  * @version 2.0 - Enhanced with multiple media support
  * @since 2025-08-02
  */
@@ -106,7 +106,7 @@ class PropertyController extends BaseController
         $searchQuery = !empty($searchParams) ? '&' . http_build_query($searchParams) : '';
 
         $data = [
-            'title' => 'Properties | Real Estate',
+            'title' => 'Properties | White Rock Realtor',
             'properties' => $properties,
             'currentPage' => $page,
             'totalPages' => ceil($totalProperties / $perPage),
@@ -181,7 +181,7 @@ class PropertyController extends BaseController
         $searchQuery = !empty($searchParams) ? '&' . http_build_query($searchParams) : '';
 
         $data = [
-            'title' => 'Search Results | Properties | Real Estate',
+            'title' => 'Search Results | Properties | White Rock Realtor',
             'properties' => $properties,
             'currentPage' => $page,
             'totalPages' => ceil($totalProperties / $perPage),
@@ -214,7 +214,7 @@ class PropertyController extends BaseController
         $similarProperties = $this->propertyModel->getByLocation($place, 6, $id);
 
         $data = [
-            'title' => $property['title'] . ' | Real Estate',
+            'title' => $property['title'] . ' | White Rock Realtor',
             'property' => $property,
             'similarProperties' => $similarProperties
         ];
@@ -246,7 +246,7 @@ class PropertyController extends BaseController
     public function create()
     {
         $data = [
-            'title' => 'Create Property | Real Estate',
+            'title' => 'Create Property | White Rock Realtor',
             'locations' => $this->getLocations()
         ];
 
@@ -475,7 +475,7 @@ class PropertyController extends BaseController
 
         // Show sale form
         $data = [
-            'title' => 'Process Property Sale | Real Estate',
+            'title' => 'Process Property Sale | White Rock Realtor',
             'property' => $property,
             'agents' => $this->getActiveAgents()
         ];
@@ -546,35 +546,7 @@ class PropertyController extends BaseController
                          ->findAll();
     }
 
-    /**
-     * View commission summary for a property
-     */
-    public function commissionSummary($propertyId)
-    {
-        // Check if user is authenticated
-        if (!session()->get('isLoggedIn') && !session()->get('agent_id')) {
-            return redirect()->to('/login')->with('error', 'Please login to view commission details.');
-        }
 
-        $propertyId = (int) $propertyId;
-        $property = $this->propertyModel->find($propertyId);
-
-        if (!$property) {
-            return redirect()->back()->with('error', 'Property not found.');
-        }
-
-        // Get commission summary
-        $saleService = new \App\Services\PropertySaleService();
-        $commissionSummary = $saleService->getCommissionSummary($propertyId);
-
-        $data = [
-            'title' => 'Commission Summary | Real Estate',
-            'property' => $property,
-            'commissionSummary' => $commissionSummary
-        ];
-
-        return view('admin/properties/commission_summary', $data);
-    }
 
     /**
      * Get available locations (Siliguri and nearby areas)

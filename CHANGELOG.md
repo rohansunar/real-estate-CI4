@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the Real Estate Website project will be documented in this file.
+All notable changes to the White Rock Realtor Website project will be documented in this file.
 
 ## [2.0.0] - 2025-08-02
 

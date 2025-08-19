@@ -137,7 +137,7 @@ php spark db:seed ContactSeeder
 
 ### Admin Dashboard Access
 ```
-Email: admin@realestate.com
+Email: admin@whiterockrealtor.com
 Password: admin123
 ```
 

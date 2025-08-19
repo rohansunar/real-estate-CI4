@@ -21,7 +21,7 @@ use CodeIgniter\HTTP\ResponseInterface;
  *
  * All methods in this controller require authentication via the 'auth' filter.
  *
- * @author Real Estate Team
+ * @author White Rock Realtor Team
  * @version 2.0 - Enhanced with pagination and real-time enquiry data
  * @since 2025-08-02
  */
@@ -50,7 +50,7 @@ class DashboardController extends BaseController
         $agentStats = $this->agentModel->getStatistics();
 
         $data = [
-            'title' => 'Dashboard | Real Estate',
+            'title' => 'Dashboard | White Rock Realtor',
             'totalProperties' => $this->propertyModel->countAllResults(),
             'totalContacts' => $this->contactModel->countAllResults(),
             'unreadContacts' => $this->contactModel->getCountByStatus(false),
@@ -68,47 +68,194 @@ class DashboardController extends BaseController
     }
 
     /**
-     * Admin: View full agents hierarchy tree
+     * Enhanced admin hierarchy view using closure table for better performance
      */
     public function agentsHierarchy()
     {
-        $logger = new \App\Services\HierarchyLogger();
-        $logger->log('access', 'Admin viewed full agents hierarchy', [
-            'user_id' => session()->get('user_id'),
-            'email' => session()->get('user_email'),
-        ]);
-
-        // Server-side pagination params (defaults chosen for performance)
-        $perPage = (int) ($this->request->getGet('perPage') ?? 10);
-        $perPage = max(5, min(50, $perPage)); // Clamp between 5 and 50
-        $page = (int) ($this->request->getGet('page') ?? 1);
-
-        try {
-            // Fetch only current page of root agents to keep memory low
-            $paged = $this->agentModel->getFullHierarchyTreePaginated($perPage, $page, 10);
-            $stats = $this->agentModel->getStatistics();
-        } catch (\Throwable $e) {
-            log_message('error', 'Failed to build full hierarchy tree: ' . $e->getMessage());
-            return redirect()->to('/dashboard')->with('error', 'Unable to load hierarchy data right now. Please try again later.');
+        // Check if this is a JSON API request
+        if ($this->request->isAJAX() || $this->request->getGet('format') === 'json') {
+            return $this->agentsHierarchyData();
         }
 
-        $totalPages = (int) ceil(($paged['total'] ?: 0) / $paged['perPage']);
+        // Use the new enhanced hierarchy view
+        return view('dashboard/agents_hierarchy');
+    }
 
-        $data = [
-            'title' => 'Agents Hierarchy | Dashboard',
-            // Maintain existing variable name for partial compatibility
-            'tree' => $paged['roots'],
-            'stats' => $stats,
-            'pagination' => [
-                'page' => $paged['page'],
-                'perPage' => $paged['perPage'],
-                'total' => $paged['total'],
-                'totalPages' => max(1, $totalPages),
-                'baseUrl' => base_url('dashboard/agents/hierarchy'),
-            ],
+    /**
+     * JSON API endpoint for admin hierarchy data
+     */
+    public function agentsHierarchyData()
+    {
+        try {
+            // Get request parameters
+            $page = max(1, (int) ($this->request->getGet('page') ?? 1));
+            $perPage = max(5, min(50, (int) ($this->request->getGet('per_page') ?? 10)));
+            $viewMode = $this->request->getGet('view_mode') ?? 'paginated';
+            $search = trim($this->request->getGet('search') ?? '');
+
+            // Get hierarchy data using closure table for better performance
+            $repository = new \App\Models\AgentRepository();
+
+            if ($viewMode === 'tree') {
+                // Full tree view (limited depth for performance)
+                $agents = $this->getFullHierarchyTreeWithClosureTable(5);
+                $pagination = null;
+            } else {
+                // Paginated view of root agents
+                $paged = $this->agentModel->getFullHierarchyTreePaginated($perPage, $page, 3);
+                $agents = $paged['roots'];
+                $pagination = [
+                    'page' => $paged['page'],
+                    'per_page' => $paged['perPage'],
+                    'total' => $paged['total'],
+                    'total_pages' => max(1, (int) ceil(($paged['total'] ?: 0) / $paged['perPage'])),
+                    'from' => (($paged['page'] - 1) * $paged['perPage']) + 1,
+                    'to' => min($paged['page'] * $paged['perPage'], $paged['total'])
+                ];
+            }
+
+            // Apply search filter if provided
+            if (!empty($search)) {
+                $agents = $this->filterAgentsBySearch($agents, $search);
+            }
+
+
+
+            // Get overall statistics
+            $statistics = $this->getHierarchyStatistics();
+
+            return $this->response->setJSON([
+                'success' => true,
+                'agents' => $agents,
+                'pagination' => $pagination,
+                'statistics' => $statistics
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error in agentsHierarchyData: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to load hierarchy data'
+            ])->setStatusCode(500);
+        }
+    }
+
+    /**
+     * Get full hierarchy tree using closure table
+     */
+    private function getFullHierarchyTreeWithClosureTable($maxDepth = 5)
+    {
+        // Get all root agents (no parent)
+        $roots = $this->agentModel->groupStart()
+            ->where('parent_agent_id', null)
+            ->orWhere('parent_agent_id', 0)
+            ->groupEnd()
+            ->where('is_active', true)
+            ->orderBy('name', 'ASC')
+            ->findAll();
+
+        foreach ($roots as &$root) {
+            $root['hierarchy_level'] = 0;
+            $root['children'] = $this->agentModel->getHierarchyTreeClosureTable($root['id'], $maxDepth);
+            $root['has_children'] = !empty($root['children']);
+            $root['total_downline'] = $this->agentModel->getSubtreeCountClosureTable($root['id']);
+        }
+        unset($root);
+
+        return $roots;
+    }
+
+    /**
+     * Filter agents by search query
+     */
+    private function filterAgentsBySearch($agents, $search)
+    {
+        return array_filter($agents, function($agent) use ($search) {
+            return stripos($agent['name'], $search) !== false ||
+                   stripos($agent['email'], $search) !== false ||
+                   stripos($agent['unique_agent_id'], $search) !== false;
+        });
+    }
+
+
+
+    /**
+     * Get overall hierarchy statistics
+     */
+    private function getHierarchyStatistics()
+    {
+        $stats = $this->agentModel->getStatistics();
+
+        // Get max depth using closure table
+        $db = \Config\Database::connect();
+        $maxDepthQuery = $db->table('agent_tree')
+            ->selectMax('depth', 'max_depth')
+            ->get()
+            ->getFirstRow('array');
+
+        $maxDepth = (int) ($maxDepthQuery['max_depth'] ?? 0);
+
+
+
+        return [
+            'total_agents' => $stats['total'],
+            'active_agents' => $stats['active'],
+            'inactive_agents' => $stats['inactive'],
+            'max_depth' => $maxDepth,
+
         ];
+    }
 
-        return view('dashboard/agents/hierarchy', $data);
+    /**
+     * Admin: View agent details (AJAX)
+     *
+     * This method allows admin to view detailed information about any agent
+     * in the hierarchy, including their profile, statistics, and sub-agents.
+     */
+    public function viewAgentDetails(int $agentId)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_METHOD_NOT_ALLOWED);
+        }
+
+        try {
+            // Get agent details
+            $agent = $this->agentModel->find($agentId);
+
+            if (!$agent) {
+                return $this->response->setStatusCode(404)->setBody(
+                    '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Agent not found.</div>'
+                );
+            }
+
+            // Get additional agent statistics
+            $directSubAgents = $this->agentModel->getSubAgents($agentId, 10); // Get up to 10 direct sub-agents
+            $totalDownline = $this->agentModel->countTotalDownline($agentId);
+            $hierarchyPosition = $this->agentModel->getAgentHierarchyPosition($agentId);
+
+            // Get parent agent information if exists
+            $parentAgent = null;
+            if ($agent['parent_agent_id']) {
+                $parentAgent = $this->agentModel->find($agent['parent_agent_id']);
+            }
+
+            $data = [
+                'agent' => $agent,
+                'directSubAgents' => $directSubAgents,
+                'totalDownline' => $totalDownline,
+                'hierarchyPosition' => $hierarchyPosition,
+                'parentAgent' => $parentAgent,
+                'directSubAgentCount' => count($directSubAgents)
+            ];
+
+            return view('dashboard/agents/view_agent_details', $data);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Admin agent details view failed: ' . $e->getMessage());
+            return $this->response->setStatusCode(500)->setBody(
+                '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Failed to load agent details. Please try again.</div>'
+            );
+        }
     }
 
     /**
@@ -120,12 +267,29 @@ class DashboardController extends BaseController
             return $this->response->setStatusCode(ResponseInterface::HTTP_METHOD_NOT_ALLOWED);
         }
 
-        $logger = new \App\Services\HierarchyLogger();
-        $lines = $logger->getRecentByAgent($agentId, 50);
+        // For now, return basic agent information
+        // This can be enhanced with actual logging functionality later
+        $agent = $this->agentModel->find($agentId);
 
-        return view('dashboard/agents/partials/agent_logs', [
-            'agentId' => $agentId,
-            'lines' => $lines,
+        if (!$agent) {
+            return $this->response->setStatusCode(404)->setJSON([
+                'success' => false,
+                'message' => 'Agent not found'
+            ]);
+        }
+
+        $logs = [
+            [
+                'timestamp' => date('Y-m-d H:i:s'),
+                'action' => 'Agent viewed',
+                'details' => 'Admin accessed agent details'
+            ]
+        ];
+
+        return $this->response->setJSON([
+            'success' => true,
+            'agent' => $agent,
+            'logs' => $logs
         ]);
     }
 

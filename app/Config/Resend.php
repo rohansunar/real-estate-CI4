@@ -16,17 +16,17 @@ class Resend extends BaseConfig
      * Default sender email address
      * Must be a verified domain in your Resend account
      */
-    public string $fromEmail = 'onboarding@realestate.com';
+    public string $fromEmail = 'onboarding@whiterockrealtor.com';
 
     /**
      * Default sender name
      */
-    public string $fromName = 'Real Estate';
+    public string $fromName = 'White Rock Realtor';
 
     /**
      * Admin email address for notifications
      */
-    public string $adminEmail = 'admin@realestate.com';
+    public string $adminEmail = 'admin@whiterockrealtor.com';
 
     /**
      * Resend API endpoint (used only for cURL fallback)
@@ -38,7 +38,7 @@ class Resend extends BaseConfig
      */
     public array $templates = [
         'agent_welcome' => [
-            'subject' => 'Welcome to Our Real Estate Team!',
+            'subject' => 'Welcome to Our White Rock Realtor Team!',
             'template' => 'emails/agent_welcome'
         ],
         'contact_notification' => [

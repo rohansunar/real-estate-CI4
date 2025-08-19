@@ -7,7 +7,7 @@
     <div class="container py-5">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">About Our Real Estate Company</h1>
+                <h1 class="display-4 fw-bold mb-4">About White Rock Realtor</h1>
                 <p class="fs-5 mb-4">
                     We are a leading real estate company in Siliguri and surrounding areas, dedicated to helping you find your perfect home or investment property.
                 </p>

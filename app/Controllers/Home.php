@@ -23,7 +23,7 @@ class Home extends BaseController
         }
 
         $data = [
-            'title' => 'Find Your Dream Home | Real Estate',
+            'title' => 'Find Your Dream Home | White Rock Realtor',
             'featuredProperties' => $featuredProperties,
             'featuredPropertiesSection' => $featuredPropertiesSection,
             'propertiesByType' => $propertiesByType
@@ -35,7 +35,7 @@ class Home extends BaseController
     public function about(): string
     {
         $data = [
-            'title' => 'About Us | Real Estate'
+            'title' => 'About Us | White Rock Realtor'
         ];
 
         return view('home/about', $data);

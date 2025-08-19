@@ -139,24 +139,194 @@ async function viewAgentLogs(agentId) {
         modal.show();
         const res = await fetch('<?= base_url('dashboard/agents/logs/') ?>' + agentId, { headers: { 'X-Requested-With': 'XMLHttpRequest' }});
 
-    // Collapse/expand behavior for admin tree
+    /**
+     * Enhanced Admin Hierarchy Auto-Collapse Functionality
+     *
+     * This implementation provides single-expansion accordion behavior for the admin
+     * hierarchy tree where expanding any node automatically collapses all other nodes
+     * at the same hierarchy level. Each level maintains independent collapse state.
+     *
+     * FEATURES:
+     * - Auto-collapse: Only one node expanded per level at any time
+     * - Level independence: Each hierarchy level manages its own state
+     * - Smooth Bootstrap 5 animations and transitions
+     * - Proper ARIA state management for accessibility
+     * - Error handling and graceful degradation
+     * - Memory efficient DOM manipulation
+     */
+
+    // Enhanced collapse/expand behavior for admin tree with auto-collapse
     document.addEventListener('click', function(e){
         const btn = e.target.closest('.toggle-children');
-        if (btn) {
+        if (!btn) return;
+
+        try {
             const node = btn.closest('.tree-node');
             const children = node?.querySelector(':scope > .tree-children');
+
+            if (!children || !node) {
+                console.warn('Admin hierarchy: Invalid node structure');
+                return;
+            }
+
+            // Get current expansion state
+            const isCurrentlyExpanded = btn.getAttribute('aria-expanded') === 'true';
+            const nodeLevel = parseInt(node.getAttribute('data-level')) || 1;
+
+            // Debug logging (only in development)
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.log(`Admin hierarchy: Toggling node at level ${nodeLevel}, currently expanded: ${isCurrentlyExpanded}`);
+            }
+
+            if (!isCurrentlyExpanded) {
+                // EXPANDING: First auto-collapse other nodes at the same level
+                autoCollapseAdminNodesAtSameLevel(node, nodeLevel);
+
+                // Then expand the current node
+                expandAdminNode(btn, children);
+            } else {
+                // COLLAPSING: Simply collapse the current node
+                collapseAdminNode(btn, children);
+            }
+
+        } catch (error) {
+            console.error('Error in admin hierarchy toggle:', error);
+            // Graceful degradation - fall back to basic toggle
+            basicAdminToggle(btn);
+        }
+    });
+
+    /**
+     * Auto-collapse all other expanded nodes at the same hierarchy level
+     * This ensures single-expansion accordion behavior within each level
+     *
+     * @param {HTMLElement} currentNode - The node being expanded
+     * @param {number} currentLevel - The hierarchy level of the current node
+     */
+    function autoCollapseAdminNodesAtSameLevel(currentNode, currentLevel) {
+        try {
+            // Find all nodes at the same level
+            const allNodesAtLevel = document.querySelectorAll(`#adminHierarchyTree .tree-node[data-level="${currentLevel}"]`);
+
+            // Debug logging (only in development)
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.log(`Found ${allNodesAtLevel.length} nodes at level ${currentLevel}`);
+            }
+
+            allNodesAtLevel.forEach(node => {
+                // Skip the current node being expanded
+                if (node === currentNode) return;
+
+                const toggleBtn = node.querySelector('.toggle-children');
+                const childrenContainer = node.querySelector(':scope > .tree-children');
+
+                if (toggleBtn && childrenContainer && toggleBtn.getAttribute('aria-expanded') === 'true') {
+                    // Debug logging (only in development)
+                    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                        console.log(`Auto-collapsing node at level ${currentLevel}`);
+                    }
+                    collapseAdminNode(toggleBtn, childrenContainer);
+                }
+            });
+
+        } catch (error) {
+            console.error('Error in autoCollapseAdminNodesAtSameLevel:', error);
+        }
+    }
+
+    /**
+     * Expand an admin hierarchy node with smooth animation
+     *
+     * @param {HTMLElement} btn - The toggle button
+     * @param {HTMLElement} children - The children container
+     */
+    function expandAdminNode(btn, children) {
+        try {
+            // Show children with Bootstrap classes
+            children.classList.add('show');
+            children.classList.remove('collapse');
+
+            // Update button icon
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-down');
+            }
+
+            // Update ARIA state
+            btn.setAttribute('aria-expanded', 'true');
+
+            // Debug logging (only in development)
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.log('Admin node expanded successfully');
+            }
+
+        } catch (error) {
+            console.error('Error in expandAdminNode:', error);
+        }
+    }
+
+    /**
+     * Collapse an admin hierarchy node with smooth animation
+     *
+     * @param {HTMLElement} btn - The toggle button
+     * @param {HTMLElement} children - The children container
+     */
+    function collapseAdminNode(btn, children) {
+        try {
+            // Hide children with Bootstrap classes
+            children.classList.remove('show');
+            children.classList.add('collapse');
+
+            // Update button icon
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-right');
+            }
+
+            // Update ARIA state
+            btn.setAttribute('aria-expanded', 'false');
+
+            // Debug logging (only in development)
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.log('Admin node collapsed successfully');
+            }
+
+        } catch (error) {
+            console.error('Error in collapseAdminNode:', error);
+        }
+    }
+
+    /**
+     * Basic toggle functionality as fallback
+     * Used when the enhanced auto-collapse functionality fails
+     *
+     * @param {HTMLElement} btn - The toggle button
+     */
+    function basicAdminToggle(btn) {
+        try {
+            const node = btn.closest('.tree-node');
+            const children = node?.querySelector(':scope > .tree-children');
+
             if (children) {
                 children.classList.toggle('show');
                 children.classList.toggle('collapse');
+
                 const icon = btn.querySelector('i');
-                if (icon) icon.classList.toggle('fa-chevron-right');
-                if (icon) icon.classList.toggle('fa-chevron-down');
-                // Accessibility: reflect expanded state
+                if (icon) {
+                    icon.classList.toggle('fa-chevron-right');
+                    icon.classList.toggle('fa-chevron-down');
+                }
+
                 const expanded = btn.getAttribute('aria-expanded') === 'true';
                 btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
             }
+
+        } catch (error) {
+            console.error('Error in basicAdminToggle:', error);
         }
-    });
+    }
 
         if (!res.ok) throw new Error('Failed to load logs');
         const html = await res.text();

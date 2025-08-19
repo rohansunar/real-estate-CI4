@@ -24,7 +24,7 @@ use App\Models\BlogPostModel;
  * - View count tracking
  * - Related posts suggestions
  *
- * @author Real Estate Team
+ * @author White Rock Realtor Team
  * @version 2.0 - Enhanced with full public blog functionality
  * @since 2025-08-02
  */
@@ -59,7 +59,7 @@ class PublicBlogController extends BaseController
         $recentPosts = $this->blogModel->getRecent(5);
 
         $data = [
-            'title' => 'Blog | Real Estate Insights',
+            'title' => 'Blog | White Rock Realtor Insights',
             'posts' => $posts,
             'categories' => $categories,
             'recentPosts' => $recentPosts,

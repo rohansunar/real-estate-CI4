@@ -22,7 +22,7 @@ use CodeIgniter\Model;
  * - youtube_video: JSON array of YouTube video URLs
  * - Backward compatibility with single video format
  *
- * @author Real Estate Team
+ * @author White Rock Realtor Team
  * @version 2.0 - Enhanced with multiple media support
  * @since 2025-08-02
  */

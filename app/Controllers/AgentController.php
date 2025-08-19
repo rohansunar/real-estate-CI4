@@ -21,7 +21,7 @@ use App\Models\AgentModel;
  * - Comprehensive error handling and logging
  * - User-friendly success/error messages
  *
- * @author Real Estate Team
+ * @author White Rock Realtor Team
  * @version 2.0 - Fixed email validation and enhanced error handling
  * @since 2025-08-02
  */

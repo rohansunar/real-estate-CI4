@@ -487,8 +487,17 @@ function showEnquiryQuickView(enquiryId) {
  */
 function initializeTooltips() {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
+    const tooltips = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Register cleanup function to prevent memory leaks
+    window.addEventListener('beforeunload', function() {
+        tooltips.forEach(tooltip => {
+            if (tooltip && typeof tooltip.dispose === 'function') {
+                tooltip.dispose();
+            }
+        });
     });
 }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'Real Estate' ?></title>
+    <title><?= $title ?? 'White Rock Realtor' ?></title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -31,7 +31,7 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-envelope me-1 me-md-2"></i>
-                            <span class="small">info@realestate.com</span>
+                            <span class="small">info@whiterockrealtor.com</span>
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold text-primary" href="<?= base_url() ?>">
                 <i class="fas fa-building me-2"></i>
-                Real Estate
+                White Rock Realtor
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -325,7 +325,7 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="d-flex align-items-center mb-4">
                         <i class="fas fa-building fs-2 text-primary me-3"></i>
-                        <h3 class="h4 mb-0 fw-bold">Real Estate</h3>
+                        <h3 class="h4 mb-0 fw-bold">White Rock Realtor</h3>
                     </div>
                     <p class="text-light mb-4">
                         Your trusted partner in finding the perfect property. We help you discover your dream home with personalized service and expert guidance.
@@ -436,7 +436,7 @@
                         <i class="fas fa-envelope text-primary me-3"></i>
                         <div>
                             <div class="fw-semibold">Email</div>
-                            <div class="text-light small">info@realestate.com</div>
+                            <div class="text-light small">info@whiterockrealtor.com</div>
                         </div>
                     </div>
                 </div>
@@ -445,7 +445,7 @@
             <hr class="border-secondary my-4">
             <div class="text-center">
                 <p class="text-muted mb-0 small">
-                    &copy; <?= date('Y') ?> Real Estate. All rights reserved.
+                    &copy; <?= date('Y') ?> White Rock Realtor. All rights reserved.
                     Built with <i class="fas fa-heart text-danger"></i> using CodeIgniter 4 & Bootstrap 5.
                 </p>
             </div>

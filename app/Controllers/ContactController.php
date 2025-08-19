@@ -10,7 +10,7 @@ use App\Models\ContactModel;
  * Handles contact form submissions and inquiries from website visitors.
  * Supports both traditional form submissions and Ajax requests.
  *
- * @author Real Estate Team
+ * @author White Rock Realtor Team
  * @version 1.0
  */
 class ContactController extends BaseController
@@ -145,7 +145,7 @@ class ContactController extends BaseController
     public function index()
     {
         $data = [
-            'title' => 'Contact Us | Real Estate'
+            'title' => 'Contact Us | White Rock Realtor'
         ];
 
         return view('contact/index', $data);

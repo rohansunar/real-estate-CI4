@@ -1,4 +1,4 @@
-# Real Estate Website - Enhanced Media Gallery
+# White Rock Realtor Website - Enhanced Media Gallery
 
 A modern, responsive real estate website built with CodeIgniter 4, featuring an enhanced media gallery system with multiple image and video support.
 
@@ -75,7 +75,7 @@ A modern, responsive real estate website built with CodeIgniter 4, featuring an 
    ```bash
    # Create database
    mysql -u root -p
-   CREATE DATABASE real_estate_ci4;
+   CREATE DATABASE whiterockrealtor_ci4;
 
    # Run migrations
    php spark migrate
@@ -99,7 +99,7 @@ A modern, responsive real estate website built with CodeIgniter 4, featuring an 
    ```
 
 ### Default Credentials
-- **Email**: admin@realestate.com
+- **Email**: admin@whiterockrealtor.com
 - **Password**: password123
 
 ## 📱 Usage Guide
@@ -263,6 +263,26 @@ Incorporate a sticky top navbar with logo and smooth-scrolling anchors.
 Design must follow accessibility best practices (WCAG 2.1 AA).
 All UI elements must use a consistent design system (typography scale, button variants, spacing units).
 
+ssh -p 21098 whiteczu@whiterockrealtor.in
+
+2tzwqSR~)#6{
+
+DB - whiteczu_estate
+
+DB User - whiteczu_shiv	
+
+DB Pass - sQM9(=MUNya2
+
+0152e004c9
+dc09892bb3
+6f3e85708f
+435e50b54f
+40a1a5f3b9
+58ff205723
+cf072ec990
+0b91b909f6
+39f1e9497f
+5449771cf4
 
 ## Property Page Enhancements
 1. **Add Hero Section**: Create a modern hero section above search and filter section for the property page with:
@@ -317,7 +337,7 @@ EXIT;
 $resend = Resend::client('re_FKwhK6Tf_EPDyQzi3vgEgv78zFummjSHH');
 
 $resend->emails->send([
-  'from' => 'Acme <onboarding@realestate.com>',
+  'from' => 'Acme <onboarding@whiterockrealtor.com>',
   'to' => ['rohansunar89@gmail.com'],
   'subject' => 'hello world',
   'html' => '<p>it works!</p>'

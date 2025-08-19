@@ -19,7 +19,7 @@ class EmailService
     public function sendAgentWelcomeEmail(array $agentData): bool
     {
         try {
-            $template = $this->config->templates['agent_welcome'] ?? ['subject' => 'Welcome to Our Real Estate Team!'];
+            $template = $this->config->templates['agent_welcome'] ?? ['subject' => 'Welcome to Our White Rock Realtor Team!'];
 
             $emailData = [
                 'from' => $this->config->fromName . ' <' . $this->config->fromEmail . '>',
@@ -184,7 +184,7 @@ class EmailService
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>Welcome to Our Real Estate Team!</h1>
+                    <h1>Welcome to Our White Rock Realtor Team!</h1>
                 </div>
                 <div class="content">
                     <h2>Hello ' . esc($data['name']) . ',</h2>
@@ -211,7 +211,7 @@ class EmailService
                     <p>Welcome aboard!</p>
                 </div>
                 <div class="footer">
-                    <p>&copy; ' . date('Y') . ' Real Estate Company. All rights reserved.</p>
+                    <p>&copy; ' . date('Y') . ' White Rock Realtor Company. All rights reserved.</p>
                 </div>
             </div>
         </body>
@@ -264,7 +264,7 @@ class EmailService
                     <p>Please respond to this inquiry as soon as possible to provide excellent customer service.</p>
                 </div>
                 <div class="footer">
-                    <p>&copy; ' . date('Y') . ' Real Estate Company. All rights reserved.</p>
+                    <p>&copy; ' . date('Y') . ' White Rock Realtor Company. All rights reserved.</p>
                 </div>
             </div>
         </body>
@@ -308,7 +308,7 @@ class EmailService
                     <p class="muted">If you did not request a password reset, you can safely ignore this email.</p>
                 </div>
                 <div class="footer">
-                    <p>&copy; ' . date('Y') . ' Real Estate Company. All rights reserved.</p>
+                    <p>&copy; ' . date('Y') . ' White Rock Realtor Company. All rights reserved.</p>
                 </div>
             </div>
         </body>

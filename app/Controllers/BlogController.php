@@ -24,7 +24,7 @@ use CodeIgniter\HTTP\ResponseInterface;
  * - Rich text content editing
  * - SEO-friendly metadata fields
  *
- * @author Real Estate Team
+ * @author White Rock Realtor Team
  * @version 2.0 - Replaced TinyMCE with Quill.js editor
  * @since 2025-08-02
  */

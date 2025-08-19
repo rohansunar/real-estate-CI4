@@ -39,7 +39,7 @@ use CodeIgniter\Model;
  * - is_active: Status flag (boolean, default true)
  * - created_at/updated_at: Timestamps
  *
- * @author Real Estate Team
+ * @author White Rock Realtor Team
  * @version 3.0 - Enhanced with authentication and hierarchy system
  * @since 2025-08-04
  */
@@ -67,6 +67,16 @@ class AgentModel extends Model
      * Keyed by agent ID.
      */
     protected array $downlineCountCache = [];
+
+    /**
+     * Cache for hierarchy position data to reduce database queries
+     */
+    protected array $hierarchyPositionCache = [];
+
+    /**
+     * Cache for parent agent data
+     */
+    protected array $parentAgentCache = [];
 
     // Dates
     protected $useTimestamps = true;
@@ -118,13 +128,13 @@ class AgentModel extends Model
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = ['hashPassword', 'generateUniqueAgentId'];
-    protected $afterInsert    = [];
+    protected $afterInsert    = ['clearCacheAfterInsert'];
     protected $beforeUpdate   = ['hashPassword'];
-    protected $afterUpdate    = [];
+    protected $afterUpdate    = ['clearCacheAfterUpdate'];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
-    protected $afterDelete    = [];
+    protected $afterDelete    = ['clearCacheAfterDelete'];
 
     /**
      * Get validation rules for agent update (excludes current agent from email uniqueness check)
@@ -242,6 +252,41 @@ class AgentModel extends Model
     {
         if (!isset($data['data']['unique_agent_id']) || empty($data['data']['unique_agent_id'])) {
             $data['data']['unique_agent_id'] = $this->generateUniqueId();
+        }
+        return $data;
+    }
+
+    /**
+     * Clear cache after insert
+     */
+    protected function clearCacheAfterInsert(array $data)
+    {
+        $this->clearCaches();
+        return $data;
+    }
+
+    /**
+     * Clear cache after update
+     */
+    protected function clearCacheAfterUpdate(array $data)
+    {
+        if (isset($data['id'])) {
+            $this->clearAgentCache($data['id'][0]);
+        } else {
+            $this->clearCaches();
+        }
+        return $data;
+    }
+
+    /**
+     * Clear cache after delete
+     */
+    protected function clearCacheAfterDelete(array $data)
+    {
+        if (isset($data['id'])) {
+            $this->clearAgentCache($data['id'][0]);
+        } else {
+            $this->clearCaches();
         }
         return $data;
     }
@@ -465,6 +510,11 @@ class AgentModel extends Model
             $child['children'] = $this->buildHierarchyTree((int) $child['id'], 1, $maxDepth);
             $child['has_children'] = !empty($child['children']);
             $child['total_downline'] = $this->countTotalDownline((int) $child['id']);
+
+            // Add parent agent information for enhanced display
+            $child['parent_agent'] = $this->getParentAgent($child['id']);
+            $child['is_root_level'] = $this->isRootLevelAgent($child['id']);
+
             $nodes[] = $child;
         }
 
@@ -526,6 +576,10 @@ class AgentModel extends Model
             $item['hierarchy_depth'] = 1; // relative to parent
             // Quick check for children presence
             $item['has_children'] = $this->where('parent_agent_id', $item['id'])->countAllResults(false) > 0;
+
+            // Add parent agent information for enhanced display
+            $item['parent_agent'] = $this->getParentAgent($item['id']);
+            $item['is_root_level'] = $this->isRootLevelAgent($item['id']);
         }
         unset($item);
 
@@ -642,10 +696,104 @@ class AgentModel extends Model
     }
 
     /**
-     * Get agent's position in hierarchy
+     * Get parent agent information for a given agent
+     *
+     * This method retrieves the direct parent agent information for display in the
+     * enhanced hierarchy UI. It supports the parent agent display functionality
+     * that shows parent information prominently when available.
+     *
+     * FUNCTIONALITY:
+     * - Fetches direct parent agent data based on parent_agent_id relationship
+     * - Returns null for root level agents (no parent exists)
+     * - Adds hierarchy level metadata for UI display purposes
+     * - Includes reference to child agent for relationship tracking
+     *
+     * USAGE IN UI:
+     * - Used to display "Under: [Parent Name]" information in agent cards
+     * - Enables visual hierarchy distinction between parent and child agents
+     * - Supports fallback to "Primary Agent" label when no parent exists
+     *
+     * PERFORMANCE CONSIDERATIONS:
+     * - Uses single database query per agent (cached by CodeIgniter's model layer)
+     * - Minimal data selection to reduce memory footprint
+     * - Efficient for paginated hierarchy displays
+     *
+     * @param int $agentId Agent ID to get parent information for
+     * @return array|null Parent agent data with hierarchy metadata, or null if no parent exists
+     *                    Returns array with keys: id, name, email, unique_agent_id, hierarchy_level, is_parent_of
+     */
+    public function getParentAgent(int $agentId): ?array
+    {
+        // Check cache first
+        if (isset($this->parentAgentCache[$agentId])) {
+            return $this->parentAgentCache[$agentId];
+        }
+
+        $agent = $this->find($agentId);
+
+        // Return null if agent doesn't exist or has no parent
+        if (!$agent || !$agent['parent_agent_id']) {
+            $this->parentAgentCache[$agentId] = null;
+            return null;
+        }
+
+        $parentAgent = $this->find($agent['parent_agent_id']);
+
+        // Return null if parent agent doesn't exist (data integrity issue)
+        if (!$parentAgent) {
+            log_message('warning', "Parent agent not found for agent ID {$agentId}, parent_agent_id: {$agent['parent_agent_id']}");
+            $this->parentAgentCache[$agentId] = null;
+            return null;
+        }
+
+        // Add hierarchy level information for UI display
+        $parentAgent['hierarchy_level'] = 1; // Direct parent is always level 1 relative to child
+        $parentAgent['is_parent_of'] = $agentId; // Reference to child for relationship tracking
+
+        // Cache the result
+        $this->parentAgentCache[$agentId] = $parentAgent;
+
+        return $parentAgent;
+    }
+
+    /**
+     * Check if an agent is a root level agent (has no parent)
+     *
+     * This method determines whether an agent is at the root level of the hierarchy,
+     * which is used to decide between showing parent agent information or the
+     * "Primary Agent" label in the UI.
+     *
+     * FUNCTIONALITY:
+     * - Checks if agent has no parent_agent_id or parent_agent_id is 0/null
+     * - Used for conditional display logic in hierarchy UI
+     * - Supports the enhanced parent agent display feature
+     *
+     * USAGE IN UI:
+     * - Determines whether to show "Primary Agent" badge or parent agent information
+     * - Controls CSS class application for visual styling (is-primary vs has-parent)
+     * - Used in conditional rendering logic in hierarchy_row.php partial
+     *
+     * @param int $agentId Agent ID to check for root level status
+     * @return bool True if agent is root level (no parent), false if agent has a parent
+     */
+    public function isRootLevelAgent(int $agentId): bool
+    {
+        $agent = $this->find($agentId);
+
+        // Agent is root level if it exists and has no parent_agent_id (null, 0, or empty)
+        return $agent && (empty($agent['parent_agent_id']) || $agent['parent_agent_id'] == 0);
+    }
+
+    /**
+     * Get agent's position in hierarchy with caching
      */
     public function getAgentHierarchyPosition(int $agentId): array
     {
+        // Check cache first
+        if (isset($this->hierarchyPositionCache[$agentId])) {
+            return $this->hierarchyPositionCache[$agentId];
+        }
+
         $agent = $this->find($agentId);
         if (!$agent) {
             return [];
@@ -655,7 +803,7 @@ class AgentModel extends Model
         $directSubAgents = $this->getSubAgents($agentId);
         $totalDownline = $this->countTotalDownline($agentId);
 
-        return [
+        $result = [
             'agent' => $agent,
             'hierarchy_level' => count($upline),
             'upline' => $upline,
@@ -663,5 +811,228 @@ class AgentModel extends Model
             'total_downline' => $totalDownline,
             'is_top_level' => empty($upline)
         ];
+
+        // Cache the result
+        $this->hierarchyPositionCache[$agentId] = $result;
+
+        return $result;
+    }
+
+    /**
+     * Clear all caches to maintain data consistency
+     * Call this method when agents are created, updated, or deleted
+     */
+    public function clearCaches(): void
+    {
+        $this->downlineCountCache = [];
+        $this->hierarchyPositionCache = [];
+        $this->parentAgentCache = [];
+    }
+
+    /**
+     * Clear cache for specific agent and related agents
+     */
+    public function clearAgentCache(int $agentId): void
+    {
+        // Clear caches for the agent
+        unset($this->downlineCountCache[$agentId]);
+        unset($this->hierarchyPositionCache[$agentId]);
+        unset($this->parentAgentCache[$agentId]);
+
+        // Clear parent cache for all children of this agent
+        $children = $this->getSubAgents($agentId);
+        foreach ($children as $child) {
+            unset($this->parentAgentCache[$child['id']]);
+        }
+
+        // Clear downline cache for all parents up the hierarchy
+        $agent = $this->find($agentId);
+        if ($agent && $agent['parent_agent_id']) {
+            $this->clearParentDownlineCaches($agent['parent_agent_id']);
+        }
+    }
+
+    /**
+     * Recursively clear downline caches for parent hierarchy
+     */
+    private function clearParentDownlineCaches(int $parentId): void
+    {
+        unset($this->downlineCountCache[$parentId]);
+        unset($this->hierarchyPositionCache[$parentId]);
+
+        $parent = $this->find($parentId);
+        if ($parent && $parent['parent_agent_id']) {
+            $this->clearParentDownlineCaches($parent['parent_agent_id']);
+        }
+    }
+
+    // ========================================================================
+    // CLOSURE TABLE INTEGRATION METHODS
+    // ========================================================================
+
+    /**
+     * Create agent using closure table pattern for enhanced hierarchy management
+     * Integrates with AgentRepository for optimal performance
+     *
+     * @param int $parentId Parent agent ID (0 or null for top-level)
+     * @param array $data Agent data
+     * @return int New agent ID
+     * @throws Exception If creation fails
+     */
+    public function createAgentWithClosureTable(int $parentId = null, array $data = []): int
+    {
+        // Load the AgentRepository for closure table operations
+        $repository = new \App\Models\AgentRepository();
+
+        if ($parentId && $parentId > 0) {
+            // Create under parent using closure table
+            return $repository->createUnder($parentId, $data);
+        } else {
+            // Create top-level agent
+            $db = \Config\Database::connect();
+            $db->transStart();
+
+            try {
+                // Insert the agent
+                $agentId = $this->insert($data);
+
+                if (!$agentId) {
+                    throw new \Exception('Failed to create agent');
+                }
+
+                // Insert self-referencing closure table record
+                $db->table('agent_tree')->insert([
+                    'ancestor_id' => $agentId,
+                    'descendant_id' => $agentId,
+                    'depth' => 0
+                ]);
+
+                $db->transComplete();
+
+                if (!$db->transStatus()) {
+                    throw new \Exception('Transaction failed');
+                }
+
+                return $agentId;
+
+            } catch (\Exception $e) {
+                $db->transRollback();
+                log_message('error', 'AgentModel::createAgentWithClosureTable failed: ' . $e->getMessage());
+                throw $e;
+            }
+        }
+    }
+
+
+
+    /**
+     * Get immediate children using closure table
+     *
+     * @param int $agentId Parent agent ID
+     * @return array Direct children
+     */
+    public function getImmediateChildrenClosureTable(int $agentId): array
+    {
+        $repository = new \App\Models\AgentRepository();
+        return $repository->getImmediateChildren($agentId);
+    }
+
+    /**
+     * Get upline using closure table
+     *
+     * @param int $agentId Descendant agent ID
+     * @return array Upline agents with depth information
+     */
+    public function getUplineClosureTable(int $agentId): array
+    {
+        $repository = new \App\Models\AgentRepository();
+        return $repository->getUpline($agentId);
+    }
+
+    /**
+     * Get subtree count using closure table for optimal performance
+     *
+     * @param int $agentId Root agent ID
+     * @return int Count of agents in subtree
+     */
+    public function getSubtreeCountClosureTable(int $agentId): int
+    {
+        $repository = new \App\Models\AgentRepository();
+        return $repository->getSubtreeCount($agentId);
+    }
+
+    /**
+     * Get hierarchy tree with closure table optimization
+     * Enhanced version that uses closure table for better performance
+     *
+     * @param int $agentId Root agent ID
+     * @param int $maxDepth Maximum depth to retrieve
+     * @return array Nested hierarchy tree
+     */
+    public function getHierarchyTreeClosureTable(int $agentId, int $maxDepth = 10): array
+    {
+        // Get all descendants within max depth using closure table
+        $descendants = $this->db->table('agent_tree t')
+            ->select('a.*, t.depth')
+            ->join('agents a', 'a.id = t.descendant_id')
+            ->where('t.ancestor_id', $agentId)
+            ->where('t.depth <=', $maxDepth)
+            ->where('a.is_active', true)
+            ->orderBy('t.depth, a.name')
+            ->get()
+            ->getResultArray();
+
+        if (empty($descendants)) {
+            return [];
+        }
+
+        // Build nested tree structure
+        return $this->buildNestedTreeFromFlat($descendants, $agentId);
+    }
+
+    /**
+     * Build nested tree structure from flat closure table results
+     *
+     * @param array $flatData Flat array of agents with depth
+     * @param int $rootId Root agent ID
+     * @return array Nested tree structure
+     */
+    private function buildNestedTreeFromFlat(array $flatData, int $rootId): array
+    {
+        $byId = [];
+        $byParent = [];
+
+        // Organize data by ID and parent
+        foreach ($flatData as $item) {
+            $id = (int) $item['id'];
+            $parentId = $item['parent_agent_id'] ? (int) $item['parent_agent_id'] : null;
+
+            $byId[$id] = $item;
+            $byId[$id]['children'] = [];
+            $byId[$id]['has_children'] = false;
+
+            if ($parentId) {
+                $byParent[$parentId][] = $id;
+            }
+        }
+
+        // Build nested structure
+        $buildTree = function($nodeId) use (&$buildTree, &$byId, &$byParent) {
+            $node = $byId[$nodeId] ?? null;
+            if (!$node) return null;
+
+            $children = $byParent[$nodeId] ?? [];
+            foreach ($children as $childId) {
+                $childNode = $buildTree($childId);
+                if ($childNode) {
+                    $node['children'][] = $childNode;
+                }
+            }
+
+            $node['has_children'] = !empty($node['children']);
+            return $node;
+        };
+
+        return $buildTree($rootId) ?: [];
     }
 }

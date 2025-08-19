@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeTestimonials();  // Testimonials section functionality
     initializeImageHandling(); // Enhanced image loading and error handling
 
-    console.log('Real Estate Website loaded successfully');
+    console.log('White Rock Realtor Website loaded successfully');
 });
 
 // Cleanup on page unload to prevent memory leaks
@@ -444,6 +444,13 @@ function initializeAnimations() {
     const animateElements = document.querySelectorAll('.card, .property-card, .hero-content, .testimonial-card');
     animateElements.forEach(el => {
         observer.observe(el);
+    });
+
+    // Register cleanup function to prevent memory leaks
+    registerCleanup(() => {
+        if (observer) {
+            observer.disconnect();
+        }
     });
 }
 
@@ -988,6 +995,13 @@ function initializeTestimonials() {
         testimonialObserver.observe(card);
     });
 
+    // Register cleanup function to prevent memory leaks
+    registerCleanup(() => {
+        if (testimonialObserver) {
+            testimonialObserver.disconnect();
+        }
+    });
+
     // Add enhanced hover effects for testimonial avatars
     testimonialCards.forEach(card => {
         const avatar = card.querySelector('.testimonial-avatar');
@@ -1054,6 +1068,13 @@ function initializeImageHandling() {
         } else if (img.src) {
             // Handle already loaded images
             setupImageHandlers(img);
+        }
+    });
+
+    // Register cleanup function to prevent memory leaks
+    registerCleanup(() => {
+        if (imageObserver) {
+            imageObserver.disconnect();
         }
     });
 
@@ -1140,6 +1161,19 @@ function initializeImageHandling() {
         });
 
         observer.observe(img, { attributes: true });
+
+        // Store observer reference for cleanup
+        if (!img._mutationObserver) {
+            img._mutationObserver = observer;
+        }
+
+        // Register cleanup function for this specific image
+        registerCleanup(() => {
+            if (img._mutationObserver) {
+                img._mutationObserver.disconnect();
+                img._mutationObserver = null;
+            }
+        });
     }
 
     // Handle network changes

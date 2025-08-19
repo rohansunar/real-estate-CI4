@@ -68,15 +68,13 @@ $routes->group('agent', function($routes) {
 
         // Multi-level hierarchy management
         $routes->get('hierarchy', 'AgentAuthController::hierarchyTree');
-        $routes->get('downline', 'AgentAuthController::downlineManagement');
+        $routes->get('hierarchy/tree', 'AgentAuthController::hierarchyTreeJson'); // JSON API for new tree view
+
+        // AJAX endpoints for level-based hierarchy UI
+        $routes->get('hierarchy/children/(:num)', 'AgentAuthController::ajaxChildrenRow/$1');
+        $routes->get('hierarchy/summary/(:num)', 'AgentAuthController::ajaxAgentSummary/$1');
 
 
-            // AJAX endpoints for level-based hierarchy UI
-            $routes->get('hierarchy/children/(:num)', 'AgentAuthController::ajaxChildrenRow/$1');
-            $routes->get('hierarchy/summary/(:num)', 'AgentAuthController::ajaxAgentSummary/$1');
-
-        // Commission management
-        $routes->get('commissions', 'AgentAuthController::commissionDashboard');
     });
 });
 
@@ -101,10 +99,7 @@ $routes->group('dashboard', ['filter' => 'auth'], function($routes) {
     $routes->get('properties/edit/(:num)', 'DashboardController::editProperty/$1');
     $routes->post('properties/edit/(:num)', 'DashboardController::updateProperty/$1');
 
-    // Property sales and commission management
-    $routes->get('properties/sale/(:num)', 'PropertyController::processSale/$1');
-    $routes->post('properties/sale/(:num)', 'PropertyController::processSale/$1');
-    $routes->get('properties/commission/(:num)', 'PropertyController::commissionSummary/$1');
+
     $routes->post('properties/toggle-featured/(:num)', 'DashboardController::toggleFeatured/$1');
 
     // Agent management
@@ -117,7 +112,9 @@ $routes->group('dashboard', ['filter' => 'auth'], function($routes) {
 
         // Admin hierarchy tree
         $routes->get('agents/hierarchy', 'DashboardController::agentsHierarchy');
-        // Agent logs (admin)
+        $routes->get('agents/hierarchy/data', 'DashboardController::agentsHierarchyData'); // JSON API for new hierarchy view
+        // Agent details and logs (admin)
+        $routes->get('agents/view/(:num)', 'DashboardController::viewAgentDetails/$1'); // View agent details (AJAX)
         $routes->get('agents/logs/(:num)', 'DashboardController::agentLogs/$1');
 
 
@@ -134,15 +131,8 @@ $routes->group('dashboard', ['filter' => 'auth'], function($routes) {
     $routes->delete('blog/(:num)', 'BlogController::delete/$1');
 });
 
-// MLM routes (public/demo) - use CDN JS
-$routes->group('mlm', function($routes) {
-    $routes->get('/', 'MLMController::index');
-    $routes->get('tree/(:num)', 'MLMApiController::tree/$1');
-    $routes->get('levels-summary', 'MLMApiController::levelsSummary');
-    $routes->get('levels-summary.csv', 'MLMApiController::levelsSummaryCsv');
-    $routes->get('search', 'MLMApiController::search');
-    $routes->get('member/(:num)/details', 'MLMApiController::memberDetails/$1');
-});
+// MLM functionality has been replaced by the enhanced agent hierarchy system
+// using closure table pattern for better performance and scalability
 
 // Contact routes
 $routes->get('contact', 'ContactController::index');

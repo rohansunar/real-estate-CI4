@@ -266,26 +266,9 @@
                     </div>
                     <span class="nav-text">Hierarchy Tree</span>
                 </a>
-                <a href="<?= base_url('agent/downline') ?>"
-                   class="nav-link <?= strpos(uri_string(), 'agent/downline') !== false ? 'active' : '' ?>">
-                    <div class="nav-icon">
-                        <i class="fas fa-project-diagram"></i>
-                    </div>
-                    <span class="nav-text">Downline Management</span>
-                </a>
             </div>
 
-            <!-- Commission Section -->
-            <!-- <div class="nav-section">
-                <div class="nav-section-title">Commission</div>
-                <a href="<?= base_url('agent/commissions') ?>"
-                   class="nav-link <?= strpos(uri_string(), 'agent/commissions') !== false ? 'active' : '' ?>">
-                    <div class="nav-icon">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <span class="nav-text">Commission Dashboard</span>
-                </a>
-            </div> -->
+
 
             <!-- Logout Section -->
             <div class="nav-section nav-section-bottom">
