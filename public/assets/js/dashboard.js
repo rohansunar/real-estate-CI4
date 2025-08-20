@@ -26,22 +26,13 @@ function initializeSidebar() {
     const sidebarClose = document.getElementById('sidebarClose');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-    // Debug logging for dashboard sidebar
-    console.log('Dashboard sidebar initialization:', {
-        sidebar: !!sidebar,
-        sidebarToggle: !!sidebarToggle,
-        sidebarClose: !!sidebarClose,
-        sidebarOverlay: !!sidebarOverlay
-    });
-
+    // Check if required elements exist
     if (!sidebar || !sidebarToggle) {
-        console.warn('Dashboard sidebar elements not found');
-        return;
+        return; // Exit if required elements not found
     }
     
     // Toggle sidebar on mobile
     sidebarToggle.addEventListener('click', function() {
-        console.log('Dashboard sidebar toggle clicked');
         sidebar.classList.add('show');
         if (sidebarOverlay) {
             sidebarOverlay.classList.add('show');

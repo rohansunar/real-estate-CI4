@@ -384,6 +384,11 @@ h6, .h6 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* Adjust spacing when only Contact Us button is present */
+.mobile-menu-actions .btn:last-child {
+  margin-bottom: 0;
+}
+
 .mobile-user-section {
   margin-top: 1rem;
 }
@@ -405,6 +410,24 @@ h6, .h6 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
 }
 
 /* Enhanced Mobile Navigation Toggle */
+.navbar-toggler.modern-hamburger {
+  border: none !important;
+  background: transparent !important;
+  padding: 0.75rem !important;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  min-width: 48px;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+/* Fallback for modern-hamburger without navbar-toggler */
 .modern-hamburger {
   border: none;
   background: transparent;
@@ -421,16 +444,19 @@ h6, .h6 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
   overflow: hidden;
 }
 
+.navbar-toggler.modern-hamburger:focus,
 .modern-hamburger:focus {
-  box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.3);
-  outline: none;
+  box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.3) !important;
+  outline: none !important;
 }
 
+.navbar-toggler.modern-hamburger:hover,
 .modern-hamburger:hover {
-  background-color: rgba(37, 99, 235, 0.1);
+  background-color: rgba(37, 99, 235, 0.1) !important;
   transform: scale(1.05);
 }
 
+.navbar-toggler.modern-hamburger:active,
 .modern-hamburger:active {
   transform: scale(0.95);
 }
@@ -447,15 +473,18 @@ h6, .h6 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
 }
 
 /* Hamburger Animation */
+.navbar-toggler.modern-hamburger.active .hamburger-line:nth-child(1),
 .modern-hamburger.active .hamburger-line:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
 
+.navbar-toggler.modern-hamburger.active .hamburger-line:nth-child(2),
 .modern-hamburger.active .hamburger-line:nth-child(2) {
   opacity: 0;
   transform: scaleX(0);
 }
 
+.navbar-toggler.modern-hamburger.active .hamburger-line:nth-child(3),
 .modern-hamburger.active .hamburger-line:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
@@ -506,8 +535,10 @@ h6, .h6 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
 
 /* Mobile menu visibility controls */
 @media (max-width: 991.98px) {
-  .modern-hamburger {
+  .navbar-toggler.modern-hamburger {
     display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .mobile-menu,

@@ -105,22 +105,17 @@ function initializeWebsite() {
 }
 
 // Check if DOM is already loaded
-console.log('Document ready state:', document.readyState);
 if (document.readyState === 'loading') {
-    console.log('Waiting for DOMContentLoaded event');
     document.addEventListener('DOMContentLoaded', initializeWebsite);
 } else {
     // DOM is already loaded, initialize immediately
-    console.log('DOM already loaded, initializing immediately');
     initializeWebsite();
 }
 
 // Additional fallback initialization after a delay
 setTimeout(() => {
-    console.log('Fallback initialization check');
     const toggle = document.getElementById('mobileMenuToggle');
     if (toggle && !toggle.hasAttribute('data-initialized')) {
-        console.log('Mobile menu not initialized, attempting fallback');
         initializeNavbar();
     }
 }, 1000);
@@ -200,30 +195,7 @@ window.addEventListener('unhandledrejection', function(event) {
     event.preventDefault(); // Prevent console error
 });
 
-/**
- * Diagnostic function to check mobile menu elements
- */
-function diagnoseMobileMenu() {
-    console.log('=== Mobile Menu Diagnostic ===');
-    console.log('mobileMenuToggle:', document.getElementById('mobileMenuToggle'));
-    console.log('mobileMenu:', document.getElementById('mobileMenu'));
-    console.log('mobileMenuOverlay:', document.getElementById('mobileMenuOverlay'));
-    console.log('mobileMenuClose:', document.getElementById('mobileMenuClose'));
 
-    const toggle = document.getElementById('mobileMenuToggle');
-    if (toggle) {
-        console.log('Toggle element classes:', toggle.className);
-        console.log('Toggle element computed style display:', window.getComputedStyle(toggle).display);
-        console.log('Toggle element computed style visibility:', window.getComputedStyle(toggle).visibility);
-    }
-
-    const menu = document.getElementById('mobileMenu');
-    if (menu) {
-        console.log('Menu element classes:', menu.className);
-        console.log('Menu element computed style display:', window.getComputedStyle(menu).display);
-    }
-    console.log('=== End Diagnostic ===');
-}
 
 /**
  * Setup mobile menu event listeners
@@ -274,21 +246,12 @@ function setupMobileMenuEvents(toggle, menu, overlay, closeBtn) {
 
     // Toggle button click handler
     toggle.addEventListener('click', function(e) {
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            console.log('Mobile menu toggle clicked');
-        }
         e.preventDefault();
         e.stopPropagation();
 
         if (menu.classList.contains('show')) {
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log('Closing mobile menu');
-            }
             closeMobileMenu();
         } else {
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log('Opening mobile menu');
-            }
             openMobileMenu();
         }
     });
@@ -372,18 +335,13 @@ function initializeNavbar() {
     const mobileMenuClose = document.getElementById('mobileMenuClose');
     const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
 
-    // Debug logging to help identify issues (only in development)
+    // Development debugging (only on localhost)
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        console.log('Navbar initialization:', {
-            navbar: !!navbar,
-            mobileMenuToggle: !!mobileMenuToggle,
-            mobileMenu: !!mobileMenu,
-            mobileMenuClose: !!mobileMenuClose,
-            mobileMenuOverlay: !!mobileMenuOverlay
+        console.log('Mobile menu initialization status:', {
+            toggle: !!mobileMenuToggle,
+            menu: !!mobileMenu,
+            overlay: !!mobileMenuOverlay
         });
-
-        // Run diagnostic
-        diagnoseMobileMenu();
     }
 
     if (!navbar) {
@@ -402,29 +360,20 @@ function initializeNavbar() {
 
     // Modern mobile menu functionality
     if (mobileMenuToggle && mobileMenu && mobileMenuOverlay) {
-        console.log('Mobile menu elements found, setting up event listeners');
+        // Initialize mobile menu with event listeners
         setupMobileMenuEvents(mobileMenuToggle, mobileMenu, mobileMenuOverlay, mobileMenuClose);
         mobileMenuToggle.setAttribute('data-initialized', 'true');
     } else {
-        console.warn('Mobile menu elements not found:', {
-            mobileMenuToggle: !!mobileMenuToggle,
-            mobileMenu: !!mobileMenu,
-            mobileMenuOverlay: !!mobileMenuOverlay
-        });
-
         // Fallback: Try to initialize mobile menu after a short delay
         setTimeout(() => {
-            console.log('Attempting fallback mobile menu initialization');
             const fallbackToggle = document.getElementById('mobileMenuToggle');
             const fallbackMenu = document.getElementById('mobileMenu');
             const fallbackOverlay = document.getElementById('mobileMenuOverlay');
             const fallbackClose = document.getElementById('mobileMenuClose');
 
             if (fallbackToggle && fallbackMenu && fallbackOverlay) {
-                console.log('Fallback mobile menu elements found, setting up event listeners');
                 setupMobileMenuEvents(fallbackToggle, fallbackMenu, fallbackOverlay, fallbackClose);
-            } else {
-                console.error('Fallback mobile menu initialization failed - elements still not found');
+                fallbackToggle.setAttribute('data-initialized', 'true');
             }
         }, 500);
     }

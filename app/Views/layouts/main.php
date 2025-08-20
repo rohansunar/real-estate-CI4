@@ -110,11 +110,8 @@
                             <i class="fas fa-sign-out-alt me-2"></i>Logout
                         </a>
                     </div>
-                <?php else: ?>
-                    <a class="btn btn-outline-primary w-100" href="<?= base_url('auth/login') ?>">
-                        <i class="fas fa-sign-in-alt me-2"></i>Login
-                    </a>
                 <?php endif; ?>
+                <!-- Login button removed from mobile menu as requested -->
             </div>
         </div>
     </div>
