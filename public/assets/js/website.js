@@ -183,7 +183,7 @@ window.addEventListener('unhandledrejection', function(event) {
  *
  * This function sets up comprehensive navbar behavior including:
  * - Scroll-based visual effects for better user experience
- * - Enhanced mobile menu with accessibility features
+ * - Modern mobile slide-out menu with accessibility features
  * - Keyboard navigation support
  * - Click-outside-to-close functionality
  * - Haptic feedback for mobile devices
@@ -192,12 +192,14 @@ window.addEventListener('unhandledrejection', function(event) {
  * The function ensures cross-browser compatibility and follows
  * WCAG 2.1 AA accessibility guidelines.
  *
- * @since 2.1.0 - Enhanced with accessibility and mobile improvements
+ * @since 3.0.0 - Modernized with slide-out mobile menu
  */
 function initializeNavbar() {
     const navbar = document.querySelector('.navbar');
-    const navbarToggler = document.querySelector('.navbar-toggler');
-    const navbarCollapse = document.querySelector('.navbar-collapse');
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuClose = document.getElementById('mobileMenuClose');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
 
     if (!navbar) return; // Exit if navbar not found
 
@@ -210,78 +212,131 @@ function initializeNavbar() {
         }
     });
 
-    // Enhanced mobile menu toggler functionality
-    if (navbarToggler && navbarCollapse) {
-        // Add ARIA labels for better accessibility
-        navbarToggler.setAttribute('aria-label', 'Toggle navigation menu');
+    // Modern mobile menu functionality
+    if (mobileMenuToggle && mobileMenu && mobileMenuOverlay) {
+        // Open mobile menu
+        function openMobileMenu() {
+            mobileMenu.classList.add('show');
+            mobileMenuOverlay.classList.add('show');
+            mobileMenuToggle.classList.add('active');
+            document.body.style.overflow = 'hidden';
 
-        // Handle toggler click with enhanced feedback
-        navbarToggler.addEventListener('click', function() {
             // Add haptic feedback for mobile devices
             if (navigator.vibrate) {
                 navigator.vibrate(50);
             }
 
-            // Update ARIA label based on state
-            const isExpanded = this.getAttribute('aria-expanded') === 'true';
-            this.setAttribute('aria-label', isExpanded ? 'Close navigation menu' : 'Open navigation menu');
-        });
+            // Update ARIA attributes
+            mobileMenuToggle.setAttribute('aria-expanded', 'true');
+            mobileMenuToggle.setAttribute('aria-label', 'Close navigation menu');
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (navbarCollapse.classList.contains('show') &&
-                !navbar.contains(e.target)) {
-                const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
-                if (bsCollapse) {
-                    bsCollapse.hide();
+            // Focus management for accessibility
+            setTimeout(() => {
+                if (mobileMenuClose) {
+                    mobileMenuClose.focus();
                 }
+            }, 300);
+        }
+
+        // Close mobile menu
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('show');
+            mobileMenuOverlay.classList.remove('show');
+            mobileMenuToggle.classList.remove('active');
+            document.body.style.overflow = '';
+
+            // Update ARIA attributes
+            mobileMenuToggle.setAttribute('aria-expanded', 'false');
+            mobileMenuToggle.setAttribute('aria-label', 'Open navigation menu');
+
+            // Return focus to toggle button
+            mobileMenuToggle.focus();
+        }
+
+        // Toggle button click handler
+        mobileMenuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (mobileMenu.classList.contains('show')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
             }
         });
 
-        // Close mobile menu on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && navbarCollapse.classList.contains('show')) {
-                const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
-                if (bsCollapse) {
-                    bsCollapse.hide();
-                }
-                navbarToggler.focus(); // Return focus to toggler
-            }
-        });
-    }
-
-    // Close mobile menu when clicking on links (improves UX on mobile)
-    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
-                const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
-                if (bsCollapse) {
-                    bsCollapse.hide();
-                }
-            }
-        });
-
-        // Add keyboard navigation support
-        link.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
+        // Close button click handler
+        if (mobileMenuClose) {
+            mobileMenuClose.addEventListener('click', function(e) {
                 e.preventDefault();
-                this.click();
+                closeMobileMenu();
+            });
+        }
+
+        // Overlay click handler
+        mobileMenuOverlay.addEventListener('click', function(e) {
+            if (e.target === mobileMenuOverlay) {
+                closeMobileMenu();
             }
         });
-    });
 
-    // Add smooth transitions for mobile menu
-    if (navbarCollapse) {
-        navbarCollapse.addEventListener('show.bs.collapse', function() {
-            this.style.transition = 'height 0.35s ease';
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && mobileMenu.classList.contains('show')) {
+                closeMobileMenu();
+            }
         });
 
-        navbarCollapse.addEventListener('hide.bs.collapse', function() {
-            this.style.transition = 'height 0.35s ease';
+        // Close menu when clicking on mobile nav links
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                // Small delay to allow navigation to start
+                setTimeout(() => {
+                    closeMobileMenu();
+                }, 100);
+            });
+
+            // Add keyboard navigation support
+            link.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+        });
+
+        // Handle responsive behavior - close menu on resize to desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 992 && mobileMenu.classList.contains('show')) {
+                closeMobileMenu();
+            }
+        });
+
+        // Prevent menu from staying open on page load
+        window.addEventListener('load', function() {
+            if (mobileMenu.classList.contains('show')) {
+                closeMobileMenu();
+            }
         });
     }
+
+    // Enhanced touch interactions for mobile menu items
+    const touchElements = document.querySelectorAll('.mobile-nav-link, .mobile-menu-close, .modern-hamburger');
+    touchElements.forEach(element => {
+        // Add touch feedback
+        element.addEventListener('touchstart', function() {
+            this.style.transform = 'scale(0.95)';
+        }, { passive: true });
+
+        element.addEventListener('touchend', function() {
+            this.style.transform = '';
+        }, { passive: true });
+
+        element.addEventListener('touchcancel', function() {
+            this.style.transform = '';
+        }, { passive: true });
+    });
 }
 
 /**

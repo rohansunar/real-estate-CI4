@@ -57,6 +57,68 @@
         </div>
     </div>
 
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <!-- Modern Mobile Slide-out Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="mobile-menu-brand">
+                <i class="fas fa-building me-2"></i>
+                <span>White Rock Realtor</span>
+            </div>
+            <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="mobile-menu-content">
+            <nav class="mobile-nav">
+                <a href="<?= base_url() ?>" class="mobile-nav-link">
+                    <i class="fas fa-home me-3"></i>
+                    <span>Home</span>
+                </a>
+                <a href="<?= base_url('properties') ?>" class="mobile-nav-link">
+                    <i class="fas fa-building me-3"></i>
+                    <span>Properties</span>
+                </a>
+                <a href="<?= base_url('about') ?>" class="mobile-nav-link">
+                    <i class="fas fa-info-circle me-3"></i>
+                    <span>About Us</span>
+                </a>
+                <a href="<?= base_url('blog') ?>" class="mobile-nav-link">
+                    <i class="fas fa-blog me-3"></i>
+                    <span>Blog</span>
+                </a>
+            </nav>
+
+            <div class="mobile-menu-actions">
+                <button type="button" class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#contactModal">
+                    <i class="fas fa-envelope me-2"></i>Contact Us
+                </button>
+
+                <?php if (isset($user) && $user): ?>
+                    <div class="mobile-user-section">
+                        <div class="mobile-user-info">
+                            <i class="fas fa-user-circle me-2"></i>
+                            <span><?= esc($user['name'] ?? $user['email']) ?></span>
+                        </div>
+                        <a href="<?= base_url('dashboard') ?>" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                        <a href="<?= base_url('auth/logout') ?>" class="btn btn-outline-danger w-100">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                    </div>
+                <?php else: ?>
+                    <a class="btn btn-outline-primary w-100" href="<?= base_url('auth/login') ?>">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top" style="top: 45px;">
         <div class="container">
@@ -65,11 +127,15 @@
                 White Rock Realtor
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+            <!-- Modern Mobile Menu Toggle -->
+            <button class="navbar-toggler modern-hamburger" type="button" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Desktop Navigation (hidden on mobile) -->
+            <div class="collapse navbar-collapse d-none d-lg-flex" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="<?= base_url('properties') ?>">Properties</a>
@@ -238,10 +304,11 @@
                         The team at Real Estate helped us find our dream home in Siliguri. Their professionalism and attention to detail made the entire process smooth and stress-free. Highly recommended!
                     </blockquote>
                     <div class="testimonial-author">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format&q=80"
-                             alt="Portrait of Rajesh Kumar"
-                             class="testimonial-avatar"
-                             loading="lazy">
+                        <div class="testimonial-avatar-wrapper">
+                            <div class="testimonial-avatar testimonial-avatar-initials" data-initials="RK">
+                                <span>RK</span>
+                            </div>
+                        </div>
                         <div class="testimonial-info">
                             <h5 id="testimonial-1-author">Rajesh Kumar</h5>
                             <p class="testimonial-role mb-0">Property Buyer, Champasari</p>
@@ -262,10 +329,11 @@
                         Excellent service! They understood exactly what we were looking for and found us the perfect apartment in Bagdogra. The entire team was very supportive throughout the process.
                     </blockquote>
                     <div class="testimonial-author">
-                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face&auto=format&q=80"
-                             alt="Portrait of Priya Sharma"
-                             class="testimonial-avatar"
-                             loading="lazy">
+                        <div class="testimonial-avatar-wrapper">
+                            <div class="testimonial-avatar testimonial-avatar-initials" data-initials="PS">
+                                <span>PS</span>
+                            </div>
+                        </div>
                         <div class="testimonial-info">
                             <h5 id="testimonial-2-author">Priya Sharma</h5>
                             <p class="testimonial-role mb-0">First-time Buyer, Bagdogra</p>
@@ -286,10 +354,11 @@
                         Professional, reliable, and trustworthy. They helped us sell our property in Jalpaiguri at a great price and made the whole transaction seamless. Thank you for the excellent service!
                     </blockquote>
                     <div class="testimonial-author">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face&auto=format&q=80"
-                             alt="Portrait of Amit Das"
-                             class="testimonial-avatar"
-                             loading="lazy">
+                        <div class="testimonial-avatar-wrapper">
+                            <div class="testimonial-avatar testimonial-avatar-initials" data-initials="AD">
+                                <span>AD</span>
+                            </div>
+                        </div>
                         <div class="testimonial-info">
                             <h5 id="testimonial-3-author">Amit Das</h5>
                             <p class="testimonial-role mb-0">Property Seller, Jalpaiguri</p>
