@@ -25,13 +25,27 @@ function initializeSidebar() {
     const sidebarToggle = document.getElementById('sidebarToggle');
     const sidebarClose = document.getElementById('sidebarClose');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
-    
-    if (!sidebar || !sidebarToggle) return;
+
+    // Debug logging for dashboard sidebar
+    console.log('Dashboard sidebar initialization:', {
+        sidebar: !!sidebar,
+        sidebarToggle: !!sidebarToggle,
+        sidebarClose: !!sidebarClose,
+        sidebarOverlay: !!sidebarOverlay
+    });
+
+    if (!sidebar || !sidebarToggle) {
+        console.warn('Dashboard sidebar elements not found');
+        return;
+    }
     
     // Toggle sidebar on mobile
     sidebarToggle.addEventListener('click', function() {
+        console.log('Dashboard sidebar toggle clicked');
         sidebar.classList.add('show');
-        sidebarOverlay.classList.add('show');
+        if (sidebarOverlay) {
+            sidebarOverlay.classList.add('show');
+        }
         document.body.style.overflow = 'hidden';
     });
     

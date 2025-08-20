@@ -504,6 +504,18 @@ h6, .h6 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
   }
 }
 
+/* Mobile menu visibility controls */
+@media (max-width: 991.98px) {
+  .modern-hamburger {
+    display: flex !important;
+  }
+
+  .mobile-menu,
+  .mobile-menu-overlay {
+    display: flex;
+  }
+}
+
 @media (min-width: 992px) {
   .mobile-menu,
   .mobile-menu-overlay,
