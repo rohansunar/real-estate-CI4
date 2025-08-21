@@ -829,6 +829,14 @@ function handleContactFormSubmission(form, isModal = false) {
     // Extract form data and prepare for submission
     const formData = new FormData(form);
     const submitButton = form.querySelector('button[type="submit"]');
+
+    // Check if submit button exists before accessing its properties
+    if (!submitButton) {
+        console.error('Contact form submit button not found');
+        showNotification('Form submission error. Please refresh the page and try again.', 'error');
+        return;
+    }
+
     const originalText = submitButton.innerHTML;
 
     // Show loading state with spinner animation
@@ -874,9 +882,11 @@ function handleContactFormSubmission(form, isModal = false) {
         showNotification('Network error. Please check your connection and try again.', 'error');
     })
     .finally(() => {
-        // Reset button
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
+        // Reset button if it exists
+        if (submitButton) {
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }
     });
 }
 
@@ -886,8 +896,22 @@ function handleContactFormSubmission(form, isModal = false) {
 function handleNewsletterSubmission(form) {
     const formData = new FormData(form);
     const submitButton = form.querySelector('button[type="submit"]');
-    const originalText = submitButton.innerHTML;
     const emailInput = form.querySelector('input[name="email"]');
+
+    // Check if required elements exist before accessing their properties
+    if (!submitButton) {
+        console.error('Newsletter form submit button not found');
+        showNotification('Form submission error. Please refresh the page and try again.', 'error');
+        return;
+    }
+
+    if (!emailInput) {
+        console.error('Newsletter form email input not found');
+        showNotification('Form submission error. Please refresh the page and try again.', 'error');
+        return;
+    }
+
+    const originalText = submitButton.innerHTML;
 
     // Show loading state with transition
     submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -940,10 +964,14 @@ function handleNewsletterSubmission(form) {
         showNotification('Network error. Please check your connection and try again.', 'error');
     })
     .finally(() => {
-        // Reset button and input
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
-        emailInput.disabled = false;
+        // Reset button and input if they exist
+        if (submitButton) {
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }
+        if (emailInput) {
+            emailInput.disabled = false;
+        }
     });
 }
 

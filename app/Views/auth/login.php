@@ -4,26 +4,22 @@
 
 <!-- Login Section -->
 <section class="d-flex align-items-center justify-content-center bg-light position-relative py-5" style="margin-top: 76px; min-height: 80vh;">
-    <!-- Animated Background -->
-    <div class="position-absolute top-0 start-0 w-100 h-100 overflow-hidden">
-        <div class="position-absolute bg-primary opacity-10 rounded-circle" style="width: 300px; height: 300px; top: -150px; right: -150px; animation: float 6s ease-in-out infinite;"></div>
-        <div class="position-absolute bg-secondary opacity-10 rounded-circle" style="width: 200px; height: 200px; bottom: -100px; left: -100px; animation: float 8s ease-in-out infinite reverse;"></div>
-    </div>
+
 
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-5 col-md-7">
                 <!-- Header -->
-                <div class="text-center mb-4 animate-fade-in-down">
+                <div class="text-center mb-4">
                     <div class="bg-primary rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center shadow-lg" style="width: 80px; height: 80px;">
                         <i class="fas fa-building text-white fs-2"></i>
                     </div>
                     <h2 class="display-6 fw-bold text-dark mb-2">Welcome Back</h2>
-                    <p class="text-muted">Sign in to your Real Estate account</p>
+                    <p class="text-muted">Sign in to your account</p>
                 </div>
 
                 <!-- Login Form -->
-                <div class="card shadow-lg border-0 animate-fade-in-up" style="animation-delay: 0.2s;">
+                <div class="card shadow-lg border-0">
                     <div class="card-body p-5">
                         <?php if (isset($errors) && $errors): ?>
                             <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert">
@@ -121,62 +117,18 @@
 
 <?= $this->section('scripts') ?>
 <style>
-/* Custom animations for login page */
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-}
-
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-fade-in-down {
-    animation: fadeInDown 0.8s ease-out;
-}
-
-.animate-fade-in-up {
-    animation: fadeInUp 0.8s ease-out;
-}
-
+/* Simplified login page styles - animations removed for faster experience */
 .form-control:focus {
     border-color: var(--bs-primary);
     box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
-    transform: translateY(-2px);
-    transition: all 0.3s ease;
 }
 
 .btn-primary {
     background: linear-gradient(135deg, var(--bs-primary), #0056b3);
     border: none;
-    transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(var(--bs-primary-rgb), 0.3);
 }
 
 .card {
-    backdrop-filter: blur(10px);
     background: rgba(255, 255, 255, 0.95);
 }
 </style>
@@ -197,67 +149,26 @@ function togglePassword() {
     }
 }
 
-// Enhanced form interactions
+// Simplified form interactions - animations removed for faster experience
 document.addEventListener('DOMContentLoaded', function() {
-    // Add floating label effect
-    const formControls = document.querySelectorAll('.form-control');
-    formControls.forEach(control => {
-        control.addEventListener('focus', function() {
-            this.parentElement.classList.add('focused');
-        });
-
-        control.addEventListener('blur', function() {
-            if (!this.value) {
-                this.parentElement.classList.remove('focused');
-            }
-        });
-
-        // Check if already has value
-        if (control.value) {
-            control.parentElement.classList.add('focused');
-        }
-    });
-
-    // Add form submission animation
+    // Basic form submission handling
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', function() {
             const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
+            if (submitBtn) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Signing In...';
+                submitBtn.disabled = true;
 
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Signing In...';
-            submitBtn.disabled = true;
-
-            // Re-enable if there's an error (form will reload)
-            setTimeout(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }, 3000);
+                // Re-enable if there's an error (form will reload)
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 3000);
+            }
         });
     }
-
-    // Add ripple effect to buttons
-    const buttons = document.querySelectorAll('.btn');
-    buttons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            const ripple = document.createElement('span');
-            const rect = this.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            ripple.classList.add('ripple');
-
-            this.appendChild(ripple);
-
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
-        });
-    });
 });
 </script>
 <?= $this->endSection() ?>

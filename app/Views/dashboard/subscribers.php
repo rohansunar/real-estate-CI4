@@ -131,10 +131,6 @@
                             Subscription Date
                             <i class="fas fa-sort sort-indicator ms-1"></i>
                         </th>
-                        <th class="sortable" data-sort="3">
-                            Status
-                            <i class="fas fa-sort sort-indicator ms-1"></i>
-                        </th>
                         <th class="text-end">
                             Actions
                         </th>
@@ -166,12 +162,6 @@
                                         <div class="fw-medium"><?= date('M j, Y', strtotime($subscriber['created_at'])) ?></div>
                                         <small class="text-muted"><?= date('g:i A', strtotime($subscriber['created_at'])) ?></small>
                                     </div>
-                                </td>
-                                <td>
-                                    <span class="badge status-active">
-                                        <i class="fas fa-check-circle me-1"></i>
-                                        Active
-                                    </span>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center justify-content-end">

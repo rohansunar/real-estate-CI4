@@ -643,7 +643,7 @@ class AgentAuthController extends BaseController
     }
 
     /**
-     * Delete sub-agent
+     * Delete sub-agent with downline protection
      */
     public function deleteSubAgent($subAgentId)
     {
@@ -656,6 +656,18 @@ class AgentAuthController extends BaseController
 
         if (!$subAgent) {
             return redirect()->to('/agent/sub-agents')->with('error', 'Sub-agent not found or access denied.');
+        }
+
+        // Check if sub-agent has downline agents
+        $downlineCount = $this->agentModel->countTotalDownline($subAgentId);
+
+        if ($downlineCount > 0) {
+            // Prevent deletion if sub-agent has downline
+            $agentName = esc($subAgent['name']);
+            $message = "Cannot delete agent '{$agentName}' because they have {$downlineCount} agent(s) in their downline. ";
+            $message .= "Please reassign or remove all downline agents first before deleting this agent.";
+
+            return redirect()->to('/agent/sub-agents')->with('error', $message);
         }
 
         try {

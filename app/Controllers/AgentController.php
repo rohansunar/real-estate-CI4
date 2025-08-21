@@ -274,7 +274,8 @@ class AgentController extends BaseController
     /**
      * Delete agent
      *
-     * Handles agent deletion with proper cascade delete for associated images.
+     * Handles agent deletion with proper validation and cascade delete for associated images.
+     * Implements downline protection to prevent deletion of agents with sub-agents.
      * Uses the centralized ImageManagementService for consistent file handling.
      */
     public function delete($id)
@@ -289,7 +290,23 @@ class AgentController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Agent not found']);
         }
 
-        // Delete agent from database first
+        // Check if agent has downline agents (sub-agents)
+        $downlineCount = $this->agentModel->countTotalDownline($id);
+
+        if ($downlineCount > 0) {
+            // Prevent deletion if agent has downline
+            $agentName = esc($agent['name']);
+            $message = "Cannot delete agent '{$agentName}' because they have {$downlineCount} agent(s) in their downline. ";
+            $message .= "Please reassign or remove all downline agents first before deleting this agent.";
+
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => $message,
+                'downline_count' => $downlineCount
+            ]);
+        }
+
+        // Proceed with deletion if no downline exists
         if ($this->agentModel->delete($id)) {
             // Delete profile image using centralized service
             if (!empty($agent['profile_image'])) {

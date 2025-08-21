@@ -31,7 +31,7 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-envelope me-1 me-md-2"></i>
-                            <span class="small">info@whiterockrealtor.com</span>
+                            <span class="small">info@whiterockrealtor.in</span>
                         </div>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
             <div class="mobile-menu-brand">
-                <i class="fas fa-building me-2"></i>
+                <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo" width="30" height="30">
                 <span>White Rock Realtor</span>
             </div>
             <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">
@@ -120,7 +120,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top" style="top: 45px;">
         <div class="container">
             <a class="navbar-brand fw-bold text-primary" href="<?= base_url() ?>">
-                <i class="fas fa-building me-2"></i>
+                <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo" width="90" height="90">
                 White Rock Realtor
             </a>
 
@@ -390,7 +390,7 @@
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
                     <div class="d-flex align-items-center mb-4">
-                        <i class="fas fa-building fs-2 text-primary me-3"></i>
+                       <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo" width="100" height="100">
                         <h3 class="h4 mb-0 fw-bold">White Rock Realtor</h3>
                     </div>
                     <p class="text-light mb-4">
