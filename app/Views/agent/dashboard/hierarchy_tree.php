@@ -455,7 +455,7 @@
     try {
       // Debug logging (only in development)
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        console.log(`Auto-collapse: Processing level ${currentLevel}, agent ${currentParentId}`);
+        // Auto-collapse processing
       }
 
       // STEP 1: Find all level rows at the SAME hierarchy level for level independence
@@ -463,7 +463,7 @@
 
       // Debug logging (only in development)
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        console.log(`Found ${allLevelRows.length} level rows at level ${currentLevel}`);
+        // Process level rows
       }
 
       // STEP 2: Process each level row to find and collapse expanded agents
@@ -480,7 +480,7 @@
 
         // Debug logging (only in development)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-          console.log(`Found ${expandButtons.length} expanded buttons in level row`);
+          // Process expanded buttons
         }
 
         // Collapse each expanded agent in this level row
@@ -547,7 +547,7 @@
       if (childrenRow && childrenRow.style.display !== 'none' && !childrenRow.classList.contains('collapsed')) {
         // Debug logging (only in development)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-          console.log(`Collapsing agent ${parentId} at level ${currentLevel}`);
+          // Collapse agent
         }
 
         // Apply smooth collapse animation
@@ -654,7 +654,7 @@
   function cleanupHierarchyResources() {
     // Bootstrap popovers are automatically cleaned up by WeakMap
     // Event listeners are automatically cleaned up when elements are removed
-    console.log('Hierarchy resources cleaned up');
+    // Hierarchy resources cleaned up
   }
 
   // Register cleanup on page unload

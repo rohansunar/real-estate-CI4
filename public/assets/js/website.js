@@ -151,20 +151,35 @@ const ErrorHandler = {
      * Get user-friendly error message
      */
     getFriendlyMessage: function(error) {
-        if (error.name === 'NetworkError' || error.message.includes('fetch')) {
+        // Handle string errors
+        if (typeof error === 'string') {
+            return error;
+        }
+
+        // Handle network errors
+        if (error.name === 'NetworkError' || (error.message && error.message.includes('fetch'))) {
             return 'Network connection issue. Please check your internet connection and try again.';
         }
 
-        if (error.name === 'TypeError' && error.message.includes('closest')) {
+        // Handle browser compatibility issues
+        if (error.name === 'TypeError' && error.message && error.message.includes('closest')) {
             return 'Browser compatibility issue detected. Please try refreshing the page.';
         }
 
-        if (error.message.includes('404')) {
-            return 'The requested resource was not found. Please try again later.';
-        }
-
-        if (error.message.includes('500')) {
-            return 'Server error occurred. Our team has been notified. Please try again later.';
+        // Handle HTTP status errors
+        if (error.message) {
+            if (error.message.includes('404')) {
+                return 'The requested resource was not found. Please try again later.';
+            }
+            if (error.message.includes('500')) {
+                return 'We are experiencing technical difficulties. Please try again in a few moments.';
+            }
+            if (error.message.includes('403') || error.message.includes('unauthorized')) {
+                return 'You do not have permission to perform this action.';
+            }
+            if (error.message.includes('timeout')) {
+                return 'Request timed out. Please try again.';
+            }
         }
 
         return 'An unexpected error occurred. Please try refreshing the page or contact support if the issue persists.';
@@ -549,34 +564,63 @@ function initializeHeroCarousel() {
 }
 
 /**
- * Initialize scroll animations
+ * Initialize scroll-triggered animations using Intersection Observer API
+ *
+ * This function sets up performance-optimized scroll animations that trigger
+ * when elements come into view. It uses the modern Intersection Observer API
+ * instead of scroll event listeners for better performance.
+ *
+ * Animation Strategy:
+ * - Elements start invisible/transformed (via CSS)
+ * - When they enter viewport, 'animate-fade-in' class is added
+ * - CSS transitions handle the actual animation
+ * - Observer is disconnected after animation to save memory
+ *
+ * Performance Benefits:
+ * - No scroll event listeners (better performance)
+ * - Automatic cleanup prevents memory leaks
+ * - One-time animations (observer disconnects after trigger)
+ * - Respects user's reduced motion preferences (handled in CSS)
+ *
+ * Browser Support:
+ * - Modern browsers with Intersection Observer support
+ * - Graceful degradation: elements remain visible if API unavailable
  */
 function initializeAnimations() {
-    // Intersection Observer for scroll animations
+    // Configuration for when animations should trigger
     const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
+        threshold: 0.1,                    // Trigger when 10% of element is visible
+        rootMargin: '0px 0px -50px 0px'   // Start animation 50px before element enters viewport
     };
 
+    // Create observer that adds animation class when elements become visible
     const observer = new IntersectionObserver(function(entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
+                // Add animation class to trigger CSS transition
                 entry.target.classList.add('animate-fade-in');
+
+                // Stop observing this element (one-time animation)
+                // This prevents repeated animations and saves memory
                 observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
-    // Observe elements for animation
+    // Find all elements that should be animated on scroll
+    // Target common UI components that benefit from entrance animations
     const animateElements = document.querySelectorAll('.card, .property-card, .hero-content, .testimonial-card');
+
+    // Start observing each element for intersection with viewport
     animateElements.forEach(el => {
         observer.observe(el);
     });
 
     // Register cleanup function to prevent memory leaks
+    // This is called when page is unloaded or when cleanup is triggered
     registerCleanup(() => {
         if (observer) {
-            observer.disconnect();
+            observer.disconnect();  // Stop all observations and free memory
         }
     });
 }

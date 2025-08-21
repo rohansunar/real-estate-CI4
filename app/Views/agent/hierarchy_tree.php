@@ -490,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             // Debug logging (only in development)
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log(`Toggling node: ${agentId}`);
+                // Toggle node functionality
             }
 
             const isExpanded = expandedNodes.has(agentId);
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Debug logging (only in development)
                 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    console.log(`Collapsed node: ${agentId}`);
+                    // Node collapsed
                 }
             } else {
                 // ACCORDION BEHAVIOR: Auto-collapse other nodes at the same level
@@ -515,7 +515,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Debug logging (only in development)
                 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    console.log(`Expanded node: ${agentId} at level ${nodeLevel}`);
+                    // Node expanded
                 }
             }
 
@@ -593,7 +593,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             // Debug logging (only in development)
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log(`Auto-collapsing nodes at level ${targetLevel}, excluding agent ${currentAgentId}`);
+                // Auto-collapsing nodes at same level
             }
 
             // Find all nodes at the same level
@@ -606,7 +606,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Debug logging (only in development)
                     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                        console.log(`Auto-collapsed node: ${nodeId} at level ${targetLevel}`);
+                        // Node auto-collapsed
                     }
                 }
             }
@@ -662,7 +662,7 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     window.toggleNodeDetails = function(agentId) {
         // This will be implemented to show agent details modal
-        console.log('Show details for agent:', agentId);
+        // Show agent details functionality
     };
 
     /**

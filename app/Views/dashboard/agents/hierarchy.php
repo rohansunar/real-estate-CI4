@@ -175,7 +175,7 @@ async function viewAgentLogs(agentId) {
 
             // Debug logging (only in development)
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log(`Admin hierarchy: Toggling node at level ${nodeLevel}, currently expanded: ${isCurrentlyExpanded}`);
+                // Toggle admin hierarchy node
             }
 
             if (!isCurrentlyExpanded) {
@@ -210,7 +210,7 @@ async function viewAgentLogs(agentId) {
 
             // Debug logging (only in development)
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log(`Found ${allNodesAtLevel.length} nodes at level ${currentLevel}`);
+                // Process nodes at current level
             }
 
             allNodesAtLevel.forEach(node => {
@@ -223,7 +223,7 @@ async function viewAgentLogs(agentId) {
                 if (toggleBtn && childrenContainer && toggleBtn.getAttribute('aria-expanded') === 'true') {
                     // Debug logging (only in development)
                     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                        console.log(`Auto-collapsing node at level ${currentLevel}`);
+                        // Auto-collapse node
                     }
                     collapseAdminNode(toggleBtn, childrenContainer);
                 }
@@ -258,7 +258,7 @@ async function viewAgentLogs(agentId) {
 
             // Debug logging (only in development)
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log('Admin node expanded successfully');
+                // Admin node expanded
             }
 
         } catch (error) {
@@ -290,7 +290,7 @@ async function viewAgentLogs(agentId) {
 
             // Debug logging (only in development)
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log('Admin node collapsed successfully');
+                // Admin node collapsed
             }
 
         } catch (error) {

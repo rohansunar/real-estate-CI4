@@ -299,21 +299,28 @@ class ImageManagementService
     
     /**
      * Convert relative path to absolute path
-     * 
-     * @param string $relativePath Relative path (e.g., 'uploads/agents/image.jpg')
+     *
+     * Handles both legacy paths (assets/images/) and new upload paths (uploads/).
+     * This method properly resolves image paths regardless of where they are stored.
+     *
+     * @param string $relativePath Relative path (e.g., 'uploads/agents/image.jpg' or 'assets/images/house1.jpg')
      * @return string Absolute path
      */
     private function getAbsolutePath(string $relativePath): string
     {
         // Remove leading slash if present
         $relativePath = ltrim($relativePath, '/');
-        
-        // If path doesn't start with 'uploads/', prepend it
-        if (!str_starts_with($relativePath, 'uploads/')) {
-            $relativePath = 'uploads/' . $relativePath;
+
+        // Check if path already starts with a known directory structure
+        if (str_starts_with($relativePath, 'uploads/') ||
+            str_starts_with($relativePath, 'assets/') ||
+            str_starts_with($relativePath, 'public/')) {
+            // Path already has proper directory structure
+            return FCPATH . $relativePath;
         }
-        
-        return FCPATH . $relativePath;
+
+        // For paths without directory structure, assume uploads directory
+        return FCPATH . 'uploads/' . $relativePath;
     }
     
     /**

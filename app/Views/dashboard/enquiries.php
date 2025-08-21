@@ -356,9 +356,8 @@ function confirmDeleteEnquiry(enquiryId) {
     const modal = bootstrap.Modal.getInstance(document.getElementById('deleteEnquiryModal'));
     modal.hide();
 
-    console.log('Deleting enquiry ID:', enquiryId);
+    // Delete enquiry functionality
     const url = `<?= base_url('dashboard/enquiries/') ?>${enquiryId}`;
-    console.log('DELETE URL:', url);
 
     fetch(url, {
         method: 'DELETE',
@@ -368,15 +367,14 @@ function confirmDeleteEnquiry(enquiryId) {
         }
     })
     .then(response => {
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
+        // Process response
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
     })
     .then(data => {
-        console.log('Response data:', data);
+        // Handle response data
         if (data.success) {
             showNotification('Enquiry deleted successfully', 'success');
             setTimeout(() => location.reload(), 1000);

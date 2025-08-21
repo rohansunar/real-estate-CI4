@@ -340,17 +340,14 @@ class PropertyController extends BaseController
             }
 
         } catch (\Exception $e) {
-            // Log detailed error for debugging
-            log_message('error', 'Property creation failed: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+            // Use centralized error message service
+            $errorService = new \App\Services\ErrorMessageService();
+            $errorService->logTechnicalError($e, 'property_creation', [
+                'user_id' => session()->get('user_id'),
+                'property_title' => $this->request->getPost('title')
+            ]);
 
-            // User-friendly error message
-            $userMessage = 'Failed to create property. Please check your information and try again.';
-
-            if (strpos($e->getMessage(), 'upload') !== false) {
-                $userMessage = 'There was an issue uploading your images. Please try again with smaller image files.';
-            } elseif (strpos($e->getMessage(), 'database') !== false) {
-                $userMessage = 'We are experiencing technical difficulties. Please try again in a few minutes.';
-            }
+            $userMessage = $errorService->getUserFriendlyMessage($e, 'property_creation');
 
             // Fix for Array to string conversion error in SiteURI.php
             // Handle array form data properly in exception scenarios

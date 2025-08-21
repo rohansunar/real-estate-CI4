@@ -785,39 +785,64 @@ class DashboardController extends BaseController
     }
 
     /**
-     * Handle image management for property updates
+     * Handle complex image management for property updates
      *
-     * This method processes:
-     * - Existing images (keeping those not marked for removal)
-     * - New uploaded images
-     * - Removal of images marked for deletion
+     * This method orchestrates the multi-step process of updating property images
+     * during property edit operations. It handles three main scenarios:
+     * 1. Preserving existing images that should remain
+     * 2. Processing and uploading new images from form submission
+     * 3. Removing images marked for deletion (both from database and filesystem)
      *
-     * @param array $property Current property data
-     * @param array &$data Data array to update (passed by reference)
+     * Business Logic Flow:
+     * 1. Parse existing images from database (JSON → array)
+     * 2. Identify images marked for removal via hidden form field
+     * 3. Filter existing images, removing marked ones and deleting files
+     * 4. Process new image uploads with validation and optimization
+     * 5. Merge filtered existing + new images into final array
+     * 6. Update data array with final image list for database storage
+     *
+     * Data Flow:
+     * - Input: Current property data + form submission data
+     * - Processing: Image filtering, file operations, new uploads
+     * - Output: Updated data array with final image list
+     *
+     * Error Handling:
+     * - File deletion errors are logged but don't stop the process
+     * - Upload errors bubble up to calling method
+     * - Maintains data integrity even if some operations fail
+     *
+     * @param array $property Current property data from database
+     * @param array &$data Data array to update (passed by reference for efficiency)
+     * @throws \Exception If critical image operations fail
      */
     private function handleImageManagement($property, &$data)
     {
-        // Parse existing images
+        // Step 1: Parse existing images from database storage format
+        // Images are stored as JSON string in database, convert to PHP array
         $existingImages = [];
         if (!empty($property['images'])) {
             $existingImages = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
-            $existingImages = $existingImages ?: [];
+            $existingImages = $existingImages ?: [];  // Fallback to empty array if decode fails
         }
 
-        // Get images marked for removal
+        // Step 2: Get list of images marked for removal from hidden form field
+        // Frontend JavaScript populates this field with indices of images to delete
         $imagesToRemove = [];
         $imagesToRemoveJson = $this->request->getPost('images_to_remove');
         if (!empty($imagesToRemoveJson)) {
             $imagesToRemove = json_decode($imagesToRemoveJson, true) ?: [];
         }
 
-        // Filter out images marked for removal
+        // Step 3: Filter existing images and delete marked ones
+        // This preserves images that should remain and removes unwanted ones
         $filteredImages = [];
         foreach ($existingImages as $index => $image) {
             if (!in_array($index, $imagesToRemove)) {
+                // Keep this image - add to filtered list
                 $filteredImages[] = $image;
             } else {
-                // Delete the physical file
+                // Remove this image - delete physical file from filesystem
+                // Note: Deletion errors are logged but don't stop the process
                 $this->deleteImageFile($image);
             }
         }

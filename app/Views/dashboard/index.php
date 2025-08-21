@@ -446,7 +446,7 @@
 // Dashboard specific functionality
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize any dashboard-specific features
-    console.log('Dashboard loaded');
+    // Dashboard initialization complete
 
     // Add click handlers for agent statistics
     document.querySelectorAll('.agent-management-widget .bg-light.rounded').forEach(function(card) {

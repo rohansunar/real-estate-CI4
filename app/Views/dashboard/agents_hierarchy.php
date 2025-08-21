@@ -569,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Check if we have valid cached data
             if (cachedData && (Date.now() - cachedData.timestamp) < CACHE_DURATION) {
-                console.log('Using cached hierarchy data');
+                // Using cached hierarchy data
                 renderHierarchy(cachedData.data.agents);
                 updatePagination(cachedData.data.pagination);
                 updateStatistics(cachedData.data.statistics);

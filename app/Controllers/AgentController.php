@@ -155,18 +155,14 @@ class AgentController extends BaseController
             }
 
         } catch (\Exception $e) {
-            // Log detailed error for debugging
-            log_message('error', 'Agent creation failed: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+            // Use centralized error message service
+            $errorService = new \App\Services\ErrorMessageService();
+            $errorService->logTechnicalError($e, 'agent_management', [
+                'user_id' => session()->get('user_id'),
+                'agent_name' => $this->request->getPost('name')
+            ]);
 
-            // User-friendly error message
-            $userMessage = 'Failed to create agent. Please check your information and try again.';
-
-            if (strpos($e->getMessage(), 'upload') !== false) {
-                $userMessage = 'There was an issue uploading the profile image. Please try again with a smaller image file.';
-            } elseif (strpos($e->getMessage(), 'database') !== false) {
-                $userMessage = 'We are experiencing technical difficulties. Please try again in a few minutes.';
-            }
-
+            $userMessage = $errorService->getUserFriendlyMessage($e, 'agent_management');
             return redirect()->back()->withInput()->with('error', $userMessage);
         }
     }
@@ -262,20 +258,15 @@ class AgentController extends BaseController
             }
 
         } catch (\Exception $e) {
-            // Log detailed error for debugging
-            log_message('error', 'Agent update failed: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+            // Use centralized error message service
+            $errorService = new \App\Services\ErrorMessageService();
+            $errorService->logTechnicalError($e, 'agent_management', [
+                'user_id' => session()->get('user_id'),
+                'agent_id' => $id,
+                'agent_name' => $this->request->getPost('name')
+            ]);
 
-            // User-friendly error message based on error type
-            $userMessage = 'Failed to update agent. Please try again.';
-
-            if (strpos($e->getMessage(), 'upload') !== false) {
-                $userMessage = 'There was an issue uploading the profile image. Please try again with a smaller image file.';
-            } elseif (strpos($e->getMessage(), 'database') !== false || strpos($e->getMessage(), 'Database') !== false) {
-                $userMessage = 'We are experiencing technical difficulties. Please try again in a few minutes.';
-            } elseif (strpos($e->getMessage(), 'validation') !== false) {
-                $userMessage = 'Please check your information and try again.';
-            }
-
+            $userMessage = $errorService->getUserFriendlyMessage($e, 'agent_management');
             return redirect()->back()->withInput()->with('error', $userMessage);
         }
     }

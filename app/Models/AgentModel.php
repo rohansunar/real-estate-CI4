@@ -367,25 +367,49 @@ class AgentModel extends Model
 
     /**
      * Recursive method to build complete hierarchy
+     *
+     * This method performs a depth-first traversal of the agent hierarchy tree,
+     * collecting all sub-agents at all levels beneath a given parent agent.
+     *
+     * Business Logic:
+     * - Only includes active agents (is_active = true)
+     * - Maintains hierarchy depth information for UI display
+     * - Uses minimal column selection to optimize memory usage
+     * - Implements recursion depth limit to prevent infinite loops
+     * - Orders by creation date (newest first) for consistent display
+     *
+     * Memory Optimization:
+     * - Uses $this->hierarchySelect to limit columns fetched
+     * - Passes result array by reference to avoid copying
+     * - Limits recursion depth to prevent stack overflow
+     *
+     * @param int $parentId The parent agent ID to start from
+     * @param array &$result Reference to result array (modified in place)
+     * @param int $currentDepth Current recursion depth (0-based)
+     * @param int $maxDepth Maximum allowed recursion depth
      */
     private function buildHierarchyRecursive(int $parentId, array &$result, int $currentDepth, int $maxDepth)
     {
+        // Safety check: prevent infinite recursion and stack overflow
         if ($currentDepth >= $maxDepth) {
-            return; // Prevent infinite recursion
+            return;
         }
 
-        // Select only minimal columns to reduce memory usage
+        // Fetch direct sub-agents of the current parent
+        // Only select minimal columns needed for hierarchy display
         $directSubAgents = $this->select($this->hierarchySelect)
                                ->where('parent_agent_id', $parentId)
-                               ->where('is_active', true)
-                               ->orderBy('created_at', 'DESC')
+                               ->where('is_active', true)  // Only active agents
+                               ->orderBy('created_at', 'DESC')  // Newest first
                                ->findAll();
 
         foreach ($directSubAgents as $agent) {
+            // Add hierarchy metadata for UI rendering
             $agent['hierarchy_depth'] = $currentDepth + 1;
             $result[] = $agent;
 
-            // Recursively get sub-agents of this agent
+            // Recursively process this agent's sub-agents
+            // This creates a depth-first traversal of the entire tree
             $this->buildHierarchyRecursive($agent['id'], $result, $currentDepth + 1, $maxDepth);
         }
     }
@@ -400,26 +424,63 @@ class AgentModel extends Model
 
     /**
      * Get full hierarchy tree for all top-level agents (admin view)
-     * Returns an array of root agents with nested children
+     *
+     * This method builds a complete hierarchical tree structure for admin dashboard display.
+     * It fetches all root-level agents and recursively builds their complete downline trees.
+     *
+     * Business Logic:
+     * - Root agents are those with parent_agent_id = null or 0
+     * - Only includes active agents in the hierarchy
+     * - Builds complete nested tree structure with children arrays
+     * - Calculates total downline count for each root agent
+     * - Orders root agents alphabetically by name for consistent display
+     *
+     * Performance Considerations:
+     * - Can be memory intensive for large hierarchies
+     * - Consider using getFullHierarchyTreePaginated() for better performance
+     * - Uses recursive tree building which may hit recursion limits
+     *
+     * Data Structure Returned:
+     * [
+     *   {
+     *     id: 1, name: "Agent A", hierarchy_depth: 1,
+     *     has_children: true, total_downline: 15,
+     *     children: [
+     *       { id: 2, name: "Sub Agent B", hierarchy_depth: 2, children: [...] }
+     *     ]
+     *   }
+     * ]
+     *
+     * @param int $maxDepth Maximum recursion depth to prevent infinite loops
+     * @return array Complete hierarchy tree with nested children
      */
     public function getFullHierarchyTree(int $maxDepth = 10): array
     {
-        // Fetch top-level agents (no parent) that are active
+        // Find all root-level agents (those without parents)
+        // Uses groupStart/groupEnd for proper OR condition with WHERE clause
         $roots = $this->groupStart()
-                      ->where('parent_agent_id', null)
-                      ->orWhere('parent_agent_id', 0)
+                      ->where('parent_agent_id', null)  // NULL parent
+                      ->orWhere('parent_agent_id', 0)   // Or zero parent (legacy data)
                       ->groupEnd()
-                      ->where('is_active', true)
-                      ->orderBy('name', 'ASC')
+                      ->where('is_active', true)        // Only active agents
+                      ->orderBy('name', 'ASC')          // Alphabetical order
                       ->findAll();
 
+        // Build complete tree structure for each root agent
         foreach ($roots as &$root) {
-            $root['hierarchy_depth'] = 1;
+            // Set hierarchy metadata
+            $root['hierarchy_depth'] = 1;  // Root level is depth 1
+
+            // Recursively build children tree
             $root['children'] = $this->buildHierarchyTree($root['id'], 1, $maxDepth);
+
+            // Add convenience flags for UI rendering
             $root['has_children'] = !empty($root['children']);
+
+            // Calculate total agents in this root's downline (for statistics)
             $root['total_downline'] = $this->countTotalDownline($root['id']);
         }
-        unset($root);
+        unset($root);  // Clean up reference to prevent memory leaks
 
         return $roots;
     }

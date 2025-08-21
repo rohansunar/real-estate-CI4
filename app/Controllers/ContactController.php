@@ -120,17 +120,14 @@ class ContactController extends BaseController
                 throw new \Exception('Database insertion failed');
             }
         } catch (\Exception $e) {
-            // Log detailed error for debugging
-            log_message('error', 'Contact form submission failed: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+            // Use centralized error message service
+            $errorService = new \App\Services\ErrorMessageService();
+            $errorService->logTechnicalError($e, 'contact_form', [
+                'user_ip' => $this->request->getIPAddress(),
+                'user_agent' => $this->request->getUserAgent()->getAgentString()
+            ]);
 
-            // User-friendly error messages based on error type
-            $userMessage = 'Sorry, there was an error submitting your enquiry. Please try again or contact us directly.';
-
-            if (strpos($e->getMessage(), 'database') !== false || strpos($e->getMessage(), 'connection') !== false) {
-                $userMessage = 'We are experiencing technical difficulties. Please try again in a few minutes or contact us directly.';
-            } elseif (strpos($e->getMessage(), 'validation') !== false) {
-                $userMessage = 'Please check your information and try again.';
-            }
+            $userMessage = $errorService->getUserFriendlyMessage($e, 'contact_form');
 
             if ($this->request->isAJAX()) {
                 return $this->response->setJSON([
