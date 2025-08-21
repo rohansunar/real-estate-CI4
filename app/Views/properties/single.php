@@ -32,9 +32,11 @@
 <!-- Property Hero Section -->
 <section class="property-hero-section position-relative overflow-hidden">
     <?php
-    // Get the first image for hero background
+    // Use ImageDisplayService for hero background image
+    $imageDisplayService = new \App\Services\ImageDisplayService();
     $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
-    $heroImage = !empty($images[0]) ? base_url($images[0]) : base_url('assets/images/default-property.svg');
+    $firstImage = !empty($images) ? $images[0] : null;
+    $heroImage = $imageDisplayService->getOptimizedImageUrl($firstImage, 'hero');
     ?>
 
     <!-- Hero Background Image -->
@@ -168,8 +170,12 @@
                             <!-- Image Slides -->
                             <?php if ($hasImages): ?>
                                 <?php foreach ($images as $index => $image): ?>
+                                    <?php
+                                    // Use ImageDisplayService for gallery images
+                                    $imageUrl = $imageDisplayService->getOptimizedImageUrl($image, 'gallery');
+                                    ?>
                                     <div class="carousel-item <?= !$hasVideo && $index === 0 ? 'active' : '' ?>">
-                                        <img src="<?= base_url($image) ?>"
+                                        <img src="<?= $imageUrl ?>"
                                              class="d-block w-100"
                                              alt="<?= esc($property['title']) ?> - Image <?= $index + 1 ?>"
                                              style="height: 500px; object-fit: cover;"
@@ -279,9 +285,13 @@
                         <?php if ($hasImages): ?>
                             <?php foreach ($images as $index => $image): ?>
                                 <?php if ($thumbnailIndex < $maxThumbnails): ?>
+                                    <?php
+                                    // Use ImageDisplayService for thumbnail images
+                                    $thumbnailUrl = $imageDisplayService->getOptimizedImageUrl($image, 'thumbnail');
+                                    ?>
                                     <div class="col-6 mb-2">
                                         <div class="position-relative">
-                                            <img src="<?= base_url($image) ?>"
+                                            <img src="<?= $thumbnailUrl ?>"
                                                  class="img-fluid rounded-3 shadow-sm thumbnail-hover"
                                                  alt="Thumbnail <?= $index + 1 ?>"
                                                  style="height: 80px; width: 100%; object-fit: cover; cursor: pointer;"
@@ -677,8 +687,10 @@ if (!empty($similarProperties)): ?>
                 <div class="col-lg-4 col-md-6">
                     <div class="card h-100 shadow-sm border-0 property-card">
                         <?php
+                        // Use ImageDisplayService for consistent image handling
                         $similarImages = is_string($similarProperty['images']) ? json_decode($similarProperty['images'], true) : $similarProperty['images'];
-                        $similarImage = !empty($similarImages[0]) ? base_url($similarImages[0]) : base_url('assets/images/default-property.svg');
+                        $firstSimilarImage = !empty($similarImages) ? $similarImages[0] : null;
+                        $similarImage = $imageDisplayService->getOptimizedImageUrl($firstSimilarImage, 'card');
                         ?>
 
                         <!-- Property Image -->
@@ -996,8 +1008,17 @@ if (!empty($similarProperties)): ?>
 <?= $this->section('scripts') ?>
 <script>
 // Property data
+<?php
+// Generate image URLs using ImageDisplayService for JavaScript
+$imageUrls = [];
+if ($hasImages) {
+    foreach ($images as $image) {
+        $imageUrls[] = $imageDisplayService->getOptimizedImageUrl($image, 'gallery');
+    }
+}
+?>
 const propertyData = {
-    images: <?= json_encode($hasImages ? array_map(function($img) { return base_url($img); }, $images) : []) ?>,
+    images: <?= json_encode($imageUrls) ?>,
     videos: <?= json_encode($hasVideo ? $videos : []) ?>,
     hasVideo: <?= $hasVideo ? 'true' : 'false' ?>,
     title: '<?= esc($property['title']) ?>',

@@ -1,6 +1,0 @@
-HTTP/1.1 404 Not Found
-Date: Thu, 14 Aug 2025 19:33:19 GMT
-Server: Apache/2.4.58 (Ubuntu)
-Content-Length: 271
-Content-Type: text/html; charset=iso-8859-1
-

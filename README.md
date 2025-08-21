@@ -251,6 +251,7 @@ Test the website in browser to ensure everything works correctly
 Remove any unnecessary/unused code related to the applications module
 Verify both authenticated and unauthenticated user scenarios
 Check for Memory leakage codes in codebase and fix it.
+Remove any console.log statements
 Provide user friendly message on errors.
 Write Proper Code Comments for other developer easily understand
 used simply logic and minimum codes to achieve goal avoid over-engineering

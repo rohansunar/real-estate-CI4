@@ -150,8 +150,11 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="card h-100 shadow-sm card-hover animate-on-scroll position-relative" style="animation-delay: <?= $index * 0.1 ?>s;">
                         <?php
+                        // Use ImageDisplayService for consistent image handling
+                        $imageDisplayService = new \App\Services\ImageDisplayService();
                         $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
-                        $propertyImage = !empty($images[0]) ? base_url($images[0]) : base_url('assets/images/default-property.svg');
+                        $firstImage = !empty($images) ? $images[0] : null;
+                        $propertyImage = $imageDisplayService->getOptimizedImageUrl($firstImage, 'card');
                         ?>
 
                         <!-- Featured Badge -->
@@ -161,9 +164,22 @@
                             </span>
                         </div>
 
-                        <!-- Property Image -->
+                        <!-- Property Image with Lazy Loading -->
                         <div class="position-relative overflow-hidden">
-                            <img src="<?= $propertyImage ?>"
+                            <?php
+                            // Use ImageDisplayService for optimized image display
+                            $imageDisplayService = new \App\Services\ImageDisplayService();
+                            $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
+                            $firstImage = !empty($images) ? $images[0] : null;
+
+                            // Get optimized image URL for card display
+                            $optimizedImageUrl = $imageDisplayService->getOptimizedImageUrl($firstImage, 'card');
+                            $srcset = $imageDisplayService->generateSrcset($firstImage);
+                            ?>
+                            <img src="<?= base_url('assets/images/placeholder.svg') ?>"
+                                 data-lazy-src="<?= $optimizedImageUrl ?>"
+                                 <?php if ($srcset): ?>data-lazy-srcset="<?= $srcset ?>"<?php endif; ?>
+                                 data-fallback="<?= base_url('assets/images/default-property.svg') ?>"
                                  class="card-img-top property-image"
                                  alt="<?= esc($property['title']) ?>"
                                  style="height: 250px; object-fit: cover;">
@@ -262,8 +278,11 @@
                             <div class="col-lg-4 col-md-6">
                                 <div class="card h-100 shadow-sm card-hover animate-on-scroll position-relative" style="animation-delay: <?= $index * 0.1 ?>s;">
                                     <?php
+                                    // Use ImageDisplayService for consistent image handling
+                                    $imageDisplayService = new \App\Services\ImageDisplayService();
                                     $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
-                                    $propertyImage = !empty($images[0]) ? base_url($images[0]) : base_url('assets/images/default-property.svg');
+                                    $firstImage = !empty($images) ? $images[0] : null;
+                                    $propertyImage = $imageDisplayService->getOptimizedImageUrl($firstImage, 'card');
                                     ?>
 
                                     <!-- Featured Badge -->
@@ -276,7 +295,23 @@
                                     <?php endif; ?>
 
                                     <div class="position-relative overflow-hidden">
-                                        <img src="<?= $propertyImage ?>" alt="<?= esc($property['title']) ?>" class="card-img-top property-image-hover" style="height: 250px; object-fit: cover;">
+                                        <?php
+                                        // Use ImageDisplayService for optimized image display
+                                        $imageDisplayService = new \App\Services\ImageDisplayService();
+                                        $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
+                                        $firstImage = !empty($images) ? $images[0] : null;
+
+                                        // Get optimized image URL for card display
+                                        $optimizedImageUrl = $imageDisplayService->getOptimizedImageUrl($firstImage, 'card');
+                                        $srcset = $imageDisplayService->generateSrcset($firstImage);
+                                        ?>
+                                        <img src="<?= base_url('assets/images/placeholder.svg') ?>"
+                                             data-lazy-src="<?= $optimizedImageUrl ?>"
+                                             <?php if ($srcset): ?>data-lazy-srcset="<?= $srcset ?>"<?php endif; ?>
+                                             data-fallback="<?= base_url('assets/images/default-property.svg') ?>"
+                                             alt="<?= esc($property['title']) ?>"
+                                             class="card-img-top property-image-hover"
+                                             style="height: 250px; object-fit: cover;">
                                         <div class="position-absolute top-0 start-0 m-3">
                                             <!-- <span class="badge bg-primary fs-6">
                                                 <?= esc(ucfirst($property['type'])) ?>

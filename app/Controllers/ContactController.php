@@ -30,45 +30,57 @@ class ContactController extends BaseController
     }
 
     /**
-     * Submit contact form
+     * Submit contact form with enhanced validation and error handling
      *
-     * Handles both Ajax and traditional form submissions.
-     * Validates input data and saves to database.
-     * Sends notification email to admin.
+     * This method handles both Ajax and traditional form submissions with comprehensive
+     * validation, user-friendly error messages, and secure data processing.
      *
-     * @return \CodeIgniter\HTTP\ResponseInterface|string
+     * Features:
+     * - Comprehensive input validation with custom error messages
+     * - XSS protection through data sanitization
+     * - CSRF protection for form security
+     * - Email notification to admin on successful submission
+     * - Mobile-friendly error handling and user feedback
+     * - Database transaction support for data integrity
+     *
+     * @return \CodeIgniter\HTTP\ResponseInterface|string JSON response for Ajax or redirect for traditional form
      */
     public function submit()
     {
-        // Define validation rules and custom messages
+        // Define comprehensive validation rules with security considerations
         $validationRules = [
             'name' => 'required|max_length[255]|alpha_space',
-            'email' => 'required|valid_email',
+            'email' => 'required|valid_email|max_length[255]',
             'phone' => 'required|max_length[20]|regex_match[/^[\+]?[0-9\s\-\(\)]+$/]',
-            'properties_in' => 'required|max_length[255]',
+            'properties_in' => 'required|max_length[255]|in_list[Champasari,Bagdogra,Jalpaiguri,Pradhan Nagar,Milan More,Khaprail,Other]',
             'message' => 'required|min_length[10]|max_length[1000]'
         ];
 
+        // Define user-friendly validation messages for better user experience
         $validationMessages = [
             'name' => [
-                'required' => 'Please enter your full name',
-                'alpha_space' => 'Name can only contain letters and spaces'
+                'required' => 'Please enter your full name to help us address you properly.',
+                'max_length' => 'Your name is too long. Please keep it under 255 characters.',
+                'alpha_space' => 'Please use only letters and spaces in your name.'
             ],
             'email' => [
-                'required' => 'Please enter your email address',
-                'valid_email' => 'Please enter a valid email address'
+                'required' => 'We need your email address to respond to your inquiry.',
+                'valid_email' => 'Please enter a valid email address (e.g., john@example.com).',
+                'max_length' => 'Email address is too long. Please use a shorter email.'
             ],
             'phone' => [
-                'required' => 'Please enter your phone number',
-                'regex_match' => 'Please enter a valid phone number'
+                'required' => 'Please provide your phone number for quick communication.',
+                'max_length' => 'Phone number is too long. Please check and try again.',
+                'regex_match' => 'Please enter a valid phone number (e.g., +91 98765 43210).'
             ],
             'properties_in' => [
-                'required' => 'Please select your property interest'
+                'required' => 'Please select the area where you\'re looking for properties.',
+                'in_list' => 'Please select a valid location from the available options.'
             ],
             'message' => [
-                'required' => 'Please enter your message',
-                'min_length' => 'Message must be at least 10 characters long',
-                'max_length' => 'Message cannot exceed 1000 characters'
+                'required' => 'Please tell us about your property requirements.',
+                'min_length' => 'Please provide more details (at least 10 characters).',
+                'max_length' => 'Your message is too long. Please keep it under 1000 characters.'
             ]
         ];
 
@@ -131,21 +143,83 @@ class ContactController extends BaseController
     }
 
     /**
-     * Send notification email to admin
+     * Send notification email to admin with error handling
+     *
+     * @param array $data Contact form data
+     * @throws \Exception If email service fails
      */
     private function sendNotificationEmail($data)
     {
-        $emailService = new \App\Services\EmailService();
-        $emailService->sendContactNotification($data);
+        try {
+            $emailService = new \App\Services\EmailService();
+            $emailService->sendContactNotification($data);
+        } catch (\Exception $e) {
+            // Log email error but don't fail the entire process
+            log_message('error', 'Contact notification email failed: ' . $e->getMessage());
+            throw $e; // Re-throw to handle in calling method
+        }
     }
 
     /**
-     * Show contact form page
+     * Basic rate limiting check to prevent spam
+     *
+     * @param string $ipAddress Client IP address
+     * @throws \Exception If rate limit exceeded
+     */
+    private function checkRateLimit($ipAddress)
+    {
+        $cache = \Config\Services::cache();
+        $key = 'contact_rate_limit_' . md5($ipAddress);
+        $attempts = $cache->get($key) ?? 0;
+
+        // Allow 3 submissions per hour per IP
+        if ($attempts >= 3) {
+            log_message('warning', 'Rate limit exceeded for IP: ' . $ipAddress);
+            throw new \Exception('Too many submissions. Please wait before submitting again.');
+        }
+
+        // Increment counter
+        $cache->save($key, $attempts + 1, 3600); // 1 hour expiry
+    }
+
+    /**
+     * Get user-friendly error message based on exception type
+     *
+     * @param \Exception $e The exception
+     * @return string User-friendly error message
+     */
+    private function getUserFriendlyErrorMessage(\Exception $e)
+    {
+        $message = $e->getMessage();
+
+        // Database related errors
+        if (strpos($message, 'database') !== false || strpos($message, 'connection') !== false) {
+            return 'We are experiencing technical difficulties. Please try again in a few minutes or contact us directly at +91 XXXXX XXXXX.';
+        }
+
+        // Rate limiting errors
+        if (strpos($message, 'rate limit') !== false || strpos($message, 'Too many') !== false) {
+            return 'You have submitted too many inquiries recently. Please wait a while before submitting again.';
+        }
+
+        // Validation errors
+        if (strpos($message, 'validation') !== false) {
+            return 'Please check your information and try again.';
+        }
+
+        // Generic error
+        return 'Sorry, there was an error submitting your enquiry. Please try again or contact us directly at +91 XXXXX XXXXX.';
+    }
+
+    /**
+     * Show contact form page with enhanced data
      */
     public function index()
     {
         $data = [
-            'title' => 'Contact Us | White Rock Realtor'
+            'title' => 'Contact Us | White Rock Realtor',
+            'meta_description' => 'Get in touch with White Rock Realtor for all your property needs in Siliguri and surrounding areas.',
+            'canonical_url' => base_url('contact')
         ];
 
         return view('contact/index', $data);

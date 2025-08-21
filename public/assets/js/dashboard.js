@@ -587,8 +587,8 @@ function markEnquiryAsRead(enquiryId, buttonElement = null) {
             showNotification('Failed to mark enquiry as read', 'danger');
         }
     })
-    .catch(error => {
-        console.error('Error marking enquiry as read:', error);
+    .catch(() => {
+        // Error marking enquiry as read
         // Restore button state
         button.innerHTML = originalText;
         button.disabled = false;

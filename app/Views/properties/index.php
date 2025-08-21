@@ -28,8 +28,10 @@
 
         if (!empty($featuredProperty)) {
             $heroProperty = $featuredProperty[0];
+            $imageDisplayService = new \App\Services\ImageDisplayService();
             $heroImages = is_string($heroProperty['images']) ? json_decode($heroProperty['images'], true) : $heroProperty['images'];
-            $heroImage = !empty($heroImages[0]) ? base_url($heroImages[0]) : base_url('assets/images/default-property.svg');
+            $firstHeroImage = !empty($heroImages) ? $heroImages[0] : null;
+            $heroImage = $imageDisplayService->getOptimizedImageUrl($firstHeroImage, 'hero');
         }
     }
     ?>
@@ -327,19 +329,32 @@
                              style="animation-delay: <?= $index * 0.1 ?>s; cursor: pointer;"
                              data-property-url="<?= base_url('properties/' . urlencode($property['location']) . '/' . $property['id']) ?>">
                             <?php
+                            // Use ImageDisplayService for optimized image display with lazy loading
+                            $imageDisplayService = new \App\Services\ImageDisplayService();
                             $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
-                            $propertyImage = !empty($images[0]) ? base_url($images[0]) : base_url('assets/images/default-property.svg');
+                            $firstImage = !empty($images) ? $images[0] : null;
+
+                            // Get optimized image URL for card display (thumbnail size)
+                            $imageUrl = $imageDisplayService->getOptimizedImageUrl($firstImage, 'card');
+                            $imageDimensions = $imageDisplayService->getImageDimensions($firstImage, 'thumbnail');
+
+                            // Generate srcset for responsive images
+                            $srcset = $imageDisplayService->generateSrcset($firstImage);
                             ?>
 
-                            <!-- Property Image -->
+                            <!-- Property Image with Lazy Loading -->
                             <div class="position-relative overflow-hidden">
-                                <img src="<?= $propertyImage ?>"
+                                <img src="<?= base_url('assets/images/placeholder.svg') ?>"
+                                     data-lazy-src="<?= $imageUrl ?>"
+                                     <?php if ($srcset): ?>data-lazy-srcset="<?= $srcset ?>"<?php endif; ?>
+                                     data-fallback="<?= base_url('assets/images/default-property.svg') ?>"
                                      alt="<?= esc($property['title']) ?>"
                                      class="card-img-top property-image-hover"
                                      style="height: 250px; object-fit: cover;"
-                                     data-fallback="<?= base_url('assets/images/default-property.svg') ?>"
-                                     loading="lazy"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                     <?php if ($imageDimensions): ?>
+                                     width="<?= $imageDimensions['width'] ?>"
+                                     height="<?= $imageDimensions['height'] ?>"
+                                     <?php endif; ?>>
 
                                 <!-- Fallback placeholder -->
                                 <div class="property-image-placeholder d-none align-items-center justify-content-center bg-light text-muted"

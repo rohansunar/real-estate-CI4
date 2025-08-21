@@ -22,12 +22,12 @@
 </section>
 
 <!-- Contact Section -->
-<section class="py-5">
-    <div class="container py-5">
-        <div class="row g-5">
+<section class="py-5 contact-section">
+    <div class="container py-3 py-md-5">
+        <div class="row g-3 g-md-5">
             <!-- Contact Form -->
             <div class="col-lg-8">
-                <div class="bg-white rounded-4 shadow-lg p-4 p-md-5">
+                <div class="bg-white rounded-4 shadow-lg p-3 p-md-5 contact-form-container">
                     <h2 class="h3 fw-bold text-dark mb-4">Send us a Message</h2>
                     
                     <!-- Display Success/Error Messages -->
@@ -60,31 +60,35 @@
                         </div>
                     <?php endif; ?>
 
-                    <form id="contactPageForm" action="<?= base_url('contact/submit') ?>" method="post">
+                    <form id="contactPageForm" action="<?= base_url('contact/submit') ?>" method="post" class="contact-form">
                         <?= csrf_field() ?>
                         
-                        <div class="row g-3">
+                        <div class="row g-3 g-md-4">
                             <div class="col-md-6">
                                 <label for="name" class="form-label fw-semibold">Full Name *</label>
-                                <input type="text" id="name" name="name" class="form-control" 
-                                       value="<?= old('name') ?>" required>
+                                <input type="text" id="name" name="name" class="form-control form-control-lg"
+                                       value="<?= old('name') ?>" required
+                                       style="min-height: 48px; font-size: 1rem;">
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <label for="email" class="form-label fw-semibold">Email Address *</label>
-                                <input type="email" id="email" name="email" class="form-control" 
-                                       value="<?= old('email') ?>" required>
+                                <input type="email" id="email" name="email" class="form-control form-control-lg"
+                                       value="<?= old('email') ?>" required
+                                       style="min-height: 48px; font-size: 1rem;">
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <label for="phone" class="form-label fw-semibold">Phone Number *</label>
-                                <input type="tel" id="phone" name="phone" class="form-control" 
-                                       value="<?= old('phone') ?>" required>
+                                <input type="tel" id="phone" name="phone" class="form-control form-control-lg"
+                                       value="<?= old('phone') ?>" required
+                                       style="min-height: 48px; font-size: 1rem;">
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <label for="properties_in" class="form-label fw-semibold">Property Interest *</label>
-                                <select id="properties_in" name="properties_in" class="form-select" required>
+                                <select id="properties_in" name="properties_in" class="form-select form-select-lg" required
+                                        style="min-height: 48px; font-size: 1rem;">
                                     <option value="">Select your interest</option>
                                     <option value="Champasari" <?= old('properties_in') === 'Champasari' ? 'selected' : '' ?>>Champasari</option>
                                     <option value="Bagdogra" <?= old('properties_in') === 'Bagdogra' ? 'selected' : '' ?>>Bagdogra</option>
@@ -95,16 +99,17 @@
                                     <option value="Other" <?= old('properties_in') === 'Other' ? 'selected' : '' ?>>Other Location</option>
                                 </select>
                             </div>
-                            
+
                             <div class="col-12">
                                 <label for="message" class="form-label fw-semibold">Message *</label>
-                                <textarea id="message" name="message" class="form-control" rows="5" 
-                                          placeholder="Tell us about your property requirements..." required><?= old('message') ?></textarea>
+                                <textarea id="message" name="message" class="form-control form-control-lg" rows="5"
+                                          placeholder="Tell us about your property requirements..." required
+                                          style="min-height: 120px; font-size: 1rem;"><?= old('message') ?></textarea>
                             </div>
                         </div>
-                        
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg">
+
+                        <div class="mt-4 d-grid d-md-block">
+                            <button type="submit" class="btn btn-primary btn-lg px-4 py-3">
                                 <i class="fas fa-paper-plane me-2"></i>Send Message
                             </button>
                         </div>
@@ -114,12 +119,12 @@
             
             <!-- Contact Information -->
             <div class="col-lg-4">
-                <div class="bg-light rounded-4 p-4 p-md-5 h-100">
+                <div class="bg-light rounded-4 p-3 p-md-5 h-100">
                     <h3 class="h4 fw-bold text-dark mb-4">Get in Touch</h3>
                     
                     <div class="mb-4">
-                        <div class="d-flex align-items-start mb-3">
-                            <div class="bg-primary text-white rounded-circle p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <div class="d-flex align-items-start mb-3 contact-info-item">
+                            <div class="bg-primary text-white rounded-circle p-2 me-3 contact-info-icon" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-map-marker-alt"></i>
                             </div>
                             <div>
@@ -127,9 +132,9 @@
                                 <p class="text-muted mb-0">Siliguri, West Bengal, India</p>
                             </div>
                         </div>
-                        
-                        <div class="d-flex align-items-start mb-3">
-                            <div class="bg-primary text-white rounded-circle p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+
+                        <div class="d-flex align-items-start mb-3 contact-info-item">
+                            <div class="bg-primary text-white rounded-circle p-2 me-3 contact-info-icon" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-phone"></i>
                             </div>
                             <div>
@@ -137,9 +142,9 @@
                                 <p class="text-muted mb-0">+91 XXXXX XXXXX</p>
                             </div>
                         </div>
-                        
-                        <div class="d-flex align-items-start mb-3">
-                            <div class="bg-primary text-white rounded-circle p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+
+                        <div class="d-flex align-items-start mb-3 contact-info-item">
+                            <div class="bg-primary text-white rounded-circle p-2 me-3 contact-info-icon" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-envelope"></i>
                             </div>
                             <div>
@@ -147,9 +152,9 @@
                                 <p class="text-muted mb-0">info@realestate.com</p>
                             </div>
                         </div>
-                        
-                        <div class="d-flex align-items-start">
-                            <div class="bg-primary text-white rounded-circle p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+
+                        <div class="d-flex align-items-start contact-info-item">
+                            <div class="bg-primary text-white rounded-circle p-2 me-3 contact-info-icon" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div>

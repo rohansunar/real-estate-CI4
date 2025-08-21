@@ -230,9 +230,11 @@
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <?php 
+                                                <?php
+                                                $imageDisplayService = new \App\Services\ImageDisplayService();
                                                 $images = is_string($property['images']) ? json_decode($property['images'], true) : $property['images'];
-                                                $propertyImage = !empty($images[0]) ? base_url($images[0]) : base_url('assets/images/default-property.svg');
+                                                $firstImage = !empty($images) ? $images[0] : null;
+                                                $propertyImage = $imageDisplayService->getOptimizedImageUrl($firstImage, 'thumbnail');
                                                 ?>
                                                 <img src="<?= $propertyImage ?>" alt="<?= esc($property['title']) ?>" class="property-image me-3">
                                                 <div>

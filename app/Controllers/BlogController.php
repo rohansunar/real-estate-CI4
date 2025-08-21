@@ -221,6 +221,9 @@ class BlogController extends BaseController
 
     /**
      * Delete blog post
+     *
+     * Handles blog post deletion with proper cascade delete for featured images.
+     * Uses the centralized ImageManagementService for consistent file handling.
      */
     public function delete($id)
     {
@@ -234,10 +237,17 @@ class BlogController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Blog post not found']);
         }
 
+        // Delete blog post from database first
         if ($this->blogModel->delete($id)) {
-            // Delete featured image file if exists
-            if ($post['featured_image'] && file_exists(FCPATH . $post['featured_image'])) {
-                unlink(FCPATH . $post['featured_image']);
+            // Delete featured image using centralized service
+            if (!empty($post['featured_image'])) {
+                $imageService = new \App\Services\ImageManagementService();
+                $deletionResult = $imageService->deleteImage($post['featured_image']);
+
+                if (!$deletionResult['success']) {
+                    // Log the error but don't fail the blog post deletion
+                    log_message('warning', "Failed to delete blog featured image: {$post['featured_image']}. Error: {$deletionResult['message']}");
+                }
             }
 
             return $this->response->setJSON(['success' => true, 'message' => 'Blog post deleted successfully']);
@@ -248,21 +258,30 @@ class BlogController extends BaseController
 
     /**
      * Handle featured image upload
+     *
+     * Uses centralized ImageManagementService for consistent file handling
+     * and unified storage location.
      */
     private function handleImageUpload()
     {
         $image = $this->request->getFile('featured_image');
 
         if ($image && $image->isValid() && !$image->hasMoved()) {
-            // Create uploads directory if it doesn't exist
-            $uploadPath = FCPATH . 'uploads/blog';
-            if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0755, true);
-            }
+            try {
+                // Use centralized image management service
+                $imageService = new \App\Services\ImageManagementService();
+                $uploadResult = $imageService->uploadImage($image, 'blog');
 
-            $newName = $image->getRandomName();
-            $image->move($uploadPath, $newName);
-            return 'uploads/blog/' . $newName;
+                if ($uploadResult['success']) {
+                    return $uploadResult['file_path'];
+                } else {
+                    log_message('error', 'Blog image upload failed: ' . $uploadResult['message']);
+                    return null;
+                }
+            } catch (\Exception $e) {
+                log_message('error', 'Blog image upload exception: ' . $e->getMessage());
+                return null;
+            }
         }
 
         return null;

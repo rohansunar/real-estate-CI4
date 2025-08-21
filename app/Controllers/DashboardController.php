@@ -488,18 +488,29 @@ class DashboardController extends BaseController
 
     /**
      * Delete property
+     *
+     * Handles property deletion with automatic cascade delete for associated images.
+     * The cascade delete is now handled by the PropertyModel's beforeDelete callback,
+     * so this method focuses on the HTTP response handling.
      */
     public function deleteProperty($id)
     {
         if ($this->request->getMethod() === 'DELETE') {
+            // The PropertyModel's beforeDelete callback will automatically handle image deletion
             if ($this->propertyModel->delete($id)) {
                 if ($this->request->isAJAX()) {
-                    return $this->response->setJSON(['success' => true]);
+                    return $this->response->setJSON([
+                        'success' => true,
+                        'message' => 'Property and associated images deleted successfully'
+                    ]);
                 }
                 return redirect()->to('/dashboard/properties')->with('success', 'Property deleted successfully');
             } else {
                 if ($this->request->isAJAX()) {
-                    return $this->response->setJSON(['success' => false, 'message' => 'Failed to delete property']);
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Failed to delete property. Please try again.'
+                    ]);
                 }
                 return redirect()->to('/dashboard/properties')->with('error', 'Failed to delete property');
             }
@@ -617,7 +628,20 @@ class DashboardController extends BaseController
 
             // Validate the request data
             if (!$this->validate($validationRules, $validationMessages)) {
-                return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+                // Fix for Array to string conversion error in SiteURI.php
+                // When validation fails, we need to handle array form data properly
+                // to prevent arrays from being passed to URL generation functions
+                $inputData = $this->request->getPost();
+
+                // Convert array fields to JSON strings to prevent URL generation errors
+                if (isset($inputData['youtube_videos']) && is_array($inputData['youtube_videos'])) {
+                    $inputData['youtube_videos'] = json_encode($inputData['youtube_videos']);
+                }
+                if (isset($inputData['images']) && is_array($inputData['images'])) {
+                    $inputData['images'] = json_encode($inputData['images']);
+                }
+
+                return redirect()->back()->withInput($inputData)->with('errors', $this->validator->getErrors());
             }
 
             // Prepare data for update
@@ -656,12 +680,27 @@ class DashboardController extends BaseController
                 $userMessage = 'We are experiencing technical difficulties. Please try again in a few minutes.';
             }
 
-            return redirect()->back()->withInput()->with('error', $userMessage);
+            // Fix for Array to string conversion error in SiteURI.php
+            // Handle array form data properly in exception scenarios
+            $inputData = $this->request->getPost();
+
+            // Convert array fields to JSON strings to prevent URL generation errors
+            if (isset($inputData['youtube_videos']) && is_array($inputData['youtube_videos'])) {
+                $inputData['youtube_videos'] = json_encode($inputData['youtube_videos']);
+            }
+            if (isset($inputData['images']) && is_array($inputData['images'])) {
+                $inputData['images'] = json_encode($inputData['images']);
+            }
+
+            return redirect()->back()->withInput($inputData)->with('error', $userMessage);
         }
     }
 
     /**
      * Handle image upload
+     *
+     * Uses unified storage location (public/uploads/properties) for consistency
+     * with the centralized image management approach.
      */
     private function handleImageUpload()
     {
@@ -671,9 +710,19 @@ class DashboardController extends BaseController
         if (isset($images['images'])) {
             foreach ($images['images'] as $image) {
                 if ($image->isValid() && !$image->hasMoved()) {
-                    $newName = $image->getRandomName();
-                    $image->move(WRITEPATH . 'uploads/properties', $newName);
-                    $imagePaths[] = 'uploads/properties/' . $newName;
+                    try {
+                        // Use centralized image management service
+                        $imageService = new \App\Services\ImageManagementService();
+                        $uploadResult = $imageService->uploadImage($image, 'property');
+
+                        if ($uploadResult['success']) {
+                            $imagePaths[] = $uploadResult['file_path'];
+                        } else {
+                            log_message('error', 'Property image upload failed: ' . $uploadResult['message']);
+                        }
+                    } catch (\Exception $e) {
+                        log_message('error', 'Property image upload exception: ' . $e->getMessage());
+                    }
                 }
             }
         }
@@ -825,8 +874,8 @@ class DashboardController extends BaseController
     /**
      * Delete image file from filesystem
      *
-     * This method safely removes image files from the server's writable directory.
-     * It includes error handling to prevent application crashes if file deletion fails.
+     * This method safely removes image files using the centralized ImageManagementService.
+     * It handles both the old writable directory and new public directory locations.
      * All deletion attempts are logged for audit purposes.
      *
      * @param string $imagePath Relative path to the image file (e.g., 'uploads/properties/image.jpg')
@@ -834,19 +883,22 @@ class DashboardController extends BaseController
     private function deleteImageFile($imagePath)
     {
         try {
-            // Construct full path to the image file
-            $fullPath = WRITEPATH . $imagePath;
+            // Use centralized image management service for consistent handling
+            $imageService = new \App\Services\ImageManagementService();
+            $result = $imageService->deleteImage($imagePath);
 
-            // Check if file exists before attempting deletion
-            if (file_exists($fullPath)) {
-                // Attempt to delete the file
-                if (unlink($fullPath)) {
-                    log_message('info', "Successfully deleted image file: {$fullPath}");
-                } else {
-                    log_message('warning', "Failed to delete image file (unlink returned false): {$fullPath}");
+            if (!$result['success']) {
+                log_message('warning', "Failed to delete image file via ImageManagementService: {$imagePath}. Error: {$result['message']}");
+
+                // Fallback: try old location for backward compatibility during transition
+                $oldPath = WRITEPATH . $imagePath;
+                if (file_exists($oldPath)) {
+                    if (unlink($oldPath)) {
+                        log_message('info', "Successfully deleted image file from old location: {$oldPath}");
+                    } else {
+                        log_message('warning', "Failed to delete image file from old location: {$oldPath}");
+                    }
                 }
-            } else {
-                log_message('info', "Image file not found (may have been already deleted): {$fullPath}");
             }
         } catch (\Exception $e) {
             // Log error but don't throw exception to prevent breaking the update process

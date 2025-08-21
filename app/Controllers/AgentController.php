@@ -282,6 +282,9 @@ class AgentController extends BaseController
 
     /**
      * Delete agent
+     *
+     * Handles agent deletion with proper cascade delete for associated images.
+     * Uses the centralized ImageManagementService for consistent file handling.
      */
     public function delete($id)
     {
@@ -295,10 +298,17 @@ class AgentController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Agent not found']);
         }
 
+        // Delete agent from database first
         if ($this->agentModel->delete($id)) {
-            // Delete profile image file if exists
-            if ($agent['profile_image'] && file_exists(WRITEPATH . $agent['profile_image'])) {
-                unlink(WRITEPATH . $agent['profile_image']);
+            // Delete profile image using centralized service
+            if (!empty($agent['profile_image'])) {
+                $imageService = new \App\Services\ImageManagementService();
+                $deletionResult = $imageService->deleteImage($agent['profile_image']);
+
+                if (!$deletionResult['success']) {
+                    // Log the error but don't fail the agent deletion
+                    log_message('warning', "Failed to delete agent profile image: {$agent['profile_image']}. Error: {$deletionResult['message']}");
+                }
             }
 
             return $this->response->setJSON(['success' => true, 'message' => 'Agent deleted successfully']);
@@ -344,24 +354,16 @@ class AgentController extends BaseController
         }
 
         try {
-            // Ensure upload directory exists with proper permissions
-            $uploadPath = WRITEPATH . 'uploads/agents';
-            if (!is_dir($uploadPath)) {
-                if (!mkdir($uploadPath, 0755, true)) {
-                    throw new \Exception('Failed to create upload directory');
-                }
-            }
+            // Use centralized image management service for consistent handling
+            $imageService = new \App\Services\ImageManagementService();
+            $uploadResult = $imageService->uploadImage($image, 'agent');
 
-            // Generate secure random filename to prevent conflicts and security issues
-            $newName = $image->getRandomName();
-
-            // Move the uploaded file to secure location
-            if (!$image->move($uploadPath, $newName)) {
-                throw new \Exception('Failed to move uploaded image file');
+            if (!$uploadResult['success']) {
+                throw new \Exception($uploadResult['message']);
             }
 
             // Return relative path for database storage
-            return 'uploads/agents/' . $newName;
+            return $uploadResult['file_path'];
 
         } catch (\Exception $e) {
             // Log detailed error information for debugging

@@ -2,28 +2,62 @@
 
 namespace App\Controllers;
 
+/**
+ * Home Controller
+ *
+ * Handles the main homepage and public pages of the White Rock Realtor website.
+ * This controller manages the display of featured properties, property types,
+ * and provides the main entry point for visitors.
+ *
+ * Key Features:
+ * - Homepage with featured property carousel
+ * - Property type sections (house, villa, land, apartment)
+ * - SEO-optimized page titles and meta data
+ * - Mobile-first responsive design support
+ *
+ * @author White Rock Realtor Team
+ * @version 2.0 - Enhanced with comprehensive property display
+ * @since 2025-08-20
+ */
 class Home extends BaseController
 {
+    /**
+     * Display the homepage with featured properties and property type sections
+     *
+     * This method orchestrates the homepage display by:
+     * - Loading featured properties for the hero carousel
+     * - Fetching properties by type for category sections
+     * - Preparing SEO-friendly page data
+     * - Ensuring optimal performance with limited queries
+     *
+     * @return string The rendered homepage view
+     */
     public function index(): string
     {
+        // Initialize property model for data retrieval
         $propertyModel = new \App\Models\PropertyModel();
 
-        // Get featured properties for carousel (latest 5)
+        // Get featured properties for hero carousel (latest 5 for variety)
         $featuredProperties = $propertyModel->getFeaturedProperties(5);
 
-        // Get exactly 3 featured properties for the featured section (different from carousel)
+        // Get exactly 3 featured properties for the featured section
+        // (separate from carousel to avoid duplication)
         $featuredPropertiesSection = $propertyModel->getFeaturedProperties(3);
 
-        // Get properties by type with featured properties first (3 per type)
+        // Define property types to display on homepage
+        // Limited to 4 main categories for optimal user experience
         $propertyTypes = ['house', 'villa', 'land', 'apartment'];
         $propertiesByType = [];
 
+        // Fetch 3 properties per type to maintain page performance
+        // Featured properties are prioritized in each category
         foreach ($propertyTypes as $type) {
             $propertiesByType[$type] = $propertyModel->getPropertiesByType($type, 3);
         }
 
+        // Prepare data array for view rendering
         $data = [
-            'title' => 'Find Your Dream Home | White Rock Realtor',
+            'title' => 'Find Your Dream Home | White Rock Realtor', // SEO-optimized title
             'featuredProperties' => $featuredProperties,
             'featuredPropertiesSection' => $featuredPropertiesSection,
             'propertiesByType' => $propertiesByType

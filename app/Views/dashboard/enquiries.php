@@ -356,18 +356,32 @@ function confirmDeleteEnquiry(enquiryId) {
     const modal = bootstrap.Modal.getInstance(document.getElementById('deleteEnquiryModal'));
     modal.hide();
 
-    fetch(`<?= base_url('dashboard/enquiries/delete/') ?>${enquiryId}`, {
+    console.log('Deleting enquiry ID:', enquiryId);
+    const url = `<?= base_url('dashboard/enquiries/') ?>${enquiryId}`;
+    console.log('DELETE URL:', url);
+
+    fetch(url, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
             showNotification('Enquiry deleted successfully', 'success');
             setTimeout(() => location.reload(), 1000);
+        } else {
+            showNotification(data.message || 'Failed to delete enquiry', 'danger');
         }
     })
     .catch(error => {

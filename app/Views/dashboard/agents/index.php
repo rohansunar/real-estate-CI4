@@ -121,10 +121,6 @@
                             Status
                             <i class="fas fa-sort sort-indicator ms-1"></i>
                         </th>
-                        <th class="sortable" data-sort="6">
-                            Joined Date
-                            <i class="fas fa-sort sort-indicator ms-1"></i>
-                        </th>
                         <th class="text-end">
                             Actions
                         </th>
@@ -227,22 +223,7 @@
                                                 <i class="fas fa-times-circle me-1"></i>Inactive
                                             </span>
                                         <?php endif; ?>
-
-                                        <?php if ($agent['password']): ?>
-                                            <span class="badge bg-info ms-2" title="Agent has login credentials">
-                                                <i class="fas fa-key"></i>
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="badge bg-warning ms-2" title="No login credentials set">
-                                                <i class="fas fa-exclamation-triangle"></i>
-                                            </span>
-                                        <?php endif; ?>
                                     </div>
-                                </td>
-                                <td>
-                                    <small class="text-muted">
-                                        <?= date('M j, Y', strtotime($agent['created_at'])) ?>
-                                    </small>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center justify-content-end">
