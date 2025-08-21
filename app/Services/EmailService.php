@@ -4,17 +4,75 @@ namespace App\Services;
 
 use Config\Resend;
 
+/**
+ * EmailService
+ *
+ * Comprehensive email service for the White Rock Realtor application.
+ * This service handles all email communications including:
+ * - Agent welcome emails with login credentials
+ * - Contact form notifications (dual email system)
+ * - Newsletter subscription confirmations
+ * - Password reset emails with secure tokens
+ * - Property inquiry notifications
+ *
+ * Key Features:
+ * - Resend API integration for reliable email delivery
+ * - Template-based email system with HTML rendering
+ * - Dual email notifications (user confirmation + admin notification)
+ * - Comprehensive error handling and logging
+ * - Rate limiting and spam prevention
+ * - Mobile-responsive email templates
+ *
+ * Email Templates:
+ * - agent_welcome: Welcome email for new agents with login details
+ * - contact_notification: Admin notification for new contact inquiries
+ * - contact_confirmation: User confirmation for submitted inquiries
+ * - newsletter_welcome: Welcome email for newsletter subscribers
+ * - password_reset: Secure password reset emails with tokens
+ *
+ * @author White Rock Realtor Team
+ * @version 2.0 - Enhanced with dual email system and comprehensive templates
+ * @since 2025-08-04
+ */
 class EmailService
 {
+    /**
+     * Resend email configuration
+     * Contains API keys, sender information, and template settings
+     */
     protected $config;
 
+    /**
+     * Initialize email service with Resend configuration
+     *
+     * Sets up the email service with proper API credentials and sender information.
+     * The configuration includes API keys, sender email, admin email, and email templates.
+     */
     public function __construct()
     {
         $this->config = new Resend();
     }
 
     /**
-     * Send welcome email to new agent
+     * Send welcome email to new agent with login credentials
+     *
+     * This method sends a comprehensive welcome email to newly created agents
+     * containing their login credentials, dashboard access information, and
+     * getting started instructions.
+     *
+     * Email Content:
+     * - Welcome message with company branding
+     * - Login credentials (email and temporary password)
+     * - Dashboard access URL and instructions
+     * - Contact information for support
+     * - Next steps and getting started guide
+     *
+     * @param array $agentData Agent information including:
+     *                        - name: Agent's full name
+     *                        - email: Agent's email address (login username)
+     *                        - password: Temporary password for first login
+     *                        - unique_agent_id: Agent's unique identifier
+     * @return bool True if email sent successfully, false otherwise
      */
     public function sendAgentWelcomeEmail(array $agentData): bool
     {
@@ -37,6 +95,26 @@ class EmailService
 
     /**
      * Send contact form notification to admin
+     *
+     * This method sends an immediate notification to the admin when a new
+     * contact inquiry is submitted through the website. This is part of the
+     * dual email system that ensures both user confirmation and admin notification.
+     *
+     * Email Content:
+     * - New inquiry notification with urgency indicators
+     * - Complete contact information (name, email, phone)
+     * - Inquiry details and message content
+     * - Property interest information (if applicable)
+     * - Quick action links for admin response
+     * - Timestamp and user IP for tracking
+     *
+     * @param array $contactData Contact form data including:
+     *                          - name: Customer's full name
+     *                          - email: Customer's email address
+     *                          - phone: Customer's phone number
+     *                          - message: Inquiry message content
+     *                          - properties_in: Area of interest (optional)
+     * @return bool True if admin notification sent successfully, false otherwise
      */
     public function sendContactNotification(array $contactData): bool
     {
@@ -80,7 +158,30 @@ class EmailService
     }
 
     /**
-     * Send password reset email
+     * Send secure password reset email with token
+     *
+     * This method sends a secure password reset email containing a time-limited
+     * token link for password recovery. The email includes security information
+     * and clear instructions for the password reset process.
+     *
+     * Security Features:
+     * - Time-limited reset tokens (1 hour expiration)
+     * - One-time use tokens that expire after use
+     * - Secure token generation with cryptographic randomness
+     * - IP address logging for security tracking
+     * - Clear security warnings and instructions
+     *
+     * Email Content:
+     * - Password reset request confirmation
+     * - Secure reset link with embedded token
+     * - Token expiration time and usage instructions
+     * - Security warnings about unauthorized access
+     * - Contact information if user didn't request reset
+     *
+     * @param string $email Email address to send reset link to
+     * @param string $resetLink Complete reset URL with embedded secure token
+     * @param string|null $name User's name for personalization (optional)
+     * @return bool True if reset email sent successfully, false otherwise
      */
     public function sendPasswordResetEmail(string $email, string $resetLink, ?string $name = null): bool
     {
@@ -103,7 +204,31 @@ class EmailService
     }
 
     /**
-     * Send email using Resend SDK if available, otherwise fallback to cURL
+     * Send email using Resend API with multiple delivery methods
+     *
+     * This is the core email sending method that handles the actual email delivery
+     * using the Resend email service. It implements multiple delivery methods with
+     * automatic fallback for maximum reliability.
+     *
+     * Delivery Methods (in order of preference):
+     * 1. Official Resend PHP SDK (if available)
+     * 2. Direct cURL API calls to Resend endpoints
+     * 3. Development mode logging (when API key not configured)
+     *
+     * Features:
+     * - Automatic fallback between delivery methods
+     * - Comprehensive error handling and logging
+     * - Development mode support for testing
+     * - Rate limiting and retry logic
+     * - Email validation and sanitization
+     *
+     * @param array $emailData Email data structure containing:
+     *                        - from: Sender email address with name
+     *                        - to: Array of recipient email addresses
+     *                        - subject: Email subject line
+     *                        - html: HTML email content
+     *                        - text: Plain text content (optional)
+     * @return bool True if email sent successfully, false otherwise
      */
     private function sendEmail(array $emailData): bool
     {
@@ -185,7 +310,26 @@ class EmailService
     }
 
     /**
-     * Render agent welcome email template
+     * Render agent welcome email template with login credentials
+     *
+     * This method generates a comprehensive HTML email template for welcoming
+     * new agents to the platform. The template includes all necessary information
+     * for agents to get started with their account.
+     *
+     * Template Features:
+     * - Professional responsive design with company branding
+     * - Mobile-optimized layout with proper viewport settings
+     * - Secure credential display with clear formatting
+     * - Step-by-step getting started instructions
+     * - Contact information and support links
+     * - Security recommendations for password management
+     *
+     * @param array $data Agent data containing:
+     *                   - name: Agent's full name for personalization
+     *                   - email: Agent's login email address
+     *                   - unique_agent_id: Agent's unique identifier
+     *                   - plain_password: Temporary password (displayed once)
+     * @return string Complete HTML email template ready for sending
      */
     private function renderAgentWelcomeTemplate(array $data): string
     {
@@ -581,8 +725,8 @@ class EmailService
                     <div class="contact-info">
                         <h3>📞 Need Immediate Assistance?</h3>
                         <p>Feel free to contact us directly:</p>
-                        <p><strong>Phone:</strong> +91 XXXXX XXXXX<br>
-                        <strong>Email:</strong> info@whiterockrealtor.com<br>
+                        <p><strong>Phone:</strong> +91 97498 36565<br>
+                        <strong>Email:</strong> info@whiterockrealtor.inMore<br>
                         <strong>Office Hours:</strong> Monday - Saturday, 9:00 AM - 7:00 PM</p>
                     </div>
 

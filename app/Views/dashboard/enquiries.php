@@ -92,8 +92,12 @@
     </div>
     
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table id="enquiries-table" data-table class="table table-hover mb-0">
+        <!-- Desktop Table View - Hidden on mobile devices -->
+        <!-- Uses Bootstrap 5 responsive utilities: d-none d-lg-block shows only on large screens -->
+        <!-- Traditional table layout works well on desktop with sufficient screen space -->
+        <div class="d-none d-lg-block">
+            <div class="table-responsive">
+                <table id="enquiries-table" data-table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
                         <th class="sortable" data-sort="0">
@@ -206,6 +210,81 @@
                 </tbody>
             </table>
         </div>
+        </div>
+
+        <!-- Mobile Card View - Responsive design for small screens -->
+        <!-- Uses Bootstrap 5 responsive utilities: d-lg-none hides on large screens and up -->
+        <!-- Card-based layout provides better mobile UX compared to cramped table rows -->
+        <div class="d-lg-none">
+            <?php if (!empty($contacts)): ?>
+                <div class="row g-3 p-3">
+                    <?php foreach ($contacts as $contact): ?>
+                        <div class="col-12">
+                            <div class="card enquiry-mobile-card h-100 shadow-sm <?= !$contact['is_read'] ? 'border-warning' : '' ?>">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 2.5rem; height: 2.5rem;">
+                                                <i class="fas fa-user text-white"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="card-title mb-1 fw-bold"><?= esc($contact['name']) ?></h6>
+                                                <small class="text-muted"><?= esc($contact['email']) ?></small>
+                                            </div>
+                                        </div>
+                                        <?php if (!$contact['is_read']): ?>
+                                            <span class="badge bg-warning text-dark">New</span>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-phone me-1"></i><?= esc($contact['phone']) ?>
+                                        </small>
+                                        <span class="badge bg-secondary mt-1">
+                                            <?= esc(ucfirst($contact['properties_in'])) ?>
+                                        </span>
+                                    </div>
+
+                                    <p class="card-text small mb-2">
+                                        <?= esc(substr($contact['message'], 0, 100)) ?><?= strlen($contact['message']) > 100 ? '...' : '' ?>
+                                    </p>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <?= date('M j, Y g:i A', strtotime($contact['created_at'])) ?>
+                                        </small>
+
+                                        <div class="btn-group btn-group-sm">
+                                            <?php if (!$contact['is_read']): ?>
+                                                <button onclick="markAsRead(<?= $contact['id'] ?>)"
+                                                        class="btn btn-outline-primary btn-sm"
+                                                        title="Mark as Read">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            <?php endif; ?>
+                                            <button onclick="deleteEnquiry(<?= $contact['id'] ?>)"
+                                                    class="btn btn-outline-danger btn-sm"
+                                                    title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="text-center py-5">
+                    <div class="d-flex flex-column align-items-center">
+                        <i class="fas fa-envelope text-muted mb-3" style="font-size: 4rem;"></i>
+                        <h5 class="text-dark mb-2">No enquiries found</h5>
+                        <p class="text-muted">Customer enquiries will appear here when they contact you.</p>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 
@@ -305,7 +384,6 @@ function markAsRead(enquiryId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         showNotification('Error marking enquiry as read', 'danger');
     });
 }
@@ -383,7 +461,6 @@ function confirmDeleteEnquiry(enquiryId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         showNotification('Error deleting enquiry', 'danger');
     });
 }

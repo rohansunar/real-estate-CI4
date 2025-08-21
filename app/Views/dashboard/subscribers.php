@@ -115,8 +115,10 @@
     </div>
     
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table id="subscribers-table" data-table class="table table-hover mb-0">
+        <!-- Desktop Table View -->
+        <div class="d-none d-lg-block">
+            <div class="table-responsive">
+                <table id="subscribers-table" data-table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
                         <th class="sortable" data-sort="0">
@@ -195,6 +197,62 @@
                 </tbody>
             </table>
         </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="d-lg-none">
+            <?php if (!empty($subscribers)): ?>
+                <div class="row g-3 p-3">
+                    <?php foreach ($subscribers as $index => $subscriber): ?>
+                        <div class="col-12">
+                            <div class="card subscriber-mobile-card h-100 shadow-sm">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 2.5rem; height: 2.5rem;">
+                                                <i class="fas fa-envelope text-white"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="card-title mb-1 fw-bold"><?= esc($subscriber['email']) ?></h6>
+                                                <small class="text-muted">#<?= $index + 1 ?></small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            <?= date('M j, Y g:i A', strtotime($subscriber['created_at'])) ?>
+                                        </small>
+
+                                        <div class="btn-group btn-group-sm">
+                                            <button onclick="copyEmail('<?= esc($subscriber['email']) ?>')"
+                                                    class="btn btn-outline-primary btn-sm"
+                                                    title="Copy Email">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                            <button onclick="deleteSubscriber(<?= $subscriber['id'] ?>)"
+                                                    class="btn btn-outline-danger btn-sm"
+                                                    title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="text-center py-5">
+                    <div class="d-flex flex-column align-items-center">
+                        <i class="fas fa-users text-muted mb-3" style="font-size: 4rem;"></i>
+                        <h5 class="text-dark mb-2">No subscribers found</h5>
+                        <p class="text-muted">Newsletter subscribers will appear here when people subscribe to your newsletter.</p>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 
@@ -207,7 +265,6 @@ function copyEmail(email) {
     navigator.clipboard.writeText(email).then(function() {
         showNotification('Email copied to clipboard', 'success');
     }, function(err) {
-        console.error('Could not copy email: ', err);
         showNotification('Failed to copy email', 'danger');
     });
 }

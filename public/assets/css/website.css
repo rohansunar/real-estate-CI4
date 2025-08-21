@@ -8,8 +8,10 @@
 
 @media (max-width: 768px) {
   .hero-section {
-    height: 60vh;
-    min-height: 500px;
+    /* Remove fixed height constraints to allow content to flow naturally */
+    height: auto;
+    min-height: 100vh; /* Ensure full viewport coverage */
+    padding: 2rem 0 3rem 0; /* Add padding for proper spacing */
   }
 }
 
@@ -2072,8 +2074,10 @@ textarea.form-control {
 /* Landscape orientation optimizations for mobile */
 @media (max-width: 768px) and (orientation: landscape) {
   .hero-section {
-    height: 50vh;
-    min-height: 400px;
+    /* Allow natural content flow in landscape mode */
+    height: auto;
+    min-height: 100vh;
+    padding: 1.5rem 0 2rem 0;
   }
 
   .navbar {
@@ -2135,16 +2139,40 @@ textarea.form-control {
     margin-bottom: 2rem;
   }
 
+  /* Bootstrap Grid Mobile Enhancements for Hero Section */
+  .hero-section .row {
+    margin: 0; /* Remove negative margins that can cause overflow */
+  }
+
+  .hero-section .col-lg-8,
+  .hero-section .col-lg-4 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Ensure proper stacking order on mobile */
+  .hero-section .col-lg-8 {
+    order: 1; /* Hero content first */
+    margin-bottom: 1rem;
+  }
+
+  .hero-section .col-lg-4 {
+    order: 2; /* Contact form second */
+  }
+
   /* Homepage Get In Touch form mobile fixes
    * These styles specifically target the hero section contact form
    * to ensure proper visibility and spacing on mobile devices */
   .hero-section .col-lg-4 {
     margin-top: 2rem; /* Adds breathing room between hero content and form */
+    margin-bottom: 2rem; /* Ensure bottom spacing for form visibility */
   }
 
   .hero-section .bg-white {
     padding: 1.5rem !important; /* Optimized padding for mobile */
-    margin: 0 1rem; /* Side margins to prevent edge-to-edge layout */
+    margin: 0 1rem 2rem 1rem; /* Side margins and bottom margin for better spacing */
+    max-width: 100%; /* Ensure form doesn't overflow */
+    box-sizing: border-box; /* Include padding in width calculation */
   }
 
   /* Form elements mobile optimization
@@ -2165,6 +2193,10 @@ textarea.form-control {
     width: 100% !important; /* Full width for mobile layout */
     box-sizing: border-box !important; /* Prevents overflow issues */
     display: block !important; /* Ensures proper block-level behavior */
+    margin-bottom: 0.75rem !important; /* Consistent spacing between fields */
+    background-color: #fff !important; /* Ensure white background */
+    -webkit-appearance: none; /* Remove iOS styling */
+    appearance: none; /* Remove default styling */
   }
 
   .form-control:focus,
@@ -2197,6 +2229,10 @@ textarea.form-control {
     box-sizing: border-box !important;
     border-radius: 0.75rem !important;
     font-weight: 600 !important;
+    margin-top: 0.5rem !important; /* Add top margin for better spacing */
+    margin-bottom: 1rem !important; /* Ensure bottom spacing */
+    display: block !important; /* Ensure proper block display */
+    text-align: center !important; /* Center button text */
   }
 
   /* View All buttons alignment and responsiveness */
@@ -2241,25 +2277,42 @@ textarea.form-control {
     padding: 1rem !important;
   }
 
+  /* Hero section container adjustments for extra small devices */
+  .hero-section .container {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .hero-section .col-lg-8,
+  .hero-section .col-lg-4 {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
   /* Homepage Get In Touch form for extra small devices */
   .hero-section .bg-white {
     padding: 1rem !important;
-    margin: 0 0.5rem;
+    margin: 0 0.5rem 2rem 0.5rem; /* Add bottom margin */
     border-radius: 1rem !important;
+    max-width: calc(100% - 1rem); /* Ensure proper width calculation */
   }
 
   .hero-section .col-lg-4 {
     margin-top: 1.5rem;
+    margin-bottom: 2rem; /* Ensure bottom spacing */
   }
 
   /* Ensure form elements are fully visible */
   #getInTouchForm .form-control,
   #getInTouchForm .form-select {
     margin-bottom: 0.75rem !important;
+    min-height: 50px !important; /* Slightly larger for very small screens */
   }
 
   #getInTouchForm .btn {
-    margin-top: 0.5rem !important;
+    margin-top: 0.75rem !important;
+    margin-bottom: 1rem !important;
+    min-height: 50px !important; /* Larger touch target for small screens */
   }
 
   .form-control,
@@ -2278,22 +2331,53 @@ textarea.form-control {
 
 /* Accessibility improvements for mobile */
 @media (max-width: 768px) {
-  /* Larger focus indicators */
+  /* Larger focus indicators for WCAG 2.1 AA compliance */
   .btn:focus,
   .form-control:focus,
+  .form-select:focus,
   .nav-link:focus {
-    outline: 3px solid rgba(0, 123, 255, 0.5);
-    outline-offset: 2px;
+    outline: 3px solid rgba(59, 130, 246, 0.6) !important;
+    outline-offset: 2px !important;
   }
 
-  /* Better contrast for small text */
+  /* Enhanced focus indicators for Get In Touch form */
+  #getInTouchForm .btn:focus,
+  #getInTouchForm .form-control:focus,
+  #getInTouchForm .form-select:focus {
+    outline: 3px solid rgba(59, 130, 246, 0.8) !important;
+    outline-offset: 3px !important;
+  }
+
+  /* Better contrast for small text - WCAG AA compliant */
   .text-muted {
     color: #6c757d !important;
   }
 
-  /* Ensure minimum text size */
+  /* Ensure minimum text size for readability */
   small, .small {
-    font-size: 0.875rem;
+    font-size: 0.875rem !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Ensure form labels are properly associated and visible */
+  .form-label {
+    color: #374151 !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    #getInTouchForm .form-control,
+    #getInTouchForm .form-select {
+      border: 3px solid #000000 !important;
+    }
+
+    #getInTouchForm .btn-primary {
+      background-color: #000000 !important;
+      border-color: #000000 !important;
+      color: #ffffff !important;
+    }
   }
 }
 
@@ -2305,6 +2389,85 @@ textarea.form-control {
   .property-card {
     transition: none;
     animation: none;
+  }
+}
+
+/* Specific mobile screen size optimizations */
+/* iPhone SE and similar (320px) */
+@media (max-width: 320px) {
+  .hero-section .bg-white {
+    margin: 0 0.25rem 2rem 0.25rem !important;
+    padding: 0.75rem !important;
+  }
+
+  #getInTouchForm .form-control,
+  #getInTouchForm .form-select {
+    font-size: 16px !important;
+    min-height: 52px !important; /* Larger for very small screens */
+  }
+
+  #getInTouchForm .btn {
+    min-height: 52px !important;
+    font-size: 1rem !important;
+  }
+}
+
+/* iPhone 6/7/8 and similar (375px) */
+@media (min-width: 321px) and (max-width: 375px) {
+  .hero-section .bg-white {
+    margin: 0 0.5rem 2rem 0.5rem !important;
+    padding: 1rem !important;
+  }
+}
+
+/* iPhone 6/7/8 Plus and similar (414px) */
+@media (min-width: 376px) and (max-width: 414px) {
+  .hero-section .bg-white {
+    margin: 0 0.75rem 2rem 0.75rem !important;
+    padding: 1.25rem !important;
+  }
+}
+
+/* Additional mobile form enhancements for better visibility */
+@media (max-width: 768px) {
+  /* Ensure form container is always visible */
+  #getInTouchForm {
+    position: relative;
+    z-index: 10;
+    background: transparent;
+  }
+
+  /* Improve form field contrast and visibility */
+  #getInTouchForm .form-control,
+  #getInTouchForm .form-select {
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #374151 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  #getInTouchForm .form-control:focus,
+  #getInTouchForm .form-select:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    background-color: #ffffff !important;
+  }
+
+  /* Ensure button is always visible and accessible */
+  #getInTouchForm .btn-primary {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  #getInTouchForm .btn-primary:hover,
+  #getInTouchForm .btn-primary:focus {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
   }
 }
 

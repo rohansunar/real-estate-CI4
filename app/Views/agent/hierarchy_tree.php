@@ -354,7 +354,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError(data.message || 'Failed to load hierarchy tree');
             }
         } catch (error) {
-            console.error('Error loading hierarchy tree:', error);
             showError('Failed to load hierarchy tree');
         }
     }
@@ -523,7 +522,6 @@ document.addEventListener('DOMContentLoaded', function() {
             renderTree();
 
         } catch (error) {
-            console.error('Error in toggleNode:', error);
             // Graceful degradation - still attempt basic toggle
             const isExpanded = expandedNodes.has(agentId);
             if (isExpanded) {
@@ -577,7 +575,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             return null;
         } catch (error) {
-            console.error('Error in getNodeLevel:', error);
             return null;
         }
     }
@@ -612,7 +609,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
         } catch (error) {
-            console.error('Error in collapseNodesAtSameLevel:', error);
+            // Error in collapseNodesAtSameLevel - continue execution
         }
     }
 
@@ -651,7 +648,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
         } catch (error) {
-            console.error('Error in findNodesAtLevel:', error);
+            // Error in findNodesAtLevel - continue execution
         }
 
         return nodesAtLevel;

@@ -245,7 +245,7 @@
         popover.dispose();
         activePopovers.delete(popoverId);
       } catch (e) {
-        console.warn('Error disposing popover:', e);
+        // Error disposing popover - continue cleanup
       }
     }
 
@@ -266,7 +266,7 @@
       try {
         popover.dispose();
       } catch (e) {
-        console.warn('Error disposing popover on unload:', e);
+        // Error disposing popover on unload - continue cleanup
       }
     });
     activePopovers.clear();
@@ -276,7 +276,6 @@
   async function fetchSummary(agentId) {
     // Input validation
     if (!agentId || isNaN(parseInt(agentId))) {
-      console.error('Invalid agent ID provided:', agentId);
       return '<div class="small text-danger"><i class="fas fa-exclamation-triangle me-1"></i>Invalid agent ID</div>';
     }
 
@@ -284,7 +283,6 @@
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
-        console.warn(`Request timeout for agent ${agentId}`);
       }, 8000); // Increased timeout to 8 seconds
 
       const res = await fetch('<?= base_url('agent/hierarchy/summary/') ?>' + agentId, {
@@ -300,7 +298,6 @@
 
       if (!res.ok) {
         const errorMsg = `HTTP ${res.status}: ${res.statusText}`;
-        console.warn('Failed to fetch agent summary:', errorMsg);
 
         // User-friendly error messages based on status code
         switch (res.status) {
@@ -321,14 +318,12 @@
 
       // Validate response content
       if (!content || content.trim().length === 0) {
-        console.warn('Empty response received for agent:', agentId);
         return '<div class="small text-muted"><i class="fas fa-info-circle me-1"></i>No details available</div>';
       }
 
       return content;
 
     } catch(e) {
-      console.error('Error fetching agent summary for agent', agentId, ':', e);
 
       // Specific error handling
       if (e.name === 'AbortError') {
@@ -358,7 +353,6 @@
    */
   function hideAllNestedLevels(startingRow) {
     if (!startingRow || !startingRow.hasAttribute('data-level-row')) {
-      console.warn('hideAllNestedLevels: Invalid starting row provided');
       return;
     }
 
@@ -391,7 +385,6 @@
         }
       }, 300);
     } catch (error) {
-      console.error('Error in hideAllNestedLevels:', error);
       // Fallback: immediately hide without animation
       if (currentRow && currentRow.parentNode) {
         currentRow.style.display = 'none';
@@ -407,7 +400,6 @@
    */
   function hideOnlyCurrentLevel(currentRow) {
     if (!currentRow || !currentRow.hasAttribute('data-level-row')) {
-      console.warn('hideOnlyCurrentLevel: Invalid row provided');
       return;
     }
 
@@ -423,7 +415,6 @@
         }
       }, 300);
     } catch (error) {
-      console.error('Error in hideOnlyCurrentLevel:', error);
       // Fallback: immediately hide without animation
       if (currentRow && currentRow.parentNode) {
         currentRow.style.display = 'none';
@@ -493,7 +484,6 @@
       await collapseWithinSameRow(currentLevelRow, currentParentId, currentLevel);
 
     } catch (error) {
-      console.error('Error in collapseOtherExpandedAgents:', error);
       // Graceful degradation - continue execution even if accordion behavior fails
     }
   }
@@ -519,7 +509,7 @@
         await collapseExpandedAgent(expandBtn, levelRow, currentLevel);
       }
     } catch (error) {
-      console.error('Error in collapseWithinSameRow:', error);
+      // Error in collapseWithinSameRow - continue execution
     }
   }
 
@@ -537,7 +527,6 @@
       const targetLevel = expandBtn.getAttribute('data-target-level');
 
       if (!parentId || !targetLevel) {
-        console.warn('Missing parentId or targetLevel for expand button');
         return;
       }
 
@@ -577,7 +566,7 @@
         expandBtn.disabled = false;
       }
     } catch (error) {
-      console.error('Error in collapseExpandedAgent:', error);
+      // Error in collapseExpandedAgent - continue execution
     }
   }
 
@@ -640,7 +629,6 @@
 
       return null; // No existing children row found - safe to create new one
     } catch (error) {
-      console.error('Error in findExistingChildrenRow:', error);
       return null; // Fail safely - allow new row creation
     }
   }
@@ -727,7 +715,6 @@
               try {
                 pop.hide();
               } catch (e) {
-                console.warn('Error hiding popover:', e);
                 popoverElement.style.display = 'none';
               }
             };
@@ -737,7 +724,7 @@
             closeBtn._closeHandler = closeHandler; // Store for cleanup
           }
         } catch (e) {
-          console.warn('Error in popover animation:', e);
+          // Error in popover animation - continue
         }
       }
     };
@@ -762,7 +749,6 @@
       pop.show();
       card.setAttribute('data-popover-loaded','1');
     } catch (e) {
-      console.error('Error showing popover:', e);
       cleanupPopover(card);
     }
   });
@@ -802,7 +788,6 @@
         }, 150);
 
       } catch (error) {
-        console.error('Pagination error:', error);
         row.classList.remove('loading');
 
         // Show user-friendly error message
@@ -836,7 +821,6 @@
 
     // Only allow expansion for Level 1-2
     if (currentLevel > 2) {
-      console.warn('Expansion not allowed for levels > 2');
       return;
     }
 
@@ -960,7 +944,6 @@
       btn.setAttribute('aria-expanded', 'true');
 
     } catch (err) {
-      console.error('Error loading children:', err);
 
       // Enhanced error handling with user-friendly message
       loadingRow.outerHTML = `
@@ -1396,7 +1379,6 @@ function deleteSubAgent(agentId, agentName) {
         document.getElementById('deleteForm').action = '<?= base_url('agent/sub-agents/delete/') ?>' + agentId;
         new bootstrap.Modal(document.getElementById('deleteModal')).show();
     } catch (error) {
-        console.error('Error showing delete modal:', error);
         alert('Unable to show delete confirmation. Please refresh the page and try again.');
     }
 }
@@ -1437,7 +1419,6 @@ function viewSubAgent(agentId) {
             modalBody.innerHTML = html;
         })
         .catch(error => {
-            console.error('Error loading agent details:', error);
             let errorMessage = 'Failed to load sub-agent details. Please try again.';
 
             if (error.name === 'AbortError') {
@@ -1461,7 +1442,6 @@ function viewSubAgent(agentId) {
             `;
         });
     } catch (error) {
-        console.error('Error showing view modal:', error);
         alert('Unable to show agent details. Please refresh the page and try again.');
     }
 }

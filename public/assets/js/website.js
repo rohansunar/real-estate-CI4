@@ -83,7 +83,7 @@ function executeCleanup() {
         try {
             cleanupFn();
         } catch (error) {
-            console.warn('Cleanup function failed:', error);
+            // Cleanup function failed - silently continue
         }
     });
     cleanupRegistry.clear();
@@ -127,16 +127,21 @@ window.addEventListener('pagehide', executeCleanup);
 
 /**
  * Centralized error handling system
- * Provides user-friendly error messages and logging
+ *
+ * This system provides consistent, user-friendly error handling across the application.
+ * It converts technical errors into readable messages that users can understand and act upon.
+ *
+ * Key Features:
+ * - Converts technical errors to user-friendly messages
+ * - Provides fallback notification system when main notification is unavailable
+ * - Maintains consistent error presentation across all forms and interactions
+ * - Simplifies error handling code by centralizing message logic
  */
 const ErrorHandler = {
     /**
      * Handle and display user-friendly errors
      */
-    handle: function(error, context = 'Application', userMessage = null) {
-        // Log technical error for developers
-        console.error(`[${context}] Error:`, error);
-
+    handle: function(error, userMessage = null) {
         // Show user-friendly message
         const friendlyMessage = userMessage || this.getFriendlyMessage(error);
         if (typeof showNotification === 'function') {
@@ -820,20 +825,44 @@ function showPropertyModal(propertyId) {
  * - Handles both success and error responses gracefully
  * - Provides user-friendly error messages
  * - Supports both modal and inline forms
- * - Implements proper error handling and logging
+ * - Implements proper error handling with centralized ErrorHandler
+ * - Handles submit button location differences (inside form vs modal footer)
+ *
+ * Technical Implementation:
+ * - Uses FormData API for secure data transmission
+ * - Implements CSRF protection via hidden form fields
+ * - Provides visual feedback during submission process
+ * - Gracefully handles network errors and server responses
+ * - Automatically closes modal on successful submission
  *
  * @param {HTMLFormElement} form - The form element to submit
- * @param {boolean} isModal - Whether the form is in a modal (affects close behavior)
+ * @param {boolean} isModal - Whether the form is in a modal (affects submit button location and close behavior)
  */
 function handleContactFormSubmission(form, isModal = false) {
     // Extract form data and prepare for submission
     const formData = new FormData(form);
-    const submitButton = form.querySelector('button[type="submit"]');
+
+    // Smart submit button detection to handle different form layouts
+    // For modal forms, the submit button is outside the form (in modal footer)
+    // For regular forms, the submit button is inside the form
+    // This approach ensures compatibility with Bootstrap 5 modal patterns
+    let submitButton = form.querySelector('button[type="submit"]');
+
+    // If not found inside form and it's a modal, look for button with form attribute
+    // This handles Bootstrap 5 modal pattern where submit button is in modal footer
+    if (!submitButton && isModal) {
+        const formId = form.getAttribute('id');
+        if (formId) {
+            submitButton = document.querySelector(`button[type="submit"][form="${formId}"]`);
+        }
+    }
 
     // Check if submit button exists before accessing its properties
     if (!submitButton) {
-        console.error('Contact form submit button not found');
-        showNotification('Form submission error. Please refresh the page and try again.', 'error');
+        ErrorHandler.handle(
+            new Error('Submit button not found for form: ' + (form.id || 'unnamed')),
+            'Form submission error. Please refresh the page and try again.'
+        );
         return;
     }
 
@@ -878,8 +907,7 @@ function handleContactFormSubmission(form, isModal = false) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        showNotification('Network error. Please check your connection and try again.', 'error');
+        ErrorHandler.handle(error, 'Network error. Please check your connection and try again.');
     })
     .finally(() => {
         // Reset button if it exists
@@ -900,14 +928,18 @@ function handleNewsletterSubmission(form) {
 
     // Check if required elements exist before accessing their properties
     if (!submitButton) {
-        console.error('Newsletter form submit button not found');
-        showNotification('Form submission error. Please refresh the page and try again.', 'error');
+        ErrorHandler.handle(
+            new Error('Submit button not found for newsletter form'),
+            'Form submission error. Please refresh the page and try again.'
+        );
         return;
     }
 
     if (!emailInput) {
-        console.error('Newsletter form email input not found');
-        showNotification('Form submission error. Please refresh the page and try again.', 'error');
+        ErrorHandler.handle(
+            new Error('Email input not found for newsletter form'),
+            'Form submission error. Please refresh the page and try again.'
+        );
         return;
     }
 
@@ -959,9 +991,8 @@ function handleNewsletterSubmission(form) {
         }
     })
     .catch(error => {
-        console.error('Newsletter subscription error:', error);
+        ErrorHandler.handle(error, 'Network error. Please check your connection and try again.');
         form.classList.remove('newsletter-loading');
-        showNotification('Network error. Please check your connection and try again.', 'error');
     })
     .finally(() => {
         // Reset button and input if they exist
@@ -1397,7 +1428,6 @@ function initializeImageHandling() {
             // If even fallback fails, show placeholder
             img.style.backgroundColor = '#f1f5f9';
             img.alt = 'Image not available';
-            console.warn('Failed to load property image and fallback:', img.dataset.src || img.src);
         };
         fallbackImg.src = fallbackSrc;
     }
@@ -1769,6 +1799,5 @@ function handleLazyImageError(img) {
     img.src = fallbackSrc;
     img.alt = img.alt || 'Image not available';
 
-    // Log error for debugging
-    console.warn('Lazy image failed to load:', img.dataset.lazySrc);
+    // Image failed to load - fallback applied
 }

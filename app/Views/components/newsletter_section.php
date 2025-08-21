@@ -209,7 +209,6 @@ function handleNewsletterSectionSubmission(form) {
         }
     })
     .catch(error => {
-        console.error('Newsletter subscription error:', error);
         form.classList.remove('newsletter-loading');
         
         if (typeof showNotification === 'function') {

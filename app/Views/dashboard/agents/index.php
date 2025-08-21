@@ -93,8 +93,10 @@
     </div>
     
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table id="agents-table" data-table class="table table-hover mb-0">
+        <!-- Desktop Table View -->
+        <div class="d-none d-lg-block">
+            <div class="table-responsive">
+                <table id="agents-table" data-table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
                         <th class="sortable" data-sort="0">
@@ -261,6 +263,113 @@
                 </tbody>
             </table>
         </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="d-lg-none">
+            <?php if (!empty($agents)): ?>
+                <div class="row g-3 p-3">
+                    <?php foreach ($agents as $agent): ?>
+                        <div class="col-12">
+                            <div class="card agent-mobile-card h-100 shadow-sm">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <?php if ($agent['profile_image']): ?>
+                                                <img src="<?= base_url($agent['profile_image']) ?>"
+                                                     alt="<?= esc($agent['name']) ?>"
+                                                     class="rounded-circle me-3"
+                                                     style="width: 2.5rem; height: 2.5rem; object-fit: cover;">
+                                            <?php else: ?>
+                                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 2.5rem; height: 2.5rem;">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div>
+                                                <h6 class="card-title mb-1 fw-bold"><?= esc($agent['name']) ?></h6>
+                                                <small class="text-muted"><?= esc($agent['email']) ?></small>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <?php if ($agent['is_active']): ?>
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check-circle me-1"></i>Active
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times-circle me-1"></i>Inactive
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-phone me-1"></i><?= esc($agent['phone']) ?>
+                                        </small>
+                                        <?php if ($agent['unique_agent_id']): ?>
+                                            <small class="text-muted d-block">
+                                                <i class="fas fa-id-card me-1"></i>ID: <?= esc($agent['unique_agent_id']) ?>
+                                            </small>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <?php if ($agent['qualification']): ?>
+                                        <p class="card-text small mb-2">
+                                            <strong>Qualification:</strong> <?= esc($agent['qualification']) ?>
+                                        </p>
+                                    <?php endif; ?>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <?php if ($agent['parent_agent_id']): ?>
+                                                <?php
+                                                // Get parent agent info (same logic as desktop table)
+                                                $agentModel = new \App\Models\AgentModel();
+                                                $parentAgent = $agentModel->find($agent['parent_agent_id']);
+                                                ?>
+                                                <?php if ($parentAgent): ?>
+                                                    <i class="fas fa-sitemap me-1"></i>Under: <?= esc($parentAgent['name']) ?>
+                                                <?php else: ?>
+                                                    <i class="fas fa-exclamation-triangle me-1 text-warning"></i>Parent not found
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                <i class="fas fa-crown me-1"></i>Primary Agent
+                                            <?php endif; ?>
+                                        </small>
+
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="<?= base_url('dashboard/agents/edit/' . $agent['id']) ?>"
+                                               class="btn btn-outline-secondary btn-sm"
+                                               title="Edit Agent">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button onclick="deleteAgent(<?= $agent['id'] ?>)"
+                                                    class="btn btn-outline-danger btn-sm"
+                                                    title="Delete Agent">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="text-center py-5">
+                    <div class="d-flex flex-column align-items-center">
+                        <i class="fas fa-user-tie text-muted mb-3" style="font-size: 4rem;"></i>
+                        <h5 class="text-dark mb-2">No agents found</h5>
+                        <p class="text-muted">Start by adding your first real estate agent.</p>
+                        <a href="<?= base_url('dashboard/agents/create') ?>" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>
+                            Add First Agent
+                        </a>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 
@@ -405,7 +514,6 @@ function confirmDeleteAgent(agentId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         showNotification('Error deleting agent', 'danger');
     });
 }

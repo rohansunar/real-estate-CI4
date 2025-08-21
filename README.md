@@ -245,8 +245,8 @@ Additionally, make sure that the following extensions are enabled in your PHP:
 - [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
 
 
-verify development server starts without errors
-Dont Modify any other Existing Features and Design
+verify development server starts and runs without errors
+Dont Modify any other Existing Features and Design expect specific onces mentioned in the task.
 Test the website in browser to ensure everything works correctly
 Remove any unnecessary/unused code related to the applications module
 Verify both authenticated and unauthenticated user scenarios
@@ -260,6 +260,7 @@ Responsive Design with Mobile Devices first
 Design a modern, minimalistic, and elegant responsive. The design should:
 Use clean lines, ample white space, and soft neutral tones (e.g., whites, blue, muted pastels).
 Use a single-column layout for mobile, expanding to a centered grid layout on desktop.
+Align buttons, icons, text, fonts, and images according to screen sizes.
 Incorporate a sticky top navbar with logo and smooth-scrolling anchors.
 Design must follow accessibility best practices (WCAG 2.1 AA).
 All UI elements must use a consistent design system (typography scale, button variants, spacing units).

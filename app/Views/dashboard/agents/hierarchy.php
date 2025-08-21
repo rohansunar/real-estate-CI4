@@ -165,7 +165,6 @@ async function viewAgentLogs(agentId) {
             const children = node?.querySelector(':scope > .tree-children');
 
             if (!children || !node) {
-                console.warn('Admin hierarchy: Invalid node structure');
                 return;
             }
 
@@ -190,7 +189,6 @@ async function viewAgentLogs(agentId) {
             }
 
         } catch (error) {
-            console.error('Error in admin hierarchy toggle:', error);
             // Graceful degradation - fall back to basic toggle
             basicAdminToggle(btn);
         }
@@ -230,7 +228,7 @@ async function viewAgentLogs(agentId) {
             });
 
         } catch (error) {
-            console.error('Error in autoCollapseAdminNodesAtSameLevel:', error);
+            // Error in autoCollapseAdminNodesAtSameLevel - continue execution
         }
     }
 
@@ -262,7 +260,7 @@ async function viewAgentLogs(agentId) {
             }
 
         } catch (error) {
-            console.error('Error in expandAdminNode:', error);
+            // Error in expandAdminNode - continue execution
         }
     }
 
@@ -294,7 +292,7 @@ async function viewAgentLogs(agentId) {
             }
 
         } catch (error) {
-            console.error('Error in collapseAdminNode:', error);
+            // Error in collapseAdminNode - continue execution
         }
     }
 
@@ -324,7 +322,7 @@ async function viewAgentLogs(agentId) {
             }
 
         } catch (error) {
-            console.error('Error in basicAdminToggle:', error);
+            // Error in basicAdminToggle - continue execution
         }
     }
 
@@ -336,7 +334,6 @@ async function viewAgentLogs(agentId) {
             <div class="alert alert-danger">
                 <i class="fas fa-exclamation-triangle me-2"></i>Unable to load logs. Please try again.
             </div>`;
-        console.error(e);
     }
 }
 </script>

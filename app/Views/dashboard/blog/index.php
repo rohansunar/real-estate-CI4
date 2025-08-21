@@ -125,8 +125,10 @@
     </div>
     
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
+        <!-- Desktop Table View -->
+        <div class="d-none d-lg-block">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
                         <th>Post</th>
@@ -241,6 +243,113 @@
                 </tbody>
             </table>
         </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="d-lg-none">
+            <?php if (!empty($posts)): ?>
+                <div class="row g-3 p-3">
+                    <?php foreach ($posts as $post): ?>
+                        <div class="col-12">
+                            <div class="card blog-mobile-card h-100 shadow-sm">
+                                <div class="row g-0">
+                                    <div class="col-4">
+                                        <?php if ($post['featured_image']): ?>
+                                            <img src="<?= base_url($post['featured_image']) ?>"
+                                                 alt="<?= esc($post['title']) ?>"
+                                                 class="img-fluid rounded-start h-100 object-cover"
+                                                 style="min-height: 120px; max-height: 120px;">
+                                        <?php else: ?>
+                                            <div class="bg-light rounded-start d-flex align-items-center justify-content-center h-100"
+                                                 style="min-height: 120px;">
+                                                <i class="fas fa-blog text-muted" style="font-size: 2rem;"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="card-title mb-1 fw-bold text-truncate" style="max-width: 70%;">
+                                                    <?= esc($post['title']) ?>
+                                                </h6>
+                                                <div class="d-flex align-items-center">
+                                                    <?php
+                                                    $statusClass = [
+                                                        'published' => 'success',
+                                                        'draft' => 'warning',
+                                                        'archived' => 'secondary'
+                                                    ];
+                                                    $statusIcon = [
+                                                        'published' => 'check-circle',
+                                                        'draft' => 'edit',
+                                                        'archived' => 'archive'
+                                                    ];
+                                                    ?>
+                                                    <span class="badge bg-<?= $statusClass[$post['status']] ?>">
+                                                        <i class="fas fa-<?= $statusIcon[$post['status']] ?> me-1"></i>
+                                                        <?= ucfirst($post['status']) ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <span class="badge bg-secondary me-2">
+                                                    <?= esc($post['category']) ?>
+                                                </span>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-eye me-1"></i><?= number_format($post['views']) ?> views
+                                                </small>
+                                            </div>
+
+                                            <p class="card-text small text-muted mb-2">
+                                                <?= esc(substr(strip_tags($post['content']), 0, 80)) ?>...
+                                            </p>
+
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">
+                                                    <?= date('M j, Y', strtotime($post['created_at'])) ?>
+                                                </small>
+
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="<?= base_url('blog/' . $post['slug']) ?>"
+                                                       target="_blank"
+                                                       class="btn btn-outline-primary btn-sm"
+                                                       title="View Post">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="<?= base_url('dashboard/blog/edit/' . $post['id']) ?>"
+                                                       class="btn btn-outline-secondary btn-sm"
+                                                       title="Edit Post">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button onclick="deletePost(<?= $post['id'] ?>)"
+                                                            class="btn btn-outline-danger btn-sm"
+                                                            title="Delete Post">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="text-center py-5">
+                    <div class="d-flex flex-column align-items-center">
+                        <i class="fas fa-blog text-muted mb-3" style="font-size: 4rem;"></i>
+                        <h5 class="text-dark mb-2">No blog posts found</h5>
+                        <p class="text-muted">Start by creating your first blog post.</p>
+                        <a href="<?= base_url('dashboard/blog/create') ?>" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>
+                            Create First Post
+                        </a>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 
@@ -308,7 +417,6 @@ function confirmDeletePost(postId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         showNotification('Error deleting blog post', 'danger');
     });
 }

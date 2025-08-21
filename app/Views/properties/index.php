@@ -1263,7 +1263,6 @@ function initializeCompactSearch() {
 
                 // Validate form exists
                 if (!searchForm) {
-                    console.error('Search form not found');
                     showQuickFilterError('Search form not available. Please refresh the page.');
                     return;
                 }
@@ -1275,7 +1274,6 @@ function initializeCompactSearch() {
                         locationSelect.value = location;
                         locationSelect.dispatchEvent(new Event('change'));
                     } else {
-                        console.error('Location select not found');
                         showQuickFilterError('Location filter not available.');
                         return;
                     }
@@ -1287,7 +1285,6 @@ function initializeCompactSearch() {
                         typeSelect.value = type;
                         typeSelect.dispatchEvent(new Event('change'));
                     } else {
-                        console.error('Type select not found');
                         showQuickFilterError('Property type filter not available.');
                         return;
                     }
@@ -1299,7 +1296,6 @@ function initializeCompactSearch() {
                         featuredCheckbox.checked = true;
                         featuredCheckbox.dispatchEvent(new Event('change'));
                     } else {
-                        console.error('Featured checkbox not found');
                         showQuickFilterError('Featured filter not available.');
                         return;
                     }
@@ -1326,13 +1322,11 @@ function initializeCompactSearch() {
                             window.location.href = searchForm.action + '?' + params.toString();
                         }
                     } catch (submitError) {
-                        console.error('Form submission error:', submitError);
                         showQuickFilterError('Unable to apply filter. Please try using the search form manually.');
                     }
                 }, 300);
 
             } catch (error) {
-                console.error('Quick filter error:', error);
                 showQuickFilterError('An error occurred while applying the filter. Please try again.');
             }
         });
@@ -1456,7 +1450,6 @@ function shareProperty(propertyId) {
                     alert('Property link copied to clipboard!');
                 }
             }).catch(err => {
-                console.error('Failed to copy to clipboard:', err);
                 // Final fallback
                 prompt('Copy this link:', window.location.href);
             });
@@ -1465,7 +1458,6 @@ function shareProperty(propertyId) {
             prompt('Copy this link:', window.location.href);
         }
     } catch (error) {
-        console.error('Share function error:', error);
         // Final fallback
         prompt('Copy this link:', window.location.href);
     }

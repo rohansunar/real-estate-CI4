@@ -626,8 +626,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError(data.message || 'Failed to load hierarchy');
             }
         } catch (error) {
-            console.error('Error loading hierarchy:', error);
-
             let errorMessage = 'Failed to load hierarchy data';
             if (error.name === 'AbortError') {
                 errorMessage = 'Request timed out. Please check your connection and try again.';
@@ -870,7 +868,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => {
                 controller.abort();
-                console.warn(`Request timeout for agent ${agentId}`);
             }, 10000); // 10 second timeout
 
             fetch('<?= base_url('dashboard/agents/view/') ?>' + agentId, {
@@ -900,7 +897,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
             })
             .catch(error => {
-                console.error('Error loading agent details:', error);
                 let errorMessage = 'Failed to load agent details. Please try again.';
 
                 if (error.name === 'AbortError') {
@@ -930,7 +926,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
         } catch (error) {
-            console.error('Error in showAgentDetails:', error);
             alert('An unexpected error occurred. Please refresh the page and try again.');
         }
     };
@@ -958,11 +953,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                console.error('Error loading agent logs:', error);
                 alert('Failed to load agent logs. Please try again.');
             });
         } catch (error) {
-            console.error('Error in viewAgentLogs:', error);
             alert('An unexpected error occurred. Please try again.');
         }
     };
@@ -1128,8 +1121,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 100);
 
         } catch (error) {
-            console.error('Error in toggleAgentExpansion:', error);
-
             // Reset loading states on error
             const agentCard = document.querySelector(`[data-agent-id="${agentId}"]`);
             if (agentCard) {

@@ -205,7 +205,6 @@ function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
             showToast('Copied to clipboard!', 'success');
         }).catch(err => {
-            console.error('Failed to copy: ', err);
             fallbackCopyTextToClipboard(text);
         });
     } else {
@@ -231,7 +230,6 @@ function fallbackCopyTextToClipboard(text) {
             showToast('Failed to copy', 'error');
         }
     } catch (err) {
-        console.error('Fallback: Oops, unable to copy', err);
         showToast('Failed to copy', 'error');
     }
     

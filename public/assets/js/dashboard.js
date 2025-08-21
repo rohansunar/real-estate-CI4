@@ -329,7 +329,6 @@ function showPropertyQuickView(propertyId) {
             });
         })
         .catch(error => {
-            console.error('Error fetching property details:', error);
             showNotification('Error loading property details', 'danger');
         });
 }
@@ -460,7 +459,6 @@ function showEnquiryQuickView(enquiryId) {
         }
     })
     .catch(error => {
-        console.error('Error fetching enquiry details:', error);
         // Show error message
         const errorContent = `
             <div class="modal-header">

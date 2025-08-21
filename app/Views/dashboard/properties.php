@@ -508,7 +508,6 @@ function confirmDelete(propertyId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         showNotification('Error deleting property', 'danger');
     });
 }
@@ -539,7 +538,6 @@ function toggleFeatured(propertyId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         showNotification('Error updating featured status', 'danger');
     });
 }

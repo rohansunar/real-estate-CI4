@@ -426,7 +426,6 @@ function deleteAgent(agentId) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             showNotification('Error deleting agent', 'danger');
         });
     }

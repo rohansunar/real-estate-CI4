@@ -1184,7 +1184,6 @@ function shareProperty() {
 
     if (navigator.share) {
         navigator.share(shareData).catch((error) => {
-            console.error('Share failed:', error);
             showToast('⚠️ Sharing not available. Property link copied to clipboard instead!', 'info');
             // Fallback to clipboard copy
             copyToClipboard(propertyUrl);
@@ -1228,7 +1227,6 @@ function manualCopyFallback(text) {
             showToast('❌ Unable to copy link. Please copy the URL from your browser address bar.', 'error');
         }
     } catch (error) {
-        console.error('Manual copy failed:', error);
         showToast('❌ Copy failed. Please manually copy the URL from your browser address bar.', 'error');
     }
 }
@@ -1270,7 +1268,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 })
                 .catch(error => {
-                    console.error('Contact form submission error:', error);
                     showToast('⚠️ Network error occurred. Please check your internet connection and try again, or contact us via WhatsApp.', 'error');
                 })
                 .finally(() => {

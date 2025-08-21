@@ -48,7 +48,7 @@
                         Dream Property
                     </span>
                 </h1>
-                <p class="fs-4 mb-5 text-light">
+                <p class="fs-4 mb-5 text-light d-none d-md-block">
                     Discover the perfect property that matches your lifestyle and budget. From cozy apartments to luxury villas, we have it all.
                 </p>
                 <div class="d-flex flex-column flex-sm-row gap-3 mb-5">
@@ -56,7 +56,7 @@
                         <i class="fas fa-search me-2"></i>
                         Browse Properties
                     </a>
-                    <a href="#properties" class="btn btn-outline-light btn-lg">
+                    <a href="#properties" class="btn btn-outline-light btn-lg d-none d-md-inline-block">
                         <i class="fas fa-play me-2"></i>
                         Learn More
                     </a>
@@ -82,24 +82,47 @@
             <!-- Right Content - Smaller Contact Form -->
             <div class="col-lg-4 animate-slide-in-right">
                 <div class="bg-white rounded-4 shadow-lg p-3 p-md-4">
-                    <h4 class="h5 fw-bold text-dark mb-3">Get In Touch</h4>
-                    <form id="getInTouchForm" action="<?= base_url('contact/submit') ?>" method="post" data-validate>
+                    <h4 class="h5 fw-bold text-dark mb-3" id="contact-form-heading">Get In Touch</h4>
+                    <form id="getInTouchForm" action="<?= base_url('contact/submit') ?>" method="post" data-validate
+                          aria-labelledby="contact-form-heading" role="form">
                         <?= csrf_field() ?>
 
                         <div class="mb-2">
-                            <input type="text" id="name" name="name" class="form-control" placeholder="Full Name" required>
+                            <label for="name" class="visually-hidden">Full Name</label>
+                            <input type="text" id="name" name="name" class="form-control"
+                                   placeholder="Full Name" required
+                                   aria-label="Full Name"
+                                   aria-describedby="name-help"
+                                   style="font-size: 16px;">
+                            <div id="name-help" class="visually-hidden">Enter your full name</div>
                         </div>
 
                         <div class="mb-2">
-                            <input type="email" id="email" name="email" class="form-control" placeholder="Email Address" required>
+                            <label for="email" class="visually-hidden">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-control"
+                                   placeholder="Email Address" required
+                                   aria-label="Email Address"
+                                   aria-describedby="email-help"
+                                   style="font-size: 16px;">
+                            <div id="email-help" class="visually-hidden">Enter your email address</div>
                         </div>
 
                         <div class="mb-2">
-                            <input type="tel" id="phone" name="phone" class="form-control" placeholder="Phone Number" required>
+                            <label for="phone" class="visually-hidden">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" class="form-control"
+                                   placeholder="Phone Number" required
+                                   aria-label="Phone Number"
+                                   aria-describedby="phone-help"
+                                   style="font-size: 16px;">
+                            <div id="phone-help" class="visually-hidden">Enter your phone number</div>
                         </div>
 
                         <div class="mb-2">
-                            <select id="properties_in" name="properties_in" class="form-select" required>
+                            <label for="properties_in" class="visually-hidden">Property Interest</label>
+                            <select id="properties_in" name="properties_in" class="form-select" required
+                                    aria-label="Property Interest"
+                                    aria-describedby="property-help"
+                                    style="font-size: 16px;">
                                 <option value="">Property Interest</option>
                                 <option value="Siliguri">Siliguri</option>
                                 <option value="Champasari">Champasari</option>
@@ -109,16 +132,25 @@
                                 <option value="Milan More">Milan More</option>
                                 <option value="Khaprail">Khaprail</option>
                             </select>
+                            <div id="property-help" class="visually-hidden">Select your property interest location</div>
                         </div>
 
                         <div class="mb-3">
-                            <textarea id="message" name="message" rows="3" class="form-control" placeholder="Your message..." required></textarea>
+                            <label for="message" class="visually-hidden">Your Message</label>
+                            <textarea id="message" name="message" rows="3" class="form-control"
+                                      placeholder="Your message..." required
+                                      aria-label="Your Message"
+                                      aria-describedby="message-help"
+                                      style="font-size: 16px;"></textarea>
+                            <div id="message-help" class="visually-hidden">Enter your message or inquiry</div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-paper-plane me-1"></i>
+                        <button type="submit" class="btn btn-primary w-100"
+                                aria-describedby="submit-help">
+                            <i class="fas fa-paper-plane me-1" aria-hidden="true"></i>
                             Send Message
                         </button>
+                        <div id="submit-help" class="visually-hidden">Submit your contact form</div>
                     </form>
                 </div>
             </div>
