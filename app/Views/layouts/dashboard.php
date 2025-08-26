@@ -307,6 +307,57 @@
             }
         }
 
+        /* User menu button specific styling to fix alignment issues */
+        .user-menu-button.btn-ghost {
+            width: auto !important;
+            height: auto !important;
+            padding: 0.5rem 0.75rem !important;
+            min-height: 2.5rem;
+            border-radius: 0.5rem;
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .user-menu-button.btn-ghost:hover {
+            background: rgba(37, 99, 235, 0.08);
+            border-color: rgba(37, 99, 235, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+        }
+
+        .user-menu-button.btn-ghost:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Responsive adjustments for user menu button */
+        @media (max-width: 767.98px) {
+            .user-menu-button.btn-ghost {
+                padding: 0.375rem 0.5rem !important;
+                min-height: 2.25rem;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .user-menu-button.btn-ghost {
+                padding: 0.25rem 0.375rem !important;
+                min-height: 2rem;
+            }
+        }
+
+        /* Dark theme support for user menu button */
+        [data-theme="dark"] .user-menu-button.btn-ghost {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] .user-menu-button.btn-ghost:hover {
+            background: rgba(37, 99, 235, 0.15);
+            border-color: rgba(37, 99, 235, 0.25);
+        }
+
         /* Old image-based avatar styles removed - now using Font Awesome icon */
     </style>
 
@@ -489,7 +540,9 @@
         <!-- Top Header -->
         <header class="header d-flex align-items-center justify-content-between px-4">
             <!-- Mobile menu button -->
-            <button class="btn btn-ghost d-lg-none" id="sidebarToggle">
+            <button class="btn btn-ghost d-lg-none" id="sidebarToggle"
+                    aria-label="Toggle navigation menu"
+                    style="width: 2.25rem; height: 2.25rem;">
                 <i class="fas fa-bars"></i>
             </button>
 
@@ -504,7 +557,7 @@
             <div class="d-flex align-items-center">
                 <!-- User Menu -->
                 <div class="dropdown">
-                    <button class="btn btn-ghost d-flex align-items-center"
+                    <button class="btn btn-ghost user-menu-button d-flex align-items-center"
                             type="button"
                             data-bs-toggle="dropdown"
                             aria-label="User menu for <?= isset($user) && $user ? esc($user['name'] ?? $user['email']) : 'Admin User' ?>"

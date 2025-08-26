@@ -56,6 +56,18 @@ class BlogController extends BaseController
     }
 
     /**
+     * Show blog functionality test page
+     */
+    public function test()
+    {
+        $data = [
+            'title' => 'Blog Functionality Test | Dashboard'
+        ];
+
+        return view('dashboard/blog/test', $data);
+    }
+
+    /**
      * Show create blog post form
      */
     public function create()
@@ -72,6 +84,15 @@ class BlogController extends BaseController
 
     /**
      * Store new blog post
+     *
+     * This method handles both draft and published blog post creation with:
+     * - Comprehensive form validation
+     * - Featured image upload handling
+     * - Automatic slug generation
+     * - Enhanced error logging and user feedback
+     * - Database transaction safety
+     *
+     * @return \CodeIgniter\HTTP\RedirectResponse
      */
     public function store()
     {
@@ -91,7 +112,9 @@ class BlogController extends BaseController
 
             // Validate the request data
             if (!$this->validate($validationRules)) {
-                return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+                $errors = $this->validator->getErrors();
+                log_message('info', 'Blog post validation failed: ' . json_encode($errors));
+                return redirect()->back()->withInput()->with('errors', $errors)->with('error', 'Please fix the validation errors and try again.');
             }
 
             // Handle featured image upload
@@ -119,10 +142,15 @@ class BlogController extends BaseController
             }
 
             // Insert blog post into database
-            if ($this->blogModel->insert($data)) {
-                return redirect()->to('/dashboard/blog')->with('success', 'Blog post created successfully!');
+            $insertResult = $this->blogModel->insert($data);
+            if ($insertResult) {
+                $successMessage = $data['status'] === 'published' ? 'Blog post published successfully!' : 'Blog post saved as draft successfully!';
+                log_message('info', 'Blog post created successfully with ID: ' . $insertResult);
+                return redirect()->to('/dashboard/blog')->with('success', $successMessage);
             } else {
-                throw new \Exception('Database insertion failed');
+                $modelErrors = $this->blogModel->errors();
+                log_message('error', 'Database insertion failed. Model errors: ' . json_encode($modelErrors));
+                throw new \Exception('Database insertion failed: ' . implode(', ', $modelErrors));
             }
 
         } catch (\Exception $e) {

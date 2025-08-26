@@ -46,25 +46,48 @@ class DashboardController extends BaseController
      */
     public function index()
     {
-        // Get agent statistics
-        $agentStats = $this->agentModel->getStatistics();
+        try {
+            // Get agent statistics
+            $agentStats = $this->agentModel->getStatistics();
 
-        $data = [
-            'title' => 'Dashboard | White Rock Realtor',
-            'totalProperties' => $this->propertyModel->countAllResults(), // Fixed: Re-added after notification badge removal
-            'totalContacts' => $this->contactModel->countAllResults(),
-            'unreadContacts' => $this->contactModel->getCountByStatus(false), // Fixed: Re-added for dashboard stats card
-            'totalSubscribers' => $this->newsletterModel->getSubscriberCount(),
-            'totalAgents' => $agentStats['total'],
-            'activeAgents' => $agentStats['active'],
-            'recentAgents' => $agentStats['recent'],
-            'agentStats' => $agentStats,
-            'recentProperties' => $this->propertyModel->orderBy('created_at', 'DESC')->limit(5)->findAll(),
-            'recentContacts' => $this->contactModel->getRecent(5),
-            'recentAgentsList' => $this->agentModel->getRecent(5)
-        ];
+            // Ensure all required variables are properly set with fallback values
+            $data = [
+                'title' => 'Dashboard | White Rock Realtor',
+                'totalProperties' => $this->propertyModel->countAllResults() ?? 0,
+                'totalContacts' => $this->contactModel->countAllResults() ?? 0,
+                'unreadContacts' => $this->contactModel->getCountByStatus(false) ?? 0,
+                'totalSubscribers' => $this->newsletterModel->getSubscriberCount() ?? 0,
+                'totalAgents' => $agentStats['total'] ?? 0,
+                'activeAgents' => $agentStats['active'] ?? 0,
+                'recentAgents' => $agentStats['recent'] ?? 0,
+                'agentStats' => $agentStats ?? [],
+                'recentProperties' => $this->propertyModel->orderBy('created_at', 'DESC')->limit(5)->findAll() ?? [],
+                'recentContacts' => $this->contactModel->getRecent(5) ?? [],
+                'recentAgentsList' => $this->agentModel->getRecent(5) ?? []
+            ];
 
-        return view('dashboard/index', $data);
+            return view('dashboard/index', $data);
+        } catch (\Exception $e) {
+            log_message('error', 'Dashboard index error: ' . $e->getMessage());
+
+            // Provide fallback data to prevent crashes
+            $data = [
+                'title' => 'Dashboard | White Rock Realtor',
+                'totalProperties' => 0,
+                'totalContacts' => 0,
+                'unreadContacts' => 0,
+                'totalSubscribers' => 0,
+                'totalAgents' => 0,
+                'activeAgents' => 0,
+                'recentAgents' => 0,
+                'agentStats' => [],
+                'recentProperties' => [],
+                'recentContacts' => [],
+                'recentAgentsList' => []
+            ];
+
+            return view('dashboard/index', $data);
+        }
     }
 
     /**

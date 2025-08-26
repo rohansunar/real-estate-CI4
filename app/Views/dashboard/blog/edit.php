@@ -89,7 +89,22 @@
                     <div class="mb-4">
                         <label for="content" class="form-label fw-medium">Content <span class="text-danger">*</span></label>
                         <div id="quill-editor" style="height: 400px;"></div>
-                        <textarea id="content" name="content" style="display: none;" required><?= old('content', $post['content']) ?></textarea>
+                        <!--
+                            Note: Removed 'required' attribute from hidden textarea to prevent
+                            "An invalid form control with name='content' is not focusable" error.
+                            Content validation is now handled by JavaScript before form submission.
+                        -->
+                        <textarea id="content" name="content" style="display: none;"><?= old('content', $post['content']) ?></textarea>
+                        <!--
+                            CRITICAL FIX: Hidden status field to ensure proper form submission
+
+                            This field prevents the "The status field is required" validation error
+                            during blog post editing. The field is updated by JavaScript based on
+                            which button is clicked (Save as Draft vs Update & Publish).
+
+                            Default value preserves the current post status for seamless editing.
+                        -->
+                        <input type="hidden" id="status" name="status" value="<?= old('status', $post['status']) ?>">
                         <div class="form-text">
                             <i class="fas fa-info-circle me-1"></i>
                             Use the rich text editor to format your content with headings, lists, links, and more.
@@ -259,37 +274,76 @@
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
 <script>
-// Initialize Quill Rich Text Editor
-const quill = new Quill('#quill-editor', {
-    theme: 'snow',
-    modules: {
-        toolbar: [
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'align': [] }],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            [{ 'indent': '-1'}, { 'indent': '+1' }],
-            ['link', 'blockquote', 'code-block'],
-            ['clean']
-        ]
-    },
-    placeholder: 'Write your blog post content here...'
-});
+/**
+ * Initialize Quill Rich Text Editor for Blog Editing with Enhanced Error Handling
+ */
+let quill;
+try {
+    quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'align': [] }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                ['link', 'blockquote', 'code-block'],
+                ['clean']
+            ]
+        },
+        placeholder: 'Write your blog post content here...'
+    });
 
-// Set initial content if available
-const initialContent = document.getElementById('content').value;
-if (initialContent) {
-    quill.root.innerHTML = initialContent;
+    // Set initial content if available with error handling
+    try {
+        const contentTextarea = document.getElementById('content');
+        const initialContent = contentTextarea ? contentTextarea.value : '';
+        if (initialContent) {
+            quill.root.innerHTML = initialContent;
+        }
+    } catch (error) {
+        // Only log in development environment
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.warn('Failed to set initial content:', error);
+        }
+    }
+
+    // Set up real-time content synchronization
+    quill.on('text-change', function() {
+        try {
+            const contentTextarea = document.getElementById('content');
+            if (contentTextarea) {
+                contentTextarea.value = quill.root.innerHTML;
+            }
+        } catch (error) {
+            // Silent error handling to prevent console spam
+        }
+    });
+
+} catch (error) {
+    // Only log in development environment
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.error('Failed to initialize Quill editor:', error);
+    }
+
+    const editorContainer = document.getElementById('quill-editor');
+    if (editorContainer) {
+        editorContainer.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Failed to load rich text editor. Please refresh the page and try again.</div>';
+    }
 }
 
-// Blog form functionality
+// Blog form functionality with enhanced browser compatibility
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('blogEditForm');
     const titleInput = document.getElementById('title');
     const slugInput = document.getElementById('slug');
     const saveDraftBtn = document.getElementById('saveDraftBtn');
     const publishBtn = document.getElementById('publishBtn');
+
+    // Track which button was clicked for cross-browser compatibility
+    let clickedButton = null;
 
     // Auto-generate slug from title (only if slug is empty or auto-generated)
     titleInput.addEventListener('input', function() {
@@ -312,6 +366,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Add click event listeners to track which button was clicked and set status
+    saveDraftBtn.addEventListener('click', function() {
+        clickedButton = this;
+        // Set status field value for draft submission
+        const statusField = document.getElementById('status');
+        if (statusField) {
+            statusField.value = 'draft';
+        }
+    });
+
+    publishBtn.addEventListener('click', function() {
+        clickedButton = this;
+        // Set status field value for published submission
+        const statusField = document.getElementById('status');
+        if (statusField) {
+            statusField.value = 'published';
+        }
+    });
+
     // Sync sidebar fields with hidden fields
     function syncSidebarFields() {
         document.getElementById('hiddenCategory').value = document.getElementById('category').value;
@@ -330,10 +403,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Form submission handling
+    // Form submission handling with enhanced error handling and cross-browser compatibility
     form.addEventListener('submit', function(e) {
-        const submitBtn = e.submitter;
+        const submitBtn = clickedButton || e.submitter || saveDraftBtn;
 
+        // Enhanced form validation with comprehensive error handling
+        const title = titleInput ? titleInput.value.trim() : '';
+        if (!title) {
+            e.preventDefault();
+            showUserFriendlyAlert('Missing Title', 'Please enter a blog post title before saving.');
+            if (titleInput) titleInput.focus();
+            return false;
+        }
+
+        // Validate content from Quill editor with enhanced error handling
+        let content = '';
+        try {
+            if (quill && quill.root) {
+                content = quill.root.innerHTML.trim();
+            } else {
+                throw new Error('Quill editor not properly initialized');
+            }
+        } catch (error) {
+            e.preventDefault();
+            showUserFriendlyAlert('Editor Error', 'The rich text editor is not working properly. Please refresh the page and try again.');
+            return false;
+        }
+
+        // Check if content is empty (accounting for various empty states)
+        const isEmpty = !content ||
+                       content === '<p><br></p>' ||
+                       content === '<p></p>' ||
+                       content === '<p>&nbsp;</p>' ||
+                       content.replace(/<[^>]*>/g, '').trim() === '';
+
+        if (isEmpty) {
+            e.preventDefault();
+            showUserFriendlyAlert('Missing Content', 'Please enter some content for your blog post.');
+            if (quill) quill.focus();
+            return false;
+        }
+
+        // Show loading state with user feedback
         if (submitBtn === saveDraftBtn) {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving Draft...';
         } else if (submitBtn === publishBtn) {
@@ -345,9 +456,72 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update hidden textarea with Quill content
         document.getElementById('content').value = quill.root.innerHTML;
 
+        // Ensure status field is properly set based on clicked button
+        // This prevents "The status field is required" validation error
+        try {
+            const statusField = document.getElementById('status');
+            if (statusField && submitBtn) {
+                // Determine status based on button clicked
+                const isDraft = (submitBtn === saveDraftBtn) || (submitBtn && submitBtn.value === 'draft');
+                statusField.value = isDraft ? 'draft' : 'published';
+            }
+        } catch (error) {
+            showUserFriendlyAlert('Status Error', 'Failed to set post status. Please try again.');
+            return false;
+        }
+
         // Sync sidebar fields before submission
         syncSidebarFields();
+
+
+        // Add a timeout to re-enable button if submission fails
+        setTimeout(function() {
+            if (submitBtn.disabled) {
+                submitBtn.disabled = false;
+                if (submitBtn === saveDraftBtn) {
+                    submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Save as Draft';
+                } else if (submitBtn === publishBtn) {
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Update & Publish';
+                }
+            }
+        }, 10000); // 10 second timeout
     });
+
+    /**
+     * Show user-friendly alert with better styling than browser default
+     */
+    function showUserFriendlyAlert(title, message) {
+        // Remove any existing alert
+        const existingAlert = document.getElementById('customAlert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+
+        // Create custom alert
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'customAlert';
+        alertDiv.className = 'position-fixed top-50 start-50 translate-middle';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.innerHTML = `
+            <div class="alert alert-warning alert-dismissible shadow-lg" role="alert" style="min-width: 300px;">
+                <h5 class="alert-heading">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${title}
+                </h5>
+                <p class="mb-0">${message}</p>
+                <button type="button" class="btn-close" onclick="document.getElementById('customAlert').remove()"></button>
+            </div>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        // Auto-remove after 5 seconds
+        setTimeout(function() {
+            if (document.getElementById('customAlert')) {
+                document.getElementById('customAlert').remove();
+            }
+        }, 5000);
+    }
 });
 
 // Featured image preview function
