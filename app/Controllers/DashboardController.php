@@ -51,9 +51,9 @@ class DashboardController extends BaseController
 
         $data = [
             'title' => 'Dashboard | White Rock Realtor',
-            'totalProperties' => $this->propertyModel->countAllResults(),
+            'totalProperties' => $this->propertyModel->countAllResults(), // Fixed: Re-added after notification badge removal
             'totalContacts' => $this->contactModel->countAllResults(),
-            'unreadContacts' => $this->contactModel->getCountByStatus(false),
+            'unreadContacts' => $this->contactModel->getCountByStatus(false), // Fixed: Re-added for dashboard stats card
             'totalSubscribers' => $this->newsletterModel->getSubscriberCount(),
             'totalAgents' => $agentStats['total'],
             'activeAgents' => $agentStats['active'],
@@ -321,7 +321,6 @@ class DashboardController extends BaseController
         $offset = ($page - 1) * $perPage;
 
         $totalContacts = $this->contactModel->countAll();
-        $unreadContacts = $this->contactModel->getCountByStatus(false);
 
         // Get weekly contacts (last 7 days)
         $weekStart = date('Y-m-d H:i:s', strtotime('-7 days'));
@@ -337,7 +336,6 @@ class DashboardController extends BaseController
             'pageTitle' => 'Enquiries',
             'contacts' => $contacts,
             'totalContacts' => $totalContacts,
-            'unreadContacts' => $unreadContacts,
             'weeklyContacts' => $weeklyContacts,
             'currentPage' => $page,
             'totalPages' => ceil($totalContacts / $perPage),
@@ -455,7 +453,6 @@ class DashboardController extends BaseController
             'pageTitle' => 'Properties',
             'properties' => $properties,
             'user' => session()->get('user'),
-            'unreadContacts' => $this->contactModel->getCountByStatus(false),
             'currentPage' => $page,
             'totalPages' => ceil($totalProperties / $perPage),
             'perPage' => $perPage,

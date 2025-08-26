@@ -9,9 +9,18 @@
  * - Font Awesome 6.5.0 (for icons)
  *
  * @author Real Estate Team
- * @version 2.1
+ * @version 3.1.0
  * @since 2025-08-01
- * @updated 2025-08-04 - Fixed browser compatibility issues
+ * @updated 2025-08-25 - Added comprehensive dark/light theme toggle system
+ *
+ * THEME SYSTEM:
+ * =============
+ * - Automatic theme detection (localStorage > system preference > light default)
+ * - Smooth transitions between themes using CSS custom properties
+ * - Multiple toggle buttons supported (desktop, mobile, dashboard)
+ * - Accessibility compliant with proper ARIA labels and keyboard navigation
+ * - Memory leak prevention through proper event cleanup
+ * - Error handling for localStorage failures
  */
 
 /**
@@ -92,6 +101,7 @@ function executeCleanup() {
 // Initialize immediately if DOM is already loaded, otherwise wait for DOMContentLoaded
 function initializeWebsite() {
     // Initialize all website components in order
+    initializeThemeToggle();   // Theme switching functionality (first for immediate theme application)
     initializeNavbar();        // Navigation functionality
     initializeAnimations();    // Scroll animations and transitions
     initializeToasts();        // Toast notification system
@@ -103,6 +113,281 @@ function initializeWebsite() {
     initializeLazyLoading();   // Progressive image loading for performance
 
     // Website initialization complete
+}
+
+/**
+ * Initialize Theme Toggle Functionality
+ *
+ * This function implements a comprehensive dark/light theme toggle system with:
+ * - localStorage persistence for user preference
+ * - Smooth CSS transitions between themes
+ * - Accessibility support with proper ARIA labels
+ * - System preference detection as fallback
+ * - Memory leak prevention through proper cleanup
+ *
+ * The theme system uses CSS custom properties (variables) defined in website.css
+ * and applies themes via data-theme attribute on the document element.
+ *
+ * @since 3.1.0 - Added comprehensive theme toggle system
+ */
+function initializeThemeToggle() {
+    // Theme configuration
+    const THEME_KEY = 'whiterock-theme-preference';
+    const THEMES = {
+        LIGHT: 'light',
+        DARK: 'dark'
+    };
+
+    // Get theme toggle buttons (desktop, mobile, and dashboard)
+    const desktopToggle = document.getElementById('themeToggle');
+    const mobileToggle = document.getElementById('mobileThemeToggle');
+    const dashboardToggle = document.getElementById('dashboardThemeToggle');
+    const agentToggle = document.getElementById('agentThemeToggle');
+
+    // Store event handlers for cleanup
+    const eventHandlers = [];
+
+    /**
+     * Get user's preferred theme
+     * Priority: localStorage > system preference > default (light)
+     */
+    function getPreferredTheme() {
+        // Check localStorage first
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme && Object.values(THEMES).includes(savedTheme)) {
+            return savedTheme;
+        }
+
+        // Check system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return THEMES.DARK;
+        }
+
+        // Default to light theme
+        return THEMES.LIGHT;
+    }
+
+    /**
+     * Apply theme to document
+     */
+    function applyTheme(theme) {
+        try {
+            // Apply theme via data attribute
+            document.documentElement.setAttribute('data-theme', theme);
+
+            // Update toggle button states
+            updateToggleButtons(theme);
+
+            // Save preference to localStorage
+            localStorage.setItem(THEME_KEY, theme);
+
+        } catch (error) {
+            // Handle localStorage errors gracefully (silently fail)
+            // Theme will still work but preference won't persist
+        }
+    }
+
+    /**
+     * Update toggle button icons and ARIA labels
+     */
+    function updateToggleButtons(theme) {
+        const isDark = theme === THEMES.DARK;
+
+        // Update desktop toggle
+        if (desktopToggle) {
+            const sunIcon = desktopToggle.querySelector('.sun-icon');
+            const moonIcon = desktopToggle.querySelector('.moon-icon');
+
+            if (sunIcon && moonIcon) {
+                // Icons are handled via CSS transitions
+                desktopToggle.setAttribute('aria-label',
+                    isDark ? 'Switch to light theme' : 'Switch to dark theme'
+                );
+                desktopToggle.setAttribute('title',
+                    isDark ? 'Switch to light theme' : 'Switch to dark theme'
+                );
+            }
+        }
+
+        // Update mobile toggle
+        if (mobileToggle) {
+            const themeText = mobileToggle.querySelector('.theme-text');
+
+            if (themeText) {
+                themeText.textContent = isDark ? 'Light Theme' : 'Dark Theme';
+            }
+
+            mobileToggle.setAttribute('aria-label',
+                isDark ? 'Switch to light theme' : 'Switch to dark theme'
+            );
+        }
+
+        // Update dashboard toggle
+        if (dashboardToggle) {
+            const themeText = dashboardToggle.querySelector('.theme-text');
+
+            if (themeText) {
+                themeText.textContent = isDark ? 'Light Theme' : 'Dark Theme';
+            }
+
+            dashboardToggle.setAttribute('aria-label',
+                isDark ? 'Switch to light theme' : 'Switch to dark theme'
+            );
+        }
+
+        // Update agent dashboard toggle
+        if (agentToggle) {
+            const themeText = agentToggle.querySelector('.theme-text');
+
+            if (themeText) {
+                themeText.textContent = isDark ? 'Light Theme' : 'Dark Theme';
+            }
+
+            agentToggle.setAttribute('aria-label',
+                isDark ? 'Switch to light theme' : 'Switch to dark theme'
+            );
+        }
+    }
+
+    /**
+     * Toggle between themes
+     */
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || THEMES.LIGHT;
+        const newTheme = currentTheme === THEMES.LIGHT ? THEMES.DARK : THEMES.LIGHT;
+
+        // Add transition class for smooth animation
+        document.documentElement.classList.add('theme-transitioning');
+
+        // Apply new theme
+        applyTheme(newTheme);
+
+        // Remove transition class after animation completes
+        setTimeout(() => {
+            document.documentElement.classList.remove('theme-transitioning');
+        }, 300);
+
+        // Provide haptic feedback on mobile devices
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
+    }
+
+    /**
+     * Handle system theme preference changes
+     */
+    function handleSystemThemeChange(e) {
+        // Only apply system preference if user hasn't set a preference
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (!savedTheme) {
+            const systemTheme = e.matches ? THEMES.DARK : THEMES.LIGHT;
+            applyTheme(systemTheme);
+        }
+    }
+
+    // Initialize theme on page load
+    const initialTheme = getPreferredTheme();
+    applyTheme(initialTheme);
+
+    // Set up event listeners for theme toggle buttons
+    if (desktopToggle) {
+        const desktopClickHandler = (e) => {
+            e.preventDefault();
+            toggleTheme();
+        };
+        desktopToggle.addEventListener('click', desktopClickHandler);
+        eventHandlers.push({ element: desktopToggle, event: 'click', handler: desktopClickHandler });
+
+        // Keyboard support
+        const desktopKeyHandler = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        };
+        desktopToggle.addEventListener('keydown', desktopKeyHandler);
+        eventHandlers.push({ element: desktopToggle, event: 'keydown', handler: desktopKeyHandler });
+    }
+
+    if (mobileToggle) {
+        const mobileClickHandler = (e) => {
+            e.preventDefault();
+            toggleTheme();
+        };
+        mobileToggle.addEventListener('click', mobileClickHandler);
+        eventHandlers.push({ element: mobileToggle, event: 'click', handler: mobileClickHandler });
+
+        // Keyboard support
+        const mobileKeyHandler = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        };
+        mobileToggle.addEventListener('keydown', mobileKeyHandler);
+        eventHandlers.push({ element: mobileToggle, event: 'keydown', handler: mobileKeyHandler });
+    }
+
+    // Dashboard theme toggle
+    if (dashboardToggle) {
+        const dashboardClickHandler = (e) => {
+            e.preventDefault();
+            toggleTheme();
+        };
+        dashboardToggle.addEventListener('click', dashboardClickHandler);
+        eventHandlers.push({ element: dashboardToggle, event: 'click', handler: dashboardClickHandler });
+
+        // Keyboard support
+        const dashboardKeyHandler = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        };
+        dashboardToggle.addEventListener('keydown', dashboardKeyHandler);
+        eventHandlers.push({ element: dashboardToggle, event: 'keydown', handler: dashboardKeyHandler });
+    }
+
+    // Agent dashboard theme toggle
+    if (agentToggle) {
+        const agentClickHandler = (e) => {
+            e.preventDefault();
+            toggleTheme();
+        };
+        agentToggle.addEventListener('click', agentClickHandler);
+        eventHandlers.push({ element: agentToggle, event: 'click', handler: agentClickHandler });
+
+        // Keyboard support
+        const agentKeyHandler = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        };
+        agentToggle.addEventListener('keydown', agentKeyHandler);
+        eventHandlers.push({ element: agentToggle, event: 'keydown', handler: agentKeyHandler });
+    }
+
+    // Listen for system theme preference changes
+    if (window.matchMedia) {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery.addEventListener('change', handleSystemThemeChange);
+        eventHandlers.push({ element: mediaQuery, event: 'change', handler: handleSystemThemeChange });
+    }
+
+    // Register cleanup function to prevent memory leaks
+    registerCleanup(() => {
+        eventHandlers.forEach(({ element, event, handler }) => {
+            try {
+                element.removeEventListener(event, handler);
+            } catch (error) {
+                // Ignore cleanup errors
+            }
+        });
+        eventHandlers.length = 0;
+    });
+
+    // Theme toggle initialization complete
 }
 
 // Check if DOM is already loaded

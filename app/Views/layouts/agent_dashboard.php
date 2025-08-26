@@ -268,8 +268,6 @@
                 </a>
             </div>
 
-
-
             <!-- Logout Section -->
             <div class="nav-section nav-section-bottom">
                 <a href="<?= base_url('agent/logout') ?>" class="nav-link">

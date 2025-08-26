@@ -93,6 +93,14 @@
             </nav>
 
             <div class="mobile-menu-actions">
+                <!-- Mobile Theme Toggle -->
+                <button type="button" class="theme-toggle mobile-theme-toggle w-100 mb-3" id="mobileThemeToggle"
+                        aria-label="Switch to dark theme">
+                    <i class="fas fa-sun sun-icon"></i>
+                    <i class="fas fa-moon moon-icon"></i>
+                    <span class="theme-text">Dark Theme</span>
+                </button>
+
                 <button type="button" class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#contactModal">
                     <i class="fas fa-envelope me-2"></i>Contact Us
                 </button>
@@ -146,6 +154,16 @@
                 </ul>
 
                 <ul class="navbar-nav">
+                    <!-- Theme Toggle Button -->
+                    <li class="nav-item me-2">
+                        <button type="button" class="theme-toggle" id="themeToggle"
+                                aria-label="Switch to dark theme"
+                                title="Switch to dark theme">
+                            <i class="fas fa-sun sun-icon"></i>
+                            <i class="fas fa-moon moon-icon"></i>
+                        </button>
+                    </li>
+
                     <li class="nav-item">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactModal">
                             <i class="fas fa-envelope me-1"></i>Contact Us
