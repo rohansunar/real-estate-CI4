@@ -42,19 +42,57 @@ class ContactController extends BaseController
      * - Email notification to admin on successful submission
      * - Mobile-friendly error handling and user feedback
      * - Database transaction support for data integrity
+     * - Clean JSON responses for AJAX requests (prevents HTML debug output)
+     *
+     * Bug Fix (2025-08-26): Fixed SyntaxError on property enquiry form submission
+     * - Added output buffer cleaning for AJAX requests to prevent HTML debug comments
+     * - Ensured proper Content-Type headers for JSON responses
+     * - Resolved "Unexpected token '<', "<!-- DEBUG"... is not valid JSON" error
+     *
+     * Bug Fix (2025-08-26): Fixed location validation error for property-specific inquiries
+     * - Added intelligent validation that differentiates between general and property-specific inquiries
+     * - Property-specific inquiries (with property_id) accept any location from property data
+     * - General inquiries still validate against predefined location list for data consistency
+     * - Added property_id field to contacts table to track property-specific inquiries
      *
      * @return \CodeIgniter\HTTP\ResponseInterface|string JSON response for Ajax or redirect for traditional form
      */
     public function submit()
     {
+        // For AJAX requests, ensure clean JSON response without debug output
+        if ($this->request->isAJAX()) {
+            // Clean any existing output buffer
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+            // Start fresh output buffer
+            ob_start();
+        }
+
+        // Check if this is a property-specific inquiry (has property_id from single property page)
+        $isPropertyInquiry = !empty($this->request->getPost('property_id'));
+
         // Define comprehensive validation rules with security considerations
         $validationRules = [
             'name' => 'required|max_length[255]|alpha_space',
             'email' => 'required|valid_email|max_length[255]',
             'phone' => 'required|max_length[20]|regex_match[/^[\+]?[0-9\s\-\(\)]+$/]',
-            'properties_in' => 'required|max_length[255]|in_list[Champasari,Siliguri,Bagdogra,Jalpaiguri,Pradhan Nagar,Milan More,Khaprail,Other]',
             'message' => 'required|min_length[10]|max_length[1000]'
         ];
+
+        // Apply intelligent validation for properties_in based on inquiry type
+        // This fixes the "Please select a valid location from the available options" error
+        if ($isPropertyInquiry) {
+            // For property-specific inquiries (from single property pages):
+            // - Accept any location since it comes from property data in database
+            // - Property locations may not be in the predefined list (e.g., Darjeeling, Kurseong)
+            $validationRules['properties_in'] = 'required|max_length[255]|alpha_space';
+        } else {
+            // For general inquiries (from contact page):
+            // - Use strict predefined location list for data consistency
+            // - Ensures users select from available service areas
+            $validationRules['properties_in'] = 'required|max_length[255]|in_list[Champasari,Siliguri,Bagdogra,Jalpaiguri,Pradhan Nagar,Milan More,Khaprail,Other]';
+        }
 
         // Define user-friendly validation messages for better user experience
         $validationMessages = [
@@ -73,10 +111,6 @@ class ContactController extends BaseController
                 'max_length' => 'Phone number is too long. Please check and try again.',
                 'regex_match' => 'Please enter a valid phone number (e.g., +91 98765 43210).'
             ],
-            'properties_in' => [
-                'required' => 'Please select the area where you\'re looking for properties.',
-                'in_list' => 'Please select a valid location from the available options.'
-            ],
             'message' => [
                 'required' => 'Please tell us about your property requirements.',
                 'min_length' => 'Please provide more details (at least 10 characters).',
@@ -84,13 +118,30 @@ class ContactController extends BaseController
             ]
         ];
 
+        // Add context-specific validation messages for properties_in
+        if ($isPropertyInquiry) {
+            $validationMessages['properties_in'] = [
+                'required' => 'Property location information is required.',
+                'alpha_space' => 'Property location contains invalid characters.'
+            ];
+        } else {
+            $validationMessages['properties_in'] = [
+                'required' => 'Please select the area where you\'re looking for properties.',
+                'in_list' => 'Please select a valid location from the available options.'
+            ];
+        }
+
         // Validate the request data
         if (!$this->validate($validationRules, $validationMessages)) {
             if ($this->request->isAJAX()) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'errors' => $this->validator->getErrors()
-                ]);
+                // Clean output buffer before sending JSON
+                ob_clean();
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON([
+                        'success' => false,
+                        'errors' => $this->validator->getErrors()
+                    ]);
             }
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
@@ -104,16 +155,25 @@ class ContactController extends BaseController
             'is_read' => false
         ];
 
+        // Add property_id if this is a property-specific inquiry
+        if ($isPropertyInquiry) {
+            $data['property_id'] = (int) $this->request->getPost('property_id');
+        }
+
         try {
             if ($this->contactModel->insert($data)) {
                 // Send dual email notifications
                 $this->sendEmailNotifications($data);
 
                 if ($this->request->isAJAX()) {
-                    return $this->response->setJSON([
-                        'success' => true,
-                        'message' => 'Thank you for your enquiry! We will get back to you within 24 hours.'
-                    ]);
+                    // Clean output buffer before sending JSON
+                    ob_clean();
+                    return $this->response
+                        ->setContentType('application/json')
+                        ->setJSON([
+                            'success' => true,
+                            'message' => 'Thank you for your enquiry! We will get back to you within 24 hours.'
+                        ]);
                 }
                 return redirect()->back()->with('success', 'Thank you for your enquiry! We will get back to you within 24 hours.');
             } else {
@@ -130,10 +190,14 @@ class ContactController extends BaseController
             $userMessage = $errorService->getUserFriendlyMessage($e, 'contact_form');
 
             if ($this->request->isAJAX()) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => $userMessage
-                ]);
+                // Clean output buffer before sending JSON
+                ob_clean();
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON([
+                        'success' => false,
+                        'message' => $userMessage
+                    ]);
             }
             return redirect()->back()->withInput()->with('error', $userMessage);
         }

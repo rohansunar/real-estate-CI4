@@ -12,7 +12,7 @@ class ContactModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'email', 'phone', 'properties_in', 'message', 'is_read'];
+    protected $allowedFields    = ['name', 'email', 'phone', 'properties_in', 'message', 'is_read', 'property_id'];
 
     // Dates
     protected $useTimestamps = true;

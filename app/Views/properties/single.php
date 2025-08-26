@@ -482,7 +482,7 @@
                 </div>
 
                 <!-- Location Map -->
-                <div class="mb-8">
+                <!-- <div class="mb-8">
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">Location</h2>
                     <div class="bg-gray-200 h-64 rounded-xl flex items-center justify-center">
                         <div class="text-center">
@@ -491,7 +491,7 @@
                             <p class="text-sm text-gray-500"><?= esc($property['location']) ?></p>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <!-- Sidebar -->
@@ -556,18 +556,21 @@
                             </div>
 
                             <!-- Property Interest Type -->
+                            <!-- Property Location (Hidden Field) -->
+                            <!-- Fix: Use property location instead of requiring user selection -->
+                            <!-- This prevents "Please select a valid location" validation errors -->
+                            <input type="hidden" name="properties_in" value="<?= esc($property['location']) ?>">
+
+                            <!-- Property Type Display (Read-only) -->
                             <div class="mb-3">
-                                <label for="property_interest" class="form-label fw-medium">
+                                <label class="form-label fw-medium">
                                     <i class="fas fa-home me-2 text-primary"></i>
                                     Property Interest
                                 </label>
-                                <select id="property_interest" name="properties_in" class="form-select form-select-lg">
-                                    <option value="<?= esc($property['type']) ?>" selected><?= ucfirst(esc($property['type'])) ?></option>
-                                    <option value="house">House</option>
-                                    <option value="apartment">Apartment</option>
-                                    <option value="villa">Villa</option>
-                                    <option value="land">Land</option>
-                                </select>
+                                <div class="form-control form-control-lg bg-light" style="cursor: default;">
+                                    <?= ucfirst(esc($property['type'])) ?> in <?= esc($property['location']) ?>
+                                </div>
+                                <small class="text-muted">You are inquiring about this specific property</small>
                             </div>
 
                             <!-- Pre-filled Message -->
@@ -1252,10 +1255,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Submit form data
                 const formData = new FormData(contactForm);
-
                 fetch(contactForm.action, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
                 })
                 .then(response => response.json())
                 .then(data => {
