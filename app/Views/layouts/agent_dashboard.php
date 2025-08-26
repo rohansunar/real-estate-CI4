@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title ?? 'Agent Dashboard') ?></title>
     
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Animate.css -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Bootstrap 5 CSS with Cache-Busting -->
+    <?= css_link('https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css') ?>
+
+    <!-- Font Awesome with Cache-Busting -->
+    <?= css_link('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css') ?>
+
+    <!-- Animate.css with Cache-Busting -->
+    <?= css_link('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css') ?>
     
     <?= $this->renderSection('styles') ?>
     
@@ -331,8 +331,8 @@
         </main>
     </div>
 
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap 5 JS with Cache-Busting -->
+    <?= js_script('https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js') ?>
     
     <script>
         // Sidebar toggle functionality

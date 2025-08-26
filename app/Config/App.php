@@ -8,6 +8,19 @@ class App extends BaseConfig
 {
     /**
      * --------------------------------------------------------------------------
+     * Application Version for Cache-Busting
+     * --------------------------------------------------------------------------
+     *
+     * This version number is used for cache-busting assets in production.
+     * Update this version number when deploying new changes to ensure
+     * users get the latest CSS and JavaScript files without manual cache clearing.
+     *
+     * @var string
+     */
+    public string $appVersion = '1.0.0';
+
+    /**
+     * --------------------------------------------------------------------------
      * Base Site URL
      * --------------------------------------------------------------------------
      *

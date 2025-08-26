@@ -744,7 +744,8 @@ if (!empty($similarProperties)): ?>
 <?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<!-- Animate.css with Cache-Busting -->
+<?= css_link('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css') ?>
 <style>
 /* Property Hero Section Styles */
 .property-hero-section {

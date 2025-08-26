@@ -88,5 +88,7 @@ class Autoload extends AutoloadConfig
      *
      * @var list<string>
      */
-    public $helpers = [];
+    public $helpers = [
+        'asset', // Cache-busting helper for CSS and JavaScript files
+    ];
 }

@@ -299,8 +299,8 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
-<!-- Quill.js CSS -->
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<!-- Quill.js CSS with Cache-Busting -->
+<?= css_link('https://cdn.quilljs.com/1.3.6/quill.snow.css') ?>
 
 <!-- Enhanced form submission styles for better user feedback -->
 <style>
@@ -349,8 +349,8 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<!-- Quill.js Rich Text Editor -->
-<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<!-- Quill.js Rich Text Editor with Cache-Busting -->
+<?= js_script('https://cdn.quilljs.com/1.3.6/quill.min.js') ?>
 
 <script>
 /**

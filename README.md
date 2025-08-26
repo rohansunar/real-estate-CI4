@@ -256,6 +256,8 @@ Provide user friendly message on errors.
 Write Proper Code Comments for other developer easily understand
 used simply logic and minimum codes to achieve goal avoid over-engineering
 Responsive Design with Mobile Devices first
+Dont write css and js inline use external files
+
 
 Design a modern, minimalistic, and elegant responsive. The design should:
 Use clean lines, ample white space, and soft neutral tones (e.g., whites, blue, muted pastels).

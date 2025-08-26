@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'White Rock Realtor' ?></title>
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 CSS with Cache-Busting -->
+    <?= css_link('https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css') ?>
 
-    <!-- Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css?v=1" rel="stylesheet">
+    <!-- Icons with Cache-Busting -->
+    <?= css_link('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css') ?>
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Custom Styles -->
-    <link href="<?= base_url('assets/css/website.css') ?>?v=1" rel="stylesheet">
+    <!-- Custom Styles with Automatic Cache-Busting -->
+    <?= css_link('assets/css/website.css') ?>
 </head>
 <body class="bg-light">
     <!-- Top Header Section - Mobile Optimized -->
@@ -617,11 +617,11 @@
         </div>
     </div>
 
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap 5 JS with Cache-Busting -->
+    <?= js_script('https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js') ?>
 
-    <!-- Custom JavaScript -->
-    <script src="<?= base_url('assets/js/website.js') ?>?v=1"></script>
+    <!-- Custom JavaScript with Automatic Cache-Busting -->
+    <?= js_script('assets/js/website.js') ?>
 
     <?= $this->renderSection('scripts') ?>
 </body>
