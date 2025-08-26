@@ -1130,17 +1130,36 @@ class AgentAuthController extends BaseController
      */
     private function sendWelcomeEmail($agentData)
     {
-        // Enhanced email service with agent credentials
         try {
-            // For now, just log the credentials
+            // Initialize email service
+            $emailService = new \App\Services\EmailService();
+
+            // Send welcome email with login credentials
+            $emailSent = $emailService->sendAgentWelcomeEmail($agentData);
+
+            if ($emailSent) {
+                log_message('info', 'Welcome email sent successfully to sub-agent: ' . $agentData['email']);
+            } else {
+                log_message('error', 'Failed to send welcome email to sub-agent: ' . $agentData['email']);
+
+                // Log credentials for manual delivery as fallback
+                log_message('info', 'Sub-agent credentials for manual delivery:');
+                log_message('info', 'Email: ' . $agentData['email']);
+                log_message('info', 'Password: ' . ($agentData['plain_password'] ?? 'N/A'));
+                log_message('info', 'Unique ID: ' . ($agentData['unique_agent_id'] ?? 'Auto-generated'));
+            }
+
+            return $emailSent;
+        } catch (\Exception $e) {
+            log_message('error', 'Exception while sending welcome email to sub-agent: ' . $e->getMessage());
+
+            // Log credentials for manual delivery as fallback
             log_message('info', 'Sub-agent credentials for manual delivery:');
             log_message('info', 'Email: ' . $agentData['email']);
             log_message('info', 'Password: ' . ($agentData['plain_password'] ?? 'N/A'));
             log_message('info', 'Unique ID: ' . ($agentData['unique_agent_id'] ?? 'Auto-generated'));
 
-            // TODO: Implement actual email sending
-        } catch (\Exception $e) {
-            log_message('error', 'Failed to send welcome email to sub-agent: ' . $e->getMessage());
+            return false;
         }
     }
 }

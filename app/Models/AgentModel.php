@@ -138,6 +138,7 @@ class AgentModel extends Model
 
     /**
      * Get validation rules for agent update (excludes current agent from email uniqueness check)
+     * Note: unique_agent_id is excluded from update validation as it's auto-generated and immutable
      */
     public function getUpdateValidationRules($agentId)
     {
@@ -148,7 +149,6 @@ class AgentModel extends Model
             'phone'           => 'required|max_length[20]',
             'address'         => 'permit_empty|max_length[1000]',
             'qualification'   => 'permit_empty|max_length[255]',
-            'unique_agent_id' => "required|max_length[50]|is_unique[agents.unique_agent_id,id,{$agentId}]",
             'parent_agent_id' => 'permit_empty|integer',
         ];
     }

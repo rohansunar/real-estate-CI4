@@ -475,7 +475,7 @@
                             <span class="nav-text">Agents</span>
                         </a>
                     </li>
-                </ul>
+                <!-- </ul>
                         <li class="nav-item">
                             <a href="<?= base_url('dashboard/agents/hierarchy') ?>"
                                class="nav-link <?= strpos(uri_string(), 'agents/hierarchy') !== false ? 'active' : '' ?>">
@@ -485,7 +485,7 @@
                                 <span class="nav-text">Agents Hierarchy</span>
                             </a>
                         </li>
-
+                </ul> -->
             </div>
 
             <!-- Blog Management Section -->
