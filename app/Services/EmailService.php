@@ -726,7 +726,7 @@ class EmailService
                         <h3>📞 Need Immediate Assistance?</h3>
                         <p>Feel free to contact us directly:</p>
                         <p><strong>Phone:</strong> +91 97498 36565<br>
-                        <strong>Email:</strong> info@whiterockrealtor.inMore<br>
+                        <strong>Email:</strong> info@whiterockrealtor.in<br>
                         <strong>Office Hours:</strong> Monday - Saturday, 9:00 AM - 7:00 PM</p>
                     </div>
 
