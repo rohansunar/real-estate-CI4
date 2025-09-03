@@ -2961,3 +2961,9 @@ textarea.form-control {
 }
 
 /* Dark mode support is now handled via data-theme attribute */
+
+.clip-img {
+  /* clip-path: inset(5px 5px 5px 5px); crop edges: top right bottom left */
+  object-fit: cover;
+  border-radius: 10%;
+}

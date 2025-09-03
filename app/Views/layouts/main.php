@@ -64,8 +64,8 @@
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
             <div class="mobile-menu-brand">
-                <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo" width="30" height="30">
-                <span>White Rock Realtor</span>
+                <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo" class="clip-img" width="130" height="60">
+                <!-- <span>White Rock Realtor</span> -->
             </div>
             <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">
                 <i class="fas fa-times"></i>
@@ -128,8 +128,8 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top" style="top: 45px;">
         <div class="container">
             <a class="navbar-brand fw-bold text-primary" href="<?= base_url() ?>">
-                <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo" width="90" height="90">
-                White Rock Realtor
+                <img src="<?= base_url('assets/images/logo.png') ?>" class="clip-img" alt="Logo" width="130" height="60">
+                <!-- White Rock Realtor -->
             </a>
 
             <!-- Modern Mobile Menu Toggle -->
@@ -408,8 +408,8 @@
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
                     <div class="d-flex align-items-center mb-4">
-                       <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo" width="100" height="100">
-                        <h3 class="h4 mb-0 fw-bold">White Rock Realtor</h3>
+                       <img src="<?= base_url('assets/images/logo.png') ?>" class="clip-img" alt="Logo" width="130" height="60">
+                        <!-- <h3 class="h4 mb-0 fw-bold">White Rock Realtor</h3> -->
                     </div>
                     <p class="text-light mb-4">
                         Your trusted partner in finding the perfect property. We help you discover your dream home with personalized service and expert guidance.
