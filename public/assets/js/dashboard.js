@@ -518,17 +518,21 @@ function autoHideToasts() {
 }
 
 /**
- * Show notification toast
- */
+  * Show notification toast
+  */
 function showNotification(message, type = 'info') {
+    // Ensure message is a string and not undefined
+    const safeMessage = message || 'An unknown error occurred';
+    const safeType = ['success', 'danger', 'warning', 'info'].includes(type) ? type : 'info';
+
     const toastHtml = `
         <div class="toast" role="alert">
-            <div class="toast-header bg-${type} text-white">
+            <div class="toast-header bg-${safeType} text-white">
                 <i class="fas fa-info-circle me-2"></i>
                 <strong class="me-auto">Notification</strong>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
             </div>
-            <div class="toast-body">${message}</div>
+            <div class="toast-body">${safeMessage}</div>
         </div>
     `;
 
@@ -541,8 +545,14 @@ function showNotification(message, type = 'info') {
 
         // Remove toast element after it's hidden
         newToast.addEventListener('hidden.bs.toast', function() {
-            this.remove();
+            if (this && this.remove) {
+                this.remove();
+            }
         });
+    } else {
+        // Fallback to browser alert if toast container doesn't exist
+        console.warn('Toast container not found, falling back to alert');
+        alert(safeMessage);
     }
 }
 

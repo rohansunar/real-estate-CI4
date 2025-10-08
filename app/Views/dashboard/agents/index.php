@@ -18,6 +18,11 @@
     </div>
 </div>
 
+<!-- Toast Container for Notifications -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+    <!-- Toasts will be inserted here by JavaScript -->
+</div>
+
 <!-- Alert Messages -->
 <?php if (session()->getFlashdata('success')): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -504,17 +509,24 @@ function confirmDeleteAgent(agentId) {
             'X-Requested-With': 'XMLHttpRequest'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        // Check if response is ok (status 200-299)
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
-            showNotification(data.message, 'success');
+            showNotification(data.message || 'Agent deleted successfully', 'success');
             setTimeout(() => location.reload(), 1000);
         } else {
-            showNotification(data.message, 'danger');
+            showNotification(data.message || 'Failed to delete agent', 'danger');
         }
     })
     .catch(error => {
-        showNotification('Error deleting agent', 'danger');
+        console.error('Delete agent error:', error);
+        showNotification('Error deleting agent. Please try again.', 'danger');
     });
 }
 

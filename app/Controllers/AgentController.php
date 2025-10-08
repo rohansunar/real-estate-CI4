@@ -273,15 +273,15 @@ class AgentController extends BaseController
     }
 
     /**
-     * Delete agent
-     *
-     * Handles agent deletion with proper validation and cascade delete for associated images.
-     * Implements downline protection to prevent deletion of agents with sub-agents.
-     * Uses the centralized ImageManagementService for consistent file handling.
-     */
-    public function delete($id)
-    {
-        if (!$this->request->isAJAX()) {
+      * Delete agent
+      *
+      * Handles agent deletion with proper validation and cascade delete for associated images.
+      * Implements downline protection to prevent deletion of agents with sub-agents.
+      * Uses the centralized ImageManagementService for consistent file handling.
+      */
+     public function delete($id)
+     {
+         if (!$this->request->isAJAX()) {
             return redirect()->to('/dashboard/agents');
         }
 
@@ -297,15 +297,13 @@ class AgentController extends BaseController
         if ($downlineCount > 0) {
             // Prevent deletion if agent has downline
             $agentName = esc($agent['name']);
-            $message = "Cannot delete '{$agentName}' because they have {$downlineCount} sub-agent(s) in their network. ";
-            $message .= "To delete this agent, you must first reassign or remove all their sub-agents. ";
-            $message .= "This prevents breaking the organizational structure.";
+            $message = "Cannot delete agent '{$agentName}' because they have {$downlineCount} agent(s) in their downline. ";
+            $message .= "Please reassign or remove all downline agents first before deleting this agent.";
 
             return $this->response->setJSON([
                 'success' => false,
                 'message' => $message,
-                'downline_count' => $downlineCount,
-                'suggestion' => 'Go to the hierarchy view to manage sub-agents before deletion.'
+                'downline_count' => $downlineCount
             ]);
         }
 
@@ -326,7 +324,7 @@ class AgentController extends BaseController
         } else {
             return $this->response->setJSON(['success' => false, 'message' => 'Failed to delete agent']);
         }
-    }
+     }
 
 
 

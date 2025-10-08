@@ -98,10 +98,6 @@ A modern, responsive real estate website built with CodeIgniter 4, featuring an 
    php spark serve
    ```
 
-### Default Credentials
-- **Email**: admin@whiterockrealtor.com
-- **Password**: password123
-
 ## 📱 Usage Guide
 
 ### Adding Properties with Multiple Media
@@ -168,29 +164,6 @@ app/
     └── dashboard/                # Admin interface
 ```
 
-### Database Schema
-```sql
--- Properties table with JSON media fields
-CREATE TABLE properties (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    type VARCHAR(50),
-    location VARCHAR(100),
-    area INT,
-    images JSON,              -- Multiple image paths
-    youtube_video JSON,       -- Multiple YouTube URLs
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
-);
-```
-
-### Security Features
-- **File Upload Security**: Random filename generation
-- **Input Validation**: YouTube URL format validation
-- **SQL Injection Protection**: CodeIgniter 4 Query Builder
-- **XSS Protection**: Built-in output escaping
-
 ## Installation & updates
 
 `composer create-project codeigniter4/appstarter` then `composer update` whenever
@@ -243,85 +216,3 @@ Additionally, make sure that the following extensions are enabled in your PHP:
 - json (enabled by default - don't turn it off)
 - [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
 - [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
-
-
-verify development server starts and runs without errors
-Dont Modify any other Existing Features and Design expect specific onces mentioned in the task.
-Test the website in browser to ensure everything works correctly
-Remove any unnecessary/unused code related to the applications module
-Verify both authenticated and unauthenticated user scenarios
-Check for Memory leakage codes in codebase and fix it.
-Remove any console.log statements after usage.
-Provide user friendly message on errors.
-Write Proper Code Comments for other developer easily understand
-used simply logic and minimum codes to achieve goal avoid over-engineering
-Responsive Design with Mobile Devices first
-Dont write css and js inline use external files
-
-
-Design a modern, minimalistic, and elegant responsive. The design should:
-Use clean lines, ample white space, and soft neutral tones (e.g., whites, blue, muted pastels).
-Use a single-column layout for mobile, expanding to a centered grid layout on desktop.
-Align buttons, icons, text, fonts, and images according to screen sizes.
-Incorporate a sticky top navbar with logo and smooth-scrolling anchors.
-Design must follow accessibility best practices (WCAG 2.1 AA).
-All UI elements must use a consistent design system (typography scale, button variants, spacing units).
-
-## Property Page Enhancements
-1. **Add Hero Section**: Create a modern hero section above search and filter section for the property page with:
-   - High-quality property image
-   - Property title and key details overlay
-   - Clean, minimalistic design following the existing design system
-
-4. **Agent Database Schema Updates**:
-   - Update all agent CRUD operations in admin dashboard (Create, Read, Update, Delete) to include these fields
-   - Ensure referral_id is displayed in agent view/list pages
-
-6. **Agent Authentication System**:
-   - Allow agents to create sub-agents under their hierarchy
-   - Include agent profile management functionality
-
-
-## Quality Assurance Requirements
-8. **Testing and Validation**:
-   - Verify development server starts without errors
-   - Test all functionality in browser (both desktop and mobile)
-   - Validate both authenticated and unauthenticated user scenarios
-   - Test agent login flow and dashboard access permissions
-
-9. **Code Quality Standards**:
-   - Remove any unused code related to applications module
-   - Check for and fix memory leaks in the codebase
-   - Provide user-friendly error messages with proper validation
-   - Add comprehensive code comments for maintainability
-   - Use simple logic with minimal code to achieve goals (avoid over-engineering)
-
-10. **Design Standards Compliance**:
-    - Maintain mobile-first responsive design approach
-    - Follow modern, minimalistic, elegant design principles
-    - Use clean lines, ample white space, and soft neutral tones (whites, blues, muted pastels)
-    - Implement single-column layout for mobile, centered grid for desktop
-    - Ensure sticky top navbar with smooth-scrolling anchors
-    - Comply with WCAG 2.1 AA accessibility standards
-    - Maintain consistent design system (typography, buttons, spacing)
-    - Preserve all existing functionality and design elements
-
-## Implementation Priority
-- Complete property page enhancements first
-- Then implement agent management system features
-- Finally, conduct comprehensive testing and code cleanup
-
-CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin@123';
-GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-EXIT;
-
-
-$resend = Resend::client('re_FKwhK6Tf_EPDyQzi3vgEgv78zFummjSHH');
-
-$resend->emails->send([
-  'from' => 'Acme <onboarding@whiterockrealtor.com>',
-  'to' => ['rohansunar89@gmail.com'],
-  'subject' => 'hello world',
-  'html' => '<p>it works!</p>'
-]);
