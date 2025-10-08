@@ -165,7 +165,7 @@
                                     </select>
                                     <div class="form-text">
                                         <i class="fas fa-info-circle me-1"></i>
-                                        Set this agent as a sub-agent of another agent
+                                        Choose a parent agent to establish the reporting hierarchy. Leave empty for top-level agents.
                                     </div>
                                 </div>
                             </div>

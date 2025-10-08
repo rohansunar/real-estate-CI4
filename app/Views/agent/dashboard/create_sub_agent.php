@@ -98,7 +98,7 @@
                                 </div>
                             <?php endif; ?>
                             <div class="form-text">
-                                <small>Login credentials will be sent to this email address</small>
+                                <small>The sub-agent will use this email address to log in and receive system notifications</small>
                             </div>
                         </div>
 

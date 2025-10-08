@@ -88,21 +88,21 @@ class AgentController extends BaseController
 
             $validationMessages = [
                 'name' => [
-                    'required' => 'Agent name is required.',
-                    'max_length' => 'Agent name cannot exceed 255 characters.'
+                    'required' => 'Please enter the agent\'s full name to continue.',
+                    'max_length' => 'Agent name must be 255 characters or less. Please use a shorter name.'
                 ],
                 'email' => [
-                    'required' => 'Email address is required.',
-                    'valid_email' => 'Please enter a valid email address.',
-                    'is_unique' => 'This email address is already registered.'
+                    'required' => 'Email address is required for agent login and notifications.',
+                    'valid_email' => 'Please enter a valid email address (e.g., john.doe@example.com).',
+                    'is_unique' => 'This email address is already registered to another agent. Please use a different email.'
                 ],
                 'phone' => [
-                    'required' => 'Phone number is required.',
-                    'max_length' => 'Phone number cannot exceed 20 characters.'
+                    'required' => 'Phone number is required for agent contact information.',
+                    'max_length' => 'Phone number must be 20 characters or less. Please use a shorter format.'
                 ],
                 'profile_image' => [
-                    'is_image' => 'Please upload a valid image file.',
-                    'max_size' => 'Profile image must be less than 2MB.'
+                    'is_image' => 'Please upload a valid image file (JPG, PNG, GIF). Other file types are not supported.',
+                    'max_size' => 'Profile image must be smaller than 2MB. Please resize or compress your image.'
                 ]
             ];
 
@@ -204,21 +204,21 @@ class AgentController extends BaseController
 
             $validationMessages = [
                 'name' => [
-                    'required' => 'Agent name is required.',
-                    'max_length' => 'Agent name cannot exceed 255 characters.'
+                    'required' => 'Please enter the agent\'s full name to continue.',
+                    'max_length' => 'Agent name must be 255 characters or less. Please use a shorter name.'
                 ],
                 'email' => [
-                    'required' => 'Email address is required.',
-                    'valid_email' => 'Please enter a valid email address.',
-                    'is_unique' => 'This email address is already registered.'
+                    'required' => 'Email address is required for agent login and notifications.',
+                    'valid_email' => 'Please enter a valid email address (e.g., john.doe@example.com).',
+                    'is_unique' => 'This email address is already registered to another agent. Please use a different email.'
                 ],
                 'phone' => [
-                    'required' => 'Phone number is required.',
-                    'max_length' => 'Phone number cannot exceed 20 characters.'
+                    'required' => 'Phone number is required for agent contact information.',
+                    'max_length' => 'Phone number must be 20 characters or less. Please use a shorter format.'
                 ],
                 'profile_image' => [
-                    'is_image' => 'Please upload a valid image file.',
-                    'max_size' => 'Profile image must be less than 2MB.'
+                    'is_image' => 'Please upload a valid image file (JPG, PNG, GIF). Other file types are not supported.',
+                    'max_size' => 'Profile image must be smaller than 2MB. Please resize or compress your image.'
                 ]
             ];
 
@@ -240,7 +240,8 @@ class AgentController extends BaseController
                 'phone' => trim($this->request->getPost('phone')),
                 'address' => trim($this->request->getPost('address')) ?: null,
                 'qualification' => trim($this->request->getPost('qualification')) ?: null,
-                'profile_image' => $profileImagePath
+                'profile_image' => $profileImagePath,
+                'parent_agent_id' => $this->request->getPost('parent_agent_id') ?: null
             ];
 
             // Attempt to update the agent (skip model validation since we already validated)
@@ -296,13 +297,15 @@ class AgentController extends BaseController
         if ($downlineCount > 0) {
             // Prevent deletion if agent has downline
             $agentName = esc($agent['name']);
-            $message = "Cannot delete agent '{$agentName}' because they have {$downlineCount} agent(s) in their downline. ";
-            $message .= "Please reassign or remove all downline agents first before deleting this agent.";
+            $message = "Cannot delete '{$agentName}' because they have {$downlineCount} sub-agent(s) in their network. ";
+            $message .= "To delete this agent, you must first reassign or remove all their sub-agents. ";
+            $message .= "This prevents breaking the organizational structure.";
 
             return $this->response->setJSON([
                 'success' => false,
                 'message' => $message,
-                'downline_count' => $downlineCount
+                'downline_count' => $downlineCount,
+                'suggestion' => 'Go to the hierarchy view to manage sub-agents before deletion.'
             ]);
         }
 

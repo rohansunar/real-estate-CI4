@@ -159,7 +159,7 @@
                                            id="unique_agent_id"
                                            name="unique_agent_id"
                                            value="<?= old('unique_agent_id', $agent['unique_agent_id']) ?>"
-                                           placeholder="e.g., AGT250804001"
+                                           placeholder="e.g., WRR00001"
                                            readonly>
                                     <div class="form-text">
                                         <i class="fas fa-info-circle me-1"></i>
@@ -187,7 +187,7 @@
                                     </select>
                                     <div class="form-text">
                                         <i class="fas fa-info-circle me-1"></i>
-                                        Set this agent as a sub-agent of another agent
+                                        Choose a parent agent to establish the reporting hierarchy. Leave empty for top-level agents.
                                     </div>
                                 </div>
 
@@ -225,11 +225,11 @@
                                            placeholder="Enter new password">
                                     <div class="form-text">
                                         <i class="fas fa-info-circle me-1"></i>
-                                        Leave empty to keep current password. Minimum 6 characters.
+                                        Leave empty to keep the current password unchanged. New passwords must be at least 6 characters long.
                                         <?php if ($agent['password']): ?>
-                                            <br><span class="text-success"><i class="fas fa-check me-1"></i>Agent has login credentials</span>
+                                            <br><span class="text-success"><i class="fas fa-check me-1"></i>This agent can log into the system</span>
                                         <?php else: ?>
-                                            <br><span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>No login credentials set</span>
+                                            <br><span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>This agent cannot log in yet - set a password to enable access</span>
                                         <?php endif; ?>
                                     </div>
                                 </div>

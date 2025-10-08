@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use CodeIgniter\Model;
 use Exception;
 
 /**
@@ -28,60 +27,8 @@ use Exception;
  * @version 1.0
  * @since 2025-08-16
  */
-class AgentRepository extends Model
+class AgentRepository
 {
-    protected $table = 'agents';
-    protected $primaryKey = 'id';
-    protected $useAutoIncrement = true;
-    protected $returnType = 'array';
-    protected $useSoftDeletes = false;
-    protected $protectFields = true;
-    protected $allowedFields = [
-        'profile_image', 'name', 'email', 'password', 'phone', 'address', 
-        'qualification', 'is_active', 'unique_agent_id', 'parent_agent_id'
-    ];
-
-    // Dates
-    protected $useTimestamps = true;
-    protected $dateFormat = 'datetime';
-    protected $createdField = 'created_at';
-    protected $updatedField = 'updated_at';
-
-    // Validation
-    protected $validationRules = [
-        'name' => 'required|max_length[255]',
-        'email' => 'required|valid_email|is_unique[agents.email]',
-        'password' => 'permit_empty|min_length[6]',
-        'phone' => 'required|max_length[20]',
-        'address' => 'permit_empty|max_length[1000]',
-        'qualification' => 'permit_empty|max_length[255]',
-        'unique_agent_id' => 'permit_empty|max_length[50]|is_unique[agents.unique_agent_id]',
-        'parent_agent_id' => 'permit_empty|integer',
-    ];
-
-    protected $validationMessages = [
-        'name' => [
-            'required' => 'Agent name is required.',
-            'max_length' => 'Agent name cannot exceed 255 characters.'
-        ],
-        'email' => [
-            'required' => 'Email address is required.',
-            'valid_email' => 'Please enter a valid email address.',
-            'is_unique' => 'This email address is already registered.'
-        ],
-        'phone' => [
-            'required' => 'Phone number is required.',
-            'max_length' => 'Phone number cannot exceed 20 characters.'
-        ]
-    ];
-
-    protected $skipValidation = false;
-    protected $cleanValidationRules = true;
-
-    // Callbacks
-    protected $allowCallbacks = true;
-    protected $beforeInsert = ['hashPassword', 'generateUniqueAgentId'];
-    protected $beforeUpdate = ['hashPassword'];
 
     /**
      * Create a new agent under a parent using closure table pattern
@@ -109,13 +56,14 @@ class AgentRepository extends Model
 
         try {
             // Step 1: Validate parent agent exists and is active
-            $parent = $this->find($parentId);
+            $agentModel = new AgentModel();
+            $parent = $agentModel->find($parentId);
             if (!$parent) {
-                throw new Exception('Parent agent not found with ID: ' . $parentId);
+                throw new Exception("Cannot create sub-agent: The selected parent agent (ID: {$parentId}) was not found. Please select a valid parent agent from the list.");
             }
 
             if (!$parent['is_active']) {
-                throw new Exception('Cannot create agent under inactive parent: ' . $parentId);
+                throw new Exception("Cannot create sub-agent under '{$parent['name']}': This parent agent is currently inactive. Please activate the parent agent first or choose a different parent.");
             }
 
             // Step 2: Prepare agent data with proper defaults and validation
@@ -123,7 +71,7 @@ class AgentRepository extends Model
 
             // Generate unique agent ID if not provided
             if (!isset($data['unique_agent_id']) || empty($data['unique_agent_id'])) {
-                $data['unique_agent_id'] = $this->generateUniqueId();
+                $data['unique_agent_id'] = $agentModel->generateUniqueId();
             }
 
             // Hash password if provided
@@ -198,7 +146,8 @@ class AgentRepository extends Model
      */
     public function getImmediateChildren(int $agentId): array
     {
-        return $this->db->table('agent_tree t')
+        $db = \Config\Database::connect();
+        return $db->table('agent_tree t')
             ->select('a.*')
             ->join('agents a', 'a.id = t.descendant_id')
             ->where('t.ancestor_id', $agentId)
@@ -217,7 +166,8 @@ class AgentRepository extends Model
      */
     public function getUpline(int $agentId): array
     {
-        return $this->db->table('agent_tree t')
+        $db = \Config\Database::connect();
+        return $db->table('agent_tree t')
             ->select('a.*, t.depth')
             ->join('agents a', 'a.id = t.ancestor_id')
             ->where('t.descendant_id', $agentId)
@@ -236,7 +186,8 @@ class AgentRepository extends Model
      */
     public function getSubtreeCount(int $agentId): int
     {
-        $result = $this->db->table('agent_tree')
+        $db = \Config\Database::connect();
+        $result = $db->table('agent_tree')
             ->selectCount('*', 'downline_count')
             ->where('ancestor_id', $agentId)
             ->where('depth >', 0)
@@ -246,37 +197,4 @@ class AgentRepository extends Model
         return (int) ($result['downline_count'] ?? 0);
     }
 
-    /**
-     * Generate unique agent ID
-     */
-    public function generateUniqueId(): string
-    {
-        do {
-            $uniqueId = 'AGT' . date('ymd') . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
-        } while ($this->where('unique_agent_id', $uniqueId)->first());
-
-        return $uniqueId;
-    }
-
-    /**
-     * Hash password before saving
-     */
-    protected function hashPassword(array $data)
-    {
-        if (isset($data['data']['password']) && !empty($data['data']['password'])) {
-            $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
-        }
-        return $data;
-    }
-
-    /**
-     * Generate unique agent ID before insert
-     */
-    protected function generateUniqueAgentId(array $data)
-    {
-        if (!isset($data['data']['unique_agent_id']) || empty($data['data']['unique_agent_id'])) {
-            $data['data']['unique_agent_id'] = $this->generateUniqueId();
-        }
-        return $data;
-    }
 }

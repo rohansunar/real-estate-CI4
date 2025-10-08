@@ -57,7 +57,7 @@ class AgentSubAgentTest extends CIUnitTestCase
         $emailData = [
             'name' => 'Test Agent',
             'email' => 'test@example.com',
-            'unique_agent_id' => 'AGT2508260001',
+            'unique_agent_id' => 'WRR000001',
             'plain_password' => 'testpass123'
         ];
 

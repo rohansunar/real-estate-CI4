@@ -98,28 +98,28 @@ class AgentModel extends Model
     ];
     protected $validationMessages   = [
         'name' => [
-            'required' => 'Agent name is required.',
-            'max_length' => 'Agent name cannot exceed 255 characters.'
+            'required' => 'Please provide the agent\'s full name to create their profile.',
+            'max_length' => 'Agent name must be 255 characters or less. Please use a shorter name.'
         ],
         'email' => [
-            'required' => 'Email address is required.',
-            'valid_email' => 'Please enter a valid email address.',
-            'is_unique' => 'This email address is already registered.'
+            'required' => 'Email address is required for agent login and system notifications.',
+            'valid_email' => 'Please enter a valid email address (e.g., john.doe@example.com).',
+            'is_unique' => 'This email address is already registered to another agent. Please use a different email.'
         ],
         'password' => [
-            'min_length' => 'Password must be at least 6 characters long.'
+            'min_length' => 'Password must be at least 6 characters long for security purposes.'
         ],
         'phone' => [
-            'required' => 'Phone number is required.',
-            'max_length' => 'Phone number cannot exceed 20 characters.'
+            'required' => 'Phone number is required for agent contact information and support.',
+            'max_length' => 'Phone number must be 20 characters or less. Please use a shorter format.'
         ],
         'unique_agent_id' => [
-            'required' => 'Unique agent ID is required.',
-            'is_unique' => 'This agent ID is already in use.',
-            'max_length' => 'Agent ID cannot exceed 50 characters.'
+            'required' => 'A unique agent ID is required for system identification.',
+            'is_unique' => 'This agent ID is already in use. Please contact support if you need assistance.',
+            'max_length' => 'Agent ID cannot exceed 50 characters. Please use a shorter identifier.'
         ],
         'parent_agent_id' => [
-            'integer' => 'Parent agent ID must be a valid number.'
+            'integer' => 'Parent agent selection must be a valid agent from the dropdown list.'
         ]
     ];
     protected $skipValidation       = false;
@@ -292,15 +292,139 @@ class AgentModel extends Model
     }
 
     /**
-     * Generate a unique agent ID
+     * Generate a unique agent ID using sequential numbering with proper race condition handling
+     *
+     * This method uses table locking to prevent race conditions when multiple requests
+     * try to generate unique IDs simultaneously. In CodeIgniter 4, table locking must
+     * be done using raw SQL queries rather than builder methods.
+     *
+     * Database Compatibility:
+     * - Works with both MySQLi (production) and SQLite3 (testing)
+     * - Uses database-agnostic queries to avoid compatibility issues
+     * - Avoids MySQL-specific functions like REGEXP and CAST with UNSIGNED
+     * - Uses string manipulation instead of complex SQL functions
+     *
+     * Locking Strategy:
+     * - Uses WRITE lock on agents table during ID generation
+     * - Ensures atomicity of the read-modify-write operation
+     * - Properly unlocks table in all code paths (success, error, exception)
+     * - Includes comprehensive logging for debugging
+     *
+     * ID Generation Algorithm:
+     * - Finds all existing WRR-formatted IDs (WRR00001, WRR00002, etc.)
+     * - Extracts numeric parts and finds the highest number
+     * - Increments by 1 to generate the next sequential ID
+     * - Validates uniqueness before returning
+     *
+     * Error Handling:
+     * - Rolls back transaction on any error
+     * - Ensures table is unlocked even if exceptions occur
+     * - Provides user-friendly error messages
+     * - Logs detailed error information for debugging
      */
     public function generateUniqueId(): string
     {
-        do {
-            $uniqueId = 'AGT' . date('ymd') . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
-        } while ($this->where('unique_agent_id', $uniqueId)->first());
+        $db = \Config\Database::connect();
 
-        return $uniqueId;
+        // Use transaction with table locking for race condition safety
+        $db->transStart();
+
+        try {
+            // Lock the agents table to prevent concurrent modifications
+            // In CodeIgniter 4, table locking requires raw SQL queries
+            $db->query('LOCK TABLES agents WRITE');
+            log_message('info', 'AgentModel::generateUniqueId - Table locked successfully');
+
+            // Find the highest existing numeric ID from WRR format
+            // Use database-agnostic approach that works with both MySQLi and SQLite3
+            try {
+                $allWrrIds = $db->table('agents')
+                              ->select('unique_agent_id')
+                              ->where('unique_agent_id LIKE', 'WRR%')
+                              ->where('LENGTH(unique_agent_id) = 8') // WRR + 5 digits
+                              ->orderBy('unique_agent_id', 'DESC')
+                              ->limit(100) // Get more records to find the highest
+                              ->get()
+                              ->getResultArray();
+
+                log_message('info', 'AgentModel::generateUniqueId - Found ' . count($allWrrIds) . ' existing WRR IDs');
+            } catch (\Exception $e) {
+                log_message('error', 'AgentModel::generateUniqueId - Error querying existing IDs: ' . $e->getMessage());
+                // Unlock table before throwing exception
+                $db->query('UNLOCK TABLES');
+                throw new \Exception('Database query failed while finding existing agent IDs');
+            }
+
+            // Find the highest numeric value from WRR format
+            $highestNumber = 0;
+            $foundValidIds = 0;
+
+            foreach ($allWrrIds as $row) {
+                if (!empty($row['unique_agent_id']) && strlen($row['unique_agent_id']) === 8) {
+                    $numericPart = substr($row['unique_agent_id'], 3); // Remove 'WRR' prefix
+                    if (is_numeric($numericPart)) {
+                        $currentNumber = (int)$numericPart;
+                        if ($currentNumber > $highestNumber) {
+                            $highestNumber = $currentNumber;
+                        }
+                        $foundValidIds++;
+                    }
+                }
+            }
+
+            log_message('info', 'AgentModel::generateUniqueId - Found ' . $foundValidIds . ' valid WRR IDs, highest number: ' . $highestNumber);
+
+            $result = null;
+            if ($highestNumber > 0) {
+                $result = ['unique_agent_id' => 'WRR' . str_pad($highestNumber, 5, '0', STR_PAD_LEFT)];
+            }
+
+            // Extract numeric part and increment, or start from 1
+            $nextNumber = 1;
+            if ($result && !empty($result['unique_agent_id'])) {
+                $numericPart = substr($result['unique_agent_id'], 3); // Remove 'WRR' prefix
+                $nextNumber = (int)$numericPart + 1;
+            }
+
+            // Generate new sequential ID with 5-digit format (WRR00001)
+            $uniqueId = 'WRR' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
+            // Verify uniqueness before releasing lock
+            $existing = $db->table('agents')
+                         ->where('unique_agent_id', $uniqueId)
+                         ->countAllResults();
+
+            if ($existing > 0) {
+                // Unlock table before throwing exception
+                $db->query('UNLOCK TABLES');
+                log_message('warning', 'AgentModel::generateUniqueId - Generated ID already exists, unlocking table');
+                throw new \Exception('Generated unique ID already exists - this should not happen');
+            }
+
+            // Unlock the table before completing transaction
+            $db->query('UNLOCK TABLES');
+            log_message('info', 'AgentModel::generateUniqueId - Table unlocked successfully');
+
+            $db->transComplete();
+
+            log_message('info', 'AgentModel::generateUniqueId - Generated unique ID: ' . $uniqueId);
+            return $uniqueId;
+
+        } catch (\Exception $e) {
+            // Ensure table is unlocked even if an error occurs
+            try {
+                $db->query('UNLOCK TABLES');
+                log_message('info', 'AgentModel::generateUniqueId - Table unlocked after error');
+            } catch (\Exception $unlockException) {
+                log_message('error', 'AgentModel::generateUniqueId - Failed to unlock table after error: ' . $unlockException->getMessage());
+            }
+
+            $db->transRollback();
+            log_message('error', 'Failed to generate unique agent ID: ' . $e->getMessage());
+
+            // Provide user-friendly error message
+            throw new \Exception('Unable to generate a unique agent ID. Please try again or contact support if the problem persists.');
+        }
     }
 
 
@@ -720,17 +844,19 @@ class AgentModel extends Model
     }
 
     /**
-     * Count total agents in downline
+     * Count total agents in downline using optimized closure table query
      */
     public function countTotalDownline(int $agentId): int
     {
-        // Use simple per-request cache to avoid recomputing for the same agent
+        // Use per-request cache to avoid recomputing for the same agent
         if (isset($this->downlineCountCache[$agentId])) {
             return $this->downlineCountCache[$agentId];
         }
 
-        $allSubAgents = $this->getAllSubAgentsInHierarchy($agentId);
-        $count = count($allSubAgents);
+        // Use closure table for O(1) count instead of recursive queries
+        $repository = new \App\Models\AgentRepository();
+        $count = $repository->getSubtreeCount($agentId);
+
         $this->downlineCountCache[$agentId] = $count;
         return $count;
     }

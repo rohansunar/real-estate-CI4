@@ -56,11 +56,11 @@ class AddReferralFieldsToAgents extends Migration
         // Generate unique IDs for existing agents
         $agents = $this->db->table('agents')->get()->getResultArray();
         foreach ($agents as $agent) {
-            $uniqueId = 'AGT' . date('ymd') . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            $uniqueId = 'WRR' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
 
             // Ensure uniqueness
             while ($this->db->table('agents')->where('unique_agent_id', $uniqueId)->get()->getNumRows() > 0) {
-                $uniqueId = 'AGT' . date('ymd') . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+                $uniqueId = 'WRR' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
             }
 
             $this->db->table('agents')
