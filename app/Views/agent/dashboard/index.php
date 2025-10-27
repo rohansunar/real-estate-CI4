@@ -7,12 +7,12 @@
     <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between">
         <div>
             <h2 class="h3 fw-bold text-dark mb-1">Welcome back, <?= esc($agent['name']) ?>!</h2>
-            <p class="text-muted">Here's your agent dashboard overview</p>
+            <p class="text-muted">Here's your Associate dashboard overview</p>
         </div>
         <div class="mt-3 mt-sm-0">
             <a href="<?= base_url('agent/sub-agents/create') ?>" class="btn btn-agent-primary">
                 <i class="fas fa-plus me-2"></i>
-                Add Sub-Agent
+                Add Sub-Associate
             </a>
         </div>
     </div>
@@ -26,7 +26,7 @@
             <div class="card-header bg-transparent border-0 pb-0">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-user-tie me-2 text-success"></i>
-                    Agent Information
+                    Business Associate Information
                 </h5>
             </div>
             <div class="card-body">
@@ -45,7 +45,7 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-muted">Unique Agent ID</label>
+                            <label class="form-label small fw-semibold text-muted">Unique Associate ID</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" value="<?= esc($agent['unique_agent_id']) ?>" readonly>
                                 <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('<?= esc($agent['unique_agent_id']) ?>')">
@@ -121,7 +121,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">
                             <i class="fas fa-users me-2 text-success"></i>
-                            Recent Sub-Agents
+                            Recent Sub-Associates
                         </h5>
                         <a href="<?= base_url('agent/sub-agents') ?>" class="btn btn-sm btn-outline-success">
                             View All
@@ -181,13 +181,13 @@
                     <div class="mb-4">
                         <i class="fas fa-users display-1 text-muted"></i>
                     </div>
-                    <h4 class="fw-bold text-dark mb-3">No Sub-Agents Yet</h4>
+                    <h4 class="fw-bold text-dark mb-3">No Sub-Associates Yet</h4>
                     <p class="text-muted mb-4 mx-auto" style="max-width: 400px;">
                         Start building your team by adding sub-agents. They'll be able to access their own dashboard and help grow your business.
                     </p>
                     <a href="<?= base_url('agent/sub-agents/create') ?>" class="btn btn-agent-primary">
                         <i class="fas fa-plus me-2"></i>
-                        Add Your First Sub-Agent
+                        Add Your First Sub-Associate
                     </a>
                 </div>
             </div>

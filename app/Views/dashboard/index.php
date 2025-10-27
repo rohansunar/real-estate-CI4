@@ -149,11 +149,11 @@
                         <div class="d-flex flex-column gap-2">
                             <a href="<?= base_url('dashboard/agents') ?>" class="btn btn-outline-success">
                                 <i class="fas fa-list me-2"></i>
-                                View All Agents
+                                View All Associate
                             </a>
                             <a href="<?= base_url('dashboard/agents/create') ?>" class="btn btn-success">
                                 <i class="fas fa-plus me-2"></i>
-                                Add New Agent
+                                Add New Associate
                             </a>
                             <!-- <a href="<?= base_url('agent/login') ?>" class="btn btn-outline-primary" target="_blank">
                                 <i class="fas fa-sign-in-alt me-2"></i>

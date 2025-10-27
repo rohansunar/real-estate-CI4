@@ -7,7 +7,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-5 col-md-7">
                 <div class="text-center mb-4">
-                    <h2 class="fw-bold">Agent Forgot Password</h2>
+                    <h2 class="fw-bold">Associate Forgot Password</h2>
                     <p class="text-muted">Enter your agent email address and we'll send you a reset link.</p>
                 </div>
 
@@ -41,13 +41,13 @@
                         <form action="<?= base_url('agent/forgot-password') ?>" method="post">
                             <?= csrf_field() ?>
                             <div class="mb-3">
-                                <label for="email" class="form-label">Agent Email</label>
+                                <label for="email" class="form-label">Associate Email</label>
                                 <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" value="<?= old('email') ?>" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Send Reset Link</button>
                         </form>
                         <div class="text-center mt-3">
-                            <a href="<?= base_url('agent/login') ?>" class="text-decoration-none">Back to Agent Login</a>
+                            <a href="<?= base_url('agent/login') ?>" class="text-decoration-none">Back to Associate Login</a>
                         </div>
                     </div>
                 </div>

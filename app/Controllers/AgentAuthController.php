@@ -60,7 +60,7 @@ class AgentAuthController extends BaseController
         }
 
         $data = [
-            'title' => 'Agent Login | White Rock Realtor'
+            'title' => 'Business Associate Login | White Rock Realtor'
         ];
 
         return view('agent/auth/login', $data);
@@ -77,7 +77,7 @@ class AgentAuthController extends BaseController
         }
 
         $data = [
-            'title' => 'Agent Forgot Password | White Rock Realtor'
+            'title' => 'Associate Forgot Password | White Rock Realtor'
         ];
         return view('agent/auth/forgot_password', $data);
     }
@@ -272,7 +272,7 @@ class AgentAuthController extends BaseController
 
 
         $data = [
-            'title' => 'Agent Dashboard | White Rock Realtor',
+            'title' => 'Associate Dashboard | White Rock Realtor',
             'agent' => $agent,
             'hierarchyPosition' => $hierarchyPosition,
             'directSubAgents' => $directSubAgents,
@@ -296,7 +296,7 @@ class AgentAuthController extends BaseController
         $agent = $this->agentModel->find($agentId);
 
         $data = [
-            'title' => 'My Profile | Agent Dashboard',
+            'title' => 'My Profile | Associate Dashboard',
             'agent' => $agent
         ];
 

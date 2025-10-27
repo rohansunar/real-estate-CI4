@@ -468,7 +468,7 @@
                         <?php endif; ?>
                         <li class="mb-2">
                             <a href="<?= base_url('agent/login') ?>" class="text-light text-decoration-none hover-primary transition-all">
-                                <i class="fas fa-user-tie me-2 small"></i>Agent Login
+                                <i class="fas fa-user-tie me-2 small"></i>Business Associate Login
                             </a>
                         </li>
                     </ul>

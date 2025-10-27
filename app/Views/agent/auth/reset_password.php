@@ -7,7 +7,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-5 col-md-7">
                 <div class="text-center mb-4">
-                    <h2 class="fw-bold">Agent Reset Password</h2>
+                    <h2 class="fw-bold">Associate Reset Password</h2>
                     <p class="text-muted">Enter and confirm your new password.</p>
                 </div>
 
@@ -50,7 +50,7 @@
                             <button type="submit" class="btn btn-success w-100">Reset Password</button>
                         </form>
                         <div class="text-center mt-3">
-                            <a href="<?= base_url('agent/login') ?>" class="text-decoration-none">Back to Agent Login</a>
+                            <a href="<?= base_url('agent/login') ?>" class="text-decoration-none">Back to Associate Login</a>
                         </div>
                     </div>
                 </div>
