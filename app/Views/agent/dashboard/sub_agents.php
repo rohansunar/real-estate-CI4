@@ -6,13 +6,13 @@
 <div class="mb-4">
     <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between">
         <div>
-            <h2 class="h3 fw-bold text-dark mb-1">Sub-Agents Management</h2>
-            <p class="text-muted">Manage your team of sub-agents</p>
+            <h2 class="h3 fw-bold text-dark mb-1">Sub-associates Management</h2>
+            <p class="text-muted">Manage your team of sub-associates</p>
         </div>
         <div class="mt-3 mt-sm-0">
             <a href="<?= base_url('agent/sub-agents/create') ?>" class="btn btn-success">
                 <i class="fas fa-plus me-2"></i>
-                Add New Sub-Agent
+                Add New Sub-Associate
             </a>
         </div>
     </div>
@@ -46,7 +46,7 @@
                     </div>
                     <div class="flex-grow-1 ms-3">
                         <div class="fw-bold fs-4"><?= $totalSubAgents ?></div>
-                        <div class="small">Total Sub-Agents</div>
+                        <div class="small">Total Sub-Associates</div>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                     </div>
                     <div class="flex-grow-1 ms-3">
                         <div class="fw-bold fs-4"><?= count(array_filter($subAgents, fn($agent) => $agent['is_active'])) ?></div>
-                        <div class="small">Active Sub-Agents</div>
+                        <div class="small">Active Sub-Associates</div>
                     </div>
                 </div>
             </div>
@@ -91,7 +91,7 @@
                     </div>
                     <div class="flex-grow-1 ms-3">
                         <div class="fw-bold fs-4"><?= count(array_filter($subAgents, fn($agent) => !$agent['is_active'])) ?></div>
-                        <div class="small">Inactive Sub-Agents</div>
+                        <div class="small">Inactive Sub-Associates</div>
                     </div>
                 </div>
             </div>
@@ -104,7 +104,7 @@
     <div class="card-body">
         <form method="get" action="<?= base_url('agent/sub-agents') ?>" class="row g-3">
             <div class="col-md-4">
-                <label for="search" class="form-label">Search Sub-Agents</label>
+                <label for="search" class="form-label">Search Sub-Associates</label>
                 <input type="text"
                        class="form-control"
                        id="search"
@@ -149,18 +149,18 @@
     <div class="card-header bg-transparent border-0 pb-0">
         <h5 class="card-title mb-0">
             <i class="fas fa-users me-2 text-success"></i>
-            Sub-Agents List
+            Sub-Associate List
         </h5>
     </div>
     <div class="card-body">
         <?php if (empty($subAgents)): ?>
             <div class="text-center py-5">
                 <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No Sub-Agents Found</h5>
-                <p class="text-muted">You haven't created any sub-agents yet.</p>
+                <h5 class="text-muted">No Sub-Associates Found</h5>
+                <p class="text-muted">You haven't created any sub-Associates yet.</p>
                 <a href="<?= base_url('agent/sub-agents/create') ?>" class="btn btn-success">
                     <i class="fas fa-plus me-2"></i>
-                    Create Your First Sub-Agent
+                    Create Your First Sub-Associate
                 </a>
             </div>
         <?php else: ?>
@@ -168,9 +168,9 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Agent Details</th>
+                            <th>Associate Details</th>
                             <th>Contact Information</th>
-                            <th>Agent IDs</th>
+                            <th>Associate IDs</th>
                             <th>Status</th>
                             <th>Joined Date</th>
                             <th>Actions</th>
@@ -330,7 +330,7 @@
             <div class="modal-header">
                 <h5 class="modal-title">
                     <i class="fas fa-user me-2"></i>
-                    Sub-Agent Details
+                    Sub-Associate Details
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>

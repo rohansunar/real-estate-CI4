@@ -87,13 +87,13 @@
 <div class="mb-4">
     <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between">
         <div>
-            <h2 class="h3 fw-bold text-dark mb-1">Agent Hierarchy</h2>
+            <h2 class="h3 fw-bold text-dark mb-1">Associate Hierarchy</h2>
             <p class="text-muted">View your complete organizational structure</p>
         </div>
         <div class="mt-3 mt-sm-0">
             <a href="<?= base_url('agent/sub-agents/create') ?>" class="btn btn-success">
                 <i class="fas fa-plus me-2"></i>
-                Add Sub-Agent
+                Add Sub-Associate
             </a>
         </div>
     </div>
@@ -139,16 +139,16 @@
                     <h6 id="navigation-guide-title" class="alert-heading mb-2">Navigation Guide</h6>
                     <ul class="mb-0 small" role="list">
                         <li role="listitem">
-                            <strong>Level 1-2 Agents:</strong> Click "Expand" button or press Enter/Space to view sub-agents
+                            <strong>Level 1-2 Associates:</strong> Click "Expand" button or press Enter/Space to view sub-associates
                         </li>
                         <li role="listitem">
-                            <strong>Level 3+ Agents:</strong> Hover with mouse or focus with Tab key to see detailed information
+                            <strong>Level 3+ Associates:</strong> Hover with mouse or focus with Tab key to see detailed information
                         </li>
                         <li role="listitem">
                             <strong>Keyboard Navigation:</strong> Use Tab/Shift+Tab to navigate, Enter/Space to activate buttons
                         </li>
                         <li role="listitem">
-                            <strong>Screen Readers:</strong> Agent cards include detailed ARIA labels with hierarchy information
+                            <strong>Screen Readers:</strong> Associate cards include detailed ARIA labels with hierarchy information
                         </li>
                     </ul>
                 </div>
@@ -200,11 +200,11 @@
         <?php else: ?>
             <div class="text-center py-5">
                 <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No Sub-Agents Yet</h5>
+                <h5 class="text-muted">No Sub-Associates Yet</h5>
                 <p class="text-muted">Start building your team by adding your first sub-agent.</p>
                 <a href="<?= base_url('agent/sub-agents/create') ?>" class="btn btn-success">
                     <i class="fas fa-plus me-2"></i>
-                    Add Your First Sub-Agent
+                    Add Your First Sub-Associate
                 </a>
             </div>
         <?php endif; ?>
@@ -673,7 +673,7 @@
     card.setAttribute('data-bs-toggle','popover');
     card.setAttribute('data-bs-html','true');
     card.setAttribute('data-bs-placement','top');
-    card.setAttribute('data-bs-title','Agent Details');
+    card.setAttribute('data-bs-title','Associate Details');
     card.setAttribute('data-bs-content', contentWithCloseBtn);
 
     // Clean up any existing popover first
@@ -1323,7 +1323,7 @@
             <div class="modal-header">
                 <h5 class="modal-title">
                     <i class="fas fa-user me-2"></i>
-                    Sub-Agent Details
+                    Sub-Associate Details
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>

@@ -339,7 +339,7 @@
                                                     <i class="fas fa-exclamation-triangle me-1 text-warning"></i>Parent not found
                                                 <?php endif; ?>
                                             <?php else: ?>
-                                                <i class="fas fa-crown me-1"></i>Primary Agent
+                                                <i class="fas fa-crown me-1"></i>Primary Associate
                                             <?php endif; ?>
                                         </small>
 

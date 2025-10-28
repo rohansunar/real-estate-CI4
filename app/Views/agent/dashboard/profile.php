@@ -85,6 +85,7 @@
                                    id="email" 
                                    name="email" 
                                    value="<?= old('email', esc($agent['email'])) ?>" 
+                                   disabled
                                    required>
                             <?php if (session()->getFlashdata('errors')['email'] ?? false): ?>
                                 <div class="invalid-feedback">
@@ -210,7 +211,7 @@
             <div class="card-header bg-transparent border-0 pb-0">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-id-card me-2 text-success"></i>
-                    Agent Details
+                    Associate Details
                 </h5>
             </div>
             <div class="card-body">
@@ -223,7 +224,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-muted">Unique Agent ID</label>
+                    <label class="form-label small fw-semibold text-muted">Unique Associate ID</label>
                     <p class="mb-0 font-monospace"><?= esc($agent['unique_agent_id']) ?></p>
                 </div>
 

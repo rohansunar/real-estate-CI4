@@ -217,7 +217,7 @@
     <div class="sidebar" id="sidebar">
         <!-- Sidebar Header -->
         <div class="sidebar-header">
-            <h4><i class="fas fa-user-tie me-2"></i>Agent Portal</h4>
+            <h4><i class="fas fa-user-tie me-2"></i>Associate Portal</h4>
             <div class="agent-badge">
                 <?= esc(session()->get('agent_unique_id') ?? 'AGENT') ?>
             </div>
@@ -257,7 +257,7 @@
                     <div class="nav-icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <span class="nav-text">Sub-Agents</span>
+                    <span class="nav-text">Sub-Associate</span>
                 </a>
                 <a href="<?= base_url('agent/hierarchy') ?>"
                    class="nav-link <?= strpos(uri_string(), 'agent/hierarchy') !== false ? 'active' : '' ?>">
@@ -292,7 +292,7 @@
             <!-- Page Title -->
             <div class="flex-grow-1">
                 <h1 class="h4 mb-0 fw-semibold">
-                    <?= isset($pageTitle) ? esc($pageTitle) : 'Agent Dashboard' ?>
+                    <?= isset($pageTitle) ? esc($pageTitle) : 'Associate Dashboard' ?>
                 </h1>
             </div>
 

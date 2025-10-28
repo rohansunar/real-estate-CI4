@@ -133,14 +133,14 @@
     <div class="d-flex flex-wrap gap-2">
         <a href="<?= base_url('agent/sub-agents/edit/' . $subAgent['id']) ?>" class="btn btn-primary">
             <i class="fas fa-edit me-2"></i>
-            Edit Sub-Agent
+            Edit Sub-Associate
         </a>
         <button type="button" 
                 class="btn btn-outline-danger" 
                 onclick="deleteSubAgent(<?= $subAgent['id'] ?>, '<?= esc($subAgent['name']) ?>')"
                 data-bs-dismiss="modal">
             <i class="fas fa-trash me-2"></i>
-            Delete Sub-Agent
+            Delete Sub-Associate
         </button>
         <button type="button" class="btn btn-outline-secondary ms-auto" data-bs-dismiss="modal">
             <i class="fas fa-times me-2"></i>

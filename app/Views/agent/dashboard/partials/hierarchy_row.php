@@ -104,7 +104,7 @@
                 <div class="primary-agent-badge">
                   <div class="small fw-medium">
                     <i class="fas fa-crown me-1"></i>
-                    <span class="primary-agent-text">Primary Agent</span>
+                    <span class="primary-agent-text">Primary Associate</span>
                   </div>
                 </div>
               <?php endif; ?>

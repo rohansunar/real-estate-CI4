@@ -6,13 +6,13 @@
 <div class="mb-4">
     <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between">
         <div>
-            <h2 class="h3 fw-bold text-dark mb-1">Edit Sub-Agent</h2>
+            <h2 class="h3 fw-bold text-dark mb-1">Edit Sub-Associate</h2>
             <p class="text-muted">Update sub-agent information</p>
         </div>
         <div class="mt-3 mt-sm-0">
             <a href="<?= base_url('agent/sub-agents') ?>" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>
-                Back to Sub-Agents
+                Back to Sub-Associates
             </a>
         </div>
     </div>
@@ -55,7 +55,7 @@
             <div class="card-header bg-transparent border-0 pb-0">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-user-edit me-2 text-success"></i>
-                    Sub-Agent Information
+                    Sub-Associate Information
                 </h5>
             </div>
             <div class="card-body">
@@ -216,7 +216,7 @@
             <div class="card-header bg-transparent border-0 pb-0">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-id-card me-2 text-success"></i>
-                    Sub-Agent Details
+                    Sub-Associate Details
                 </h5>
             </div>
             <div class="card-body">
@@ -229,7 +229,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-muted">Unique Agent ID</label>
+                    <label class="form-label small fw-semibold text-muted">Unique Associate ID</label>
                     <p class="mb-0 font-monospace"><?= esc($subAgent['unique_agent_id']) ?></p>
                 </div>
 

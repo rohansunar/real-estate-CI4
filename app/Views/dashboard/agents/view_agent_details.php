@@ -17,12 +17,12 @@
             <?php if ($agent['is_active']): ?>
                 <span class="badge bg-success fs-6 px-3 py-2">
                     <i class="fas fa-check-circle me-1"></i>
-                    Active Agent
+                    Active Associate
                 </span>
             <?php else: ?>
                 <span class="badge bg-danger fs-6 px-3 py-2">
                     <i class="fas fa-times-circle me-1"></i>
-                    Inactive Agent
+                    Inactive Associate
                 </span>
             <?php endif; ?>
 
@@ -38,7 +38,7 @@
                             <strong>Level:</strong> <?= (int)($hierarchyPosition['level'] ?? 0) ?>
                         </div>
                         <div class="mb-1">
-                            <strong>Direct Sub-Agents:</strong> <?= (int)$directSubAgentCount ?>
+                            <strong>Direct Sub-Associates:</strong> <?= (int)$directSubAgentCount ?>
                         </div>
                         <div>
                             <strong>Total Downline:</strong> <?= (int)$totalDownline ?>
@@ -199,7 +199,7 @@
                         <div class="card-header bg-secondary text-white">
                             <h6 class="mb-0">
                                 <i class="fas fa-users me-2"></i>
-                                Direct Sub-Agents (<?= count($directSubAgents) ?>)
+                                Direct Sub-Associates (<?= count($directSubAgents) ?>)
                             </h6>
                         </div>
                         <div class="card-body">
@@ -235,7 +235,7 @@
         <div class="d-flex gap-2">
             <a href="<?= base_url('dashboard/agents/edit/' . $agent['id']) ?>" class="btn btn-primary">
                 <i class="fas fa-edit me-2"></i>
-                Edit Agent
+                Edit Associate
             </a>
             <button type="button" class="btn btn-outline-info" onclick="viewAgentLogs(<?= $agent['id'] ?>)">
                 <i class="fas fa-clipboard-list me-2"></i>
@@ -244,7 +244,7 @@
             <?php if (!empty($directSubAgents)): ?>
                 <button type="button" class="btn btn-outline-success" onclick="addSubAgent(<?= $agent['id'] ?>)">
                     <i class="fas fa-plus me-2"></i>
-                    Add Sub-Agent
+                    Add Sub-Associate
                 </button>
             <?php endif; ?>
         </div>

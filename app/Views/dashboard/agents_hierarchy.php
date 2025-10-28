@@ -467,7 +467,7 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="agentModalLabel">Agent Details</h5>
+                <h5 class="modal-title" id="agentModalLabel">Associate Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="agentModalContent">
@@ -476,7 +476,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="editAgentBtn">
-                    <i class="fas fa-edit me-1"></i>Edit Agent
+                    <i class="fas fa-edit me-1"></i>Edit Associate
                 </button>
 
             </div>
@@ -751,7 +751,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <i class="fas fa-eye me-1"></i>View Details
                     </button>
                     <button class="btn btn-sm btn-outline-success" onclick="addSubAgent(${agent.id})">
-                        <i class="fas fa-plus me-1"></i>Add Sub-Agent
+                        <i class="fas fa-plus me-1"></i>Add Sub-Associate
                     </button>
                     ${hasChildren ? `
                         <button class="btn btn-sm btn-outline-info expand-toggle"

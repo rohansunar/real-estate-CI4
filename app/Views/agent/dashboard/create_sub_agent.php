@@ -6,13 +6,13 @@
 <div class="mb-4">
     <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between">
         <div>
-            <h2 class="h3 fw-bold text-dark mb-1">Create New Sub-Agent</h2>
-            <p class="text-muted">Add a new sub-agent to your team</p>
+            <h2 class="h3 fw-bold text-dark mb-1">Create New Sub-Associate</h2>
+            <p class="text-muted">Add a new sub-associate to your team</p>
         </div>
         <div class="mt-3 mt-sm-0">
             <a href="<?= base_url('agent/sub-agents') ?>" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>
-                Back to Sub-Agents
+                Back to Sub-Associates
             </a>
         </div>
     </div>
@@ -55,7 +55,7 @@
             <div class="card-header bg-transparent border-0 pb-0">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-user-plus me-2 text-success"></i>
-                    Sub-Agent Information
+                    Sub-Associate Information
                 </h5>
             </div>
             <div class="card-body">
@@ -161,7 +161,7 @@
                         <div class="d-flex flex-column flex-sm-row gap-2">
                             <button type="submit" class="btn btn-success">
                                 <i class="fas fa-user-plus me-2"></i>
-                                Create Sub-Agent
+                                Create Sub-Associate
                             </button>
                             <a href="<?= base_url('agent/sub-agents') ?>" class="btn btn-outline-secondary">
                                 <i class="fas fa-times me-2"></i>
@@ -234,7 +234,7 @@
                     <div class="col-6">
                         <div class="border rounded p-3">
                             <div class="h4 text-primary mb-1">0</div>
-                            <div class="small text-muted">Current Sub-Agents</div>
+                            <div class="small text-muted">Current Sub-Associates</div>
                         </div>
                     </div>
                     <div class="col-6">

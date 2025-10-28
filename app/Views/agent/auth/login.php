@@ -167,10 +167,10 @@
             <!-- Login Header -->
             <div class="login-header">
                 <div class="agent-badge">
-                    <i class="fas fa-user-tie me-2"></i>Agent Portal
+                    <i class="fas fa-user-tie me-2"></i>Associate Portal
                 </div>
-                <h1><i class="fas fa-sign-in-alt me-2"></i>Agent Login</h1>
-                <p>Access your agent dashboard</p>
+                <h1><i class="fas fa-sign-in-alt me-2"></i>Associate Login</h1>
+                <p>Access your associate dashboard</p>
             </div>
 
             <!-- Login Body -->
