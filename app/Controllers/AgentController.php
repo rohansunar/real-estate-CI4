@@ -179,7 +179,7 @@ class AgentController extends BaseController
         }
 
         $data = [
-            'title' => 'Edit Agent | Dashboard',
+            'title' => 'Edit Associate | Dashboard',
             'agent' => $agent
         ];
 

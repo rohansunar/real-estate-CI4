@@ -464,7 +464,7 @@
 
             <!-- Agent Management Section -->
             <div class="nav-section">
-                <div class="nav-section-title">Agent Management</div>
+                <div class="nav-section-title">Associate Management</div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a href="<?= base_url('dashboard/agents') ?>"
@@ -472,7 +472,7 @@
                             <div class="nav-icon">
                                 <i class="fas fa-user-tie"></i>
                             </div>
-                            <span class="nav-text">Agents</span>
+                            <span class="nav-text">Associates</span>
                         </a>
                     </li>
                 <!-- </ul>

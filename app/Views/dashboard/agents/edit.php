@@ -6,13 +6,13 @@
 <div class="mb-4">
     <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between">
         <div>
-            <h2 class="h3 fw-bold text-dark mb-1">Edit Agent</h2>
-            <p class="text-muted">Update agent information</p>
+            <h2 class="h3 fw-bold text-dark mb-1">Edit Associate</h2>
+            <p class="text-muted">Update associate information</p>
         </div>
         <div class="mt-3 mt-sm-0">
             <a href="<?= base_url('dashboard/agents') ?>" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>
-                Back to Agents
+                Back to Associates
             </a>
         </div>
     </div>
@@ -45,7 +45,7 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title mb-0">Agent Information</h5>
+                <h5 class="card-title mb-0">Associate Information</h5>
             </div>
             <div class="card-body">
                 <form action="<?= base_url('dashboard/agents/edit/' . $agent['id']) ?>" method="post" enctype="multipart/form-data" id="agentForm">
@@ -147,13 +147,13 @@
                         <div class="card-header bg-transparent border-0 pb-0">
                             <h6 class="card-title mb-0">
                                 <i class="fas fa-id-card text-primary me-2"></i>
-                                Agent IDs & Hierarchy
+                                Associate IDs & Hierarchy
                             </h6>
                         </div>
                         <div class="card-body pt-3">
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <label for="unique_agent_id" class="form-label fw-medium">Unique Agent ID</label>
+                                    <label for="unique_agent_id" class="form-label fw-medium">Unique Associate ID</label>
                                     <input type="text"
                                            class="form-control <?= isset(session()->getFlashdata('errors')['unique_agent_id']) ? 'is-invalid' : '' ?>"
                                            id="unique_agent_id"
@@ -163,7 +163,7 @@
                                            readonly>
                                     <div class="form-text">
                                         <i class="fas fa-info-circle me-1"></i>
-                                        Auto-generated unique identifier for this agent
+                                        Auto-generated unique identifier for this associate
                                     </div>
                                 </div>
                             </div>
@@ -171,9 +171,9 @@
 
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="parent_agent_id" class="form-label fw-medium">Parent Agent</label>
+                                    <label for="parent_agent_id" class="form-label fw-medium">Parent Associate</label>
                                     <select class="form-select" id="parent_agent_id" name="parent_agent_id">
-                                        <option value="">Select Parent Agent (Optional)</option>
+                                        <option value="">Select Parent Associate (Optional)</option>
                                         <?php
                                         $agentModel = new \App\Models\AgentModel();
                                         $allAgents = $agentModel->where('id !=', $agent['id'])->where('is_active', true)->findAll();
@@ -187,19 +187,19 @@
                                     </select>
                                     <div class="form-text">
                                         <i class="fas fa-info-circle me-1"></i>
-                                        Choose a parent agent to establish the reporting hierarchy. Leave empty for top-level agents.
+                                        Choose a parent associate to establish the reporting hierarchy. Leave empty for top-level associates.
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="is_active" class="form-label fw-medium">Agent Status</label>
+                                    <label for="is_active" class="form-label fw-medium">Associate Status</label>
                                     <select class="form-select" id="is_active" name="is_active">
                                         <option value="1" <?= old('is_active', $agent['is_active']) == '1' ? 'selected' : '' ?>>Active</option>
                                         <option value="0" <?= old('is_active', $agent['is_active']) == '0' ? 'selected' : '' ?>>Inactive</option>
                                     </select>
                                     <div class="form-text">
                                         <i class="fas fa-info-circle me-1"></i>
-                                        Active agents can log in and access the system
+                                        Active associates can log in and access the system
                                     </div>
                                 </div>
                             </div>
@@ -227,9 +227,9 @@
                                         <i class="fas fa-info-circle me-1"></i>
                                         Leave empty to keep the current password unchanged. New passwords must be at least 6 characters long.
                                         <?php if ($agent['password']): ?>
-                                            <br><span class="text-success"><i class="fas fa-check me-1"></i>This agent can log into the system</span>
+                                            <br><span class="text-success"><i class="fas fa-check me-1"></i>This associate can log into the system</span>
                                         <?php else: ?>
-                                            <br><span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>This agent cannot log in yet - set a password to enable access</span>
+                                            <br><span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>This associate cannot log in yet - set a password to enable access</span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -258,7 +258,7 @@
                         </a>
                         <button type="submit" class="btn btn-primary" id="submitBtn">
                             <i class="fas fa-save me-2"></i>
-                            Update Agent
+                            Update
                         </button>
                     </div>
                 </form>
@@ -272,7 +272,7 @@
             <div class="card-header">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-user-tie text-primary me-2"></i>
-                    Agent Details
+                    Associate Details
                 </h5>
             </div>
             <div class="card-body">
@@ -294,7 +294,7 @@
                         <h6 class="mb-1"><?= esc($agent['name']) ?></h6>
                         <p class="text-muted small mb-0">
                             <?php if ($agent['unique_agent_id']): ?>
-                                Agent ID: <?= esc($agent['unique_agent_id']) ?>
+                                Associate ID: <?= esc($agent['unique_agent_id']) ?>
                             <?php else: ?>
                                 Database ID: #<?= $agent['id'] ?>
                             <?php endif; ?>
@@ -327,7 +327,7 @@
                         <?php if ($agent['parent_agent_id']): ?>
                         <div class="col-12">
                             <div class="d-flex justify-content-between">
-                                <span class="text-muted">Parent Agent:</span>
+                                <span class="text-muted">Parent Associate:</span>
                                 <span class="text-info">
                                     <?php
                                     $agentModel = new \App\Models\AgentModel();
@@ -365,7 +365,7 @@
                             class="btn btn-outline-danger"
                             onclick="deleteAgent(<?= $agent['id'] ?>)">
                         <i class="fas fa-trash me-2"></i>
-                        Delete Agent
+                        Delete Associate
                     </button>
                 </div>
             </div>
@@ -408,7 +408,7 @@ function previewImage(input) {
 
 // Delete agent
 function deleteAgent(agentId) {
-    if (confirm('Are you sure you want to delete this agent? This action cannot be undone.')) {
+    if (confirm('Are you sure you want to delete this associate? This action cannot be undone.')) {
         fetch(`<?= base_url('dashboard/agents/') ?>${agentId}`, {
             method: 'DELETE',
             headers: {

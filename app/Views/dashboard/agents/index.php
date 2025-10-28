@@ -6,13 +6,13 @@
 <div class="mb-4">
     <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between">
         <div>
-            <h2 class="h3 fw-bold text-dark mb-1">Agents Management</h2>
-            <p class="text-muted">Manage your real estate agents</p>
+            <h2 class="h3 fw-bold text-dark mb-1">Associates Management</h2>
+            <p class="text-muted">Manage your real estate associates</p>
         </div>
         <div class="mt-3 mt-sm-0">
             <a href="<?= base_url('dashboard/agents/create') ?>" class="btn btn-primary">
                 <i class="fas fa-plus me-2"></i>
-                Add New Agent
+                Add New Associate
             </a>
         </div>
     </div>
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <div class="ms-3">
-                        <p class="text-muted mb-1 small fw-medium">Total Agents</p>
+                        <p class="text-muted mb-1 small fw-medium">Total Associates</p>
                         <p class="h3 fw-bold mb-0"><?= number_format($statistics['total'] ?? 0) ?></p>
                     </div>
                 </div>
@@ -88,8 +88,8 @@
     <div class="card-header border-bottom">
         <div class="d-flex align-items-center justify-content-between">
             <div>
-                <h5 class="card-title mb-1">Real Estate Agents</h5>
-                <p class="card-text text-muted small mb-0">All registered agents and their information</p>
+                <h5 class="card-title mb-1">Real Estate Associates</h5>
+                <p class="card-text text-muted small mb-0">All registered associates and their information</p>
             </div>
             <div class="text-muted small" data-table-info="agents-table">
                 Showing 1-<?= count($agents) ?> of <?= count($agents) ?> results
@@ -105,7 +105,7 @@
                 <thead class="table-light">
                     <tr>
                         <th class="sortable" data-sort="0">
-                            Agent
+                            Associate
                             <i class="fas fa-sort sort-indicator ms-1"></i>
                         </th>
                         <th class="sortable" data-sort="1">
@@ -113,7 +113,7 @@
                             <i class="fas fa-sort sort-indicator ms-1"></i>
                         </th>
                         <th class="sortable" data-sort="2">
-                            Agent IDs
+                            Associate IDs
                             <i class="fas fa-sort sort-indicator ms-1"></i>
                         </th>
                         <th class="sortable" data-sort="3">
@@ -196,7 +196,7 @@
                                             <?php if ($parentAgent): ?>
                                                 <div class="text-info">
                                                     <i class="fas fa-level-up-alt me-1"></i>
-                                                    Sub-agent of: <?= esc($parentAgent['name']) ?>
+                                                    Sub-associate of: <?= esc($parentAgent['name']) ?>
                                                 </div>
                                             <?php else: ?>
                                                 <div class="text-warning">
@@ -207,7 +207,7 @@
                                         <?php else: ?>
                                             <div class="text-success">
                                                 <i class="fas fa-crown me-1"></i>
-                                                Primary Agent
+                                                Primary Associate
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -237,12 +237,12 @@
                                         <div class="btn-group btn-group-sm">
                                             <a href="<?= base_url('dashboard/agents/edit/' . $agent['id']) ?>"
                                                class="btn btn-ghost"
-                                               title="Edit Agent">
+                                               title="Edit Associate">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <button onclick="deleteAgent(<?= $agent['id'] ?>)" 
                                                     class="btn btn-ghost text-danger"
-                                                    title="Delete Agent">
+                                                    title="Delete Associate">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -255,11 +255,11 @@
                             <td colspan="6" class="text-center py-5">
                                 <div class="d-flex flex-column align-items-center">
                                     <i class="fas fa-user-tie text-muted mb-3" style="font-size: 4rem;"></i>
-                                    <h5 class="text-dark mb-2">No agents found</h5>
-                                    <p class="text-muted">Start by adding your first real estate agent.</p>
+                                    <h5 class="text-dark mb-2">No associates found</h5>
+                                    <p class="text-muted">Start by adding your first real estate associate.</p>
                                     <a href="<?= base_url('dashboard/agents/create') ?>" class="btn btn-primary">
                                         <i class="fas fa-plus me-2"></i>
-                                        Add First Agent
+                                        Add First Associate
                                     </a>
                                 </div>
                             </td>
@@ -346,12 +346,12 @@
                                         <div class="btn-group btn-group-sm">
                                             <a href="<?= base_url('dashboard/agents/edit/' . $agent['id']) ?>"
                                                class="btn btn-outline-secondary btn-sm"
-                                               title="Edit Agent">
+                                               title="Edit Associate">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <button onclick="deleteAgent(<?= $agent['id'] ?>)"
                                                     class="btn btn-outline-danger btn-sm"
-                                                    title="Delete Agent">
+                                                    title="Delete Associate">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -365,11 +365,11 @@
                 <div class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
                         <i class="fas fa-user-tie text-muted mb-3" style="font-size: 4rem;"></i>
-                        <h5 class="text-dark mb-2">No agents found</h5>
-                        <p class="text-muted">Start by adding your first real estate agent.</p>
+                        <h5 class="text-dark mb-2">No associates found</h5>
+                        <p class="text-muted">Start by adding your first real estate associate.</p>
                         <a href="<?= base_url('dashboard/agents/create') ?>" class="btn btn-primary">
                             <i class="fas fa-plus me-2"></i>
-                            Add First Agent
+                            Add First Associate
                         </a>
                     </div>
                 </div>
@@ -382,7 +382,7 @@
 <?php if (isset($totalPages) && $totalPages > 1): ?>
     <div class="d-flex justify-content-between align-items-center mt-4">
         <div class="text-muted">
-            Showing <?= ($currentPage - 1) * $perPage + 1 ?> to <?= min($currentPage * $perPage, $totalAgents) ?> of <?= $totalAgents ?> agents
+            Showing <?= ($currentPage - 1) * $perPage + 1 ?> to <?= min($currentPage * $perPage, $totalAgents) ?> of <?= $totalAgents ?> associates
         </div>
         <nav aria-label="Agents pagination">
             <ul class="pagination mb-0">
@@ -466,7 +466,7 @@ function deleteAgent(agentId) {
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Delete Agent</h5>
+                        <h5 class="modal-title">Delete Associate</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -474,14 +474,14 @@ function deleteAgent(agentId) {
                             <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 4rem; height: 4rem;">
                                 <i class="fas fa-exclamation-triangle text-danger fs-4"></i>
                             </div>
-                            <h6 class="mb-2">Are you sure you want to delete this agent?</h6>
-                            <p class="text-muted small mb-0">This action cannot be undone. All agent data will be permanently removed.</p>
+                            <h6 class="mb-2">Are you sure you want to delete this associate?</h6>
+                            <p class="text-muted small mb-0">This action cannot be undone. All associate data will be permanently removed.</p>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-danger" onclick="confirmDeleteAgent(${agentId})">
-                            <i class="fas fa-trash me-2"></i>Delete Agent
+                            <i class="fas fa-trash me-2"></i>Delete Associate
                         </button>
                     </div>
                 </div>
@@ -518,15 +518,15 @@ function confirmDeleteAgent(agentId) {
     })
     .then(data => {
         if (data.success) {
-            showNotification(data.message || 'Agent deleted successfully', 'success');
+            showNotification(data.message || 'Associate deleted successfully', 'success');
             setTimeout(() => location.reload(), 1000);
         } else {
-            showNotification(data.message || 'Failed to delete agent', 'danger');
+            showNotification(data.message || 'Failed to delete associate', 'danger');
         }
     })
     .catch(error => {
-        console.error('Delete agent error:', error);
-        showNotification('Error deleting agent. Please try again.', 'danger');
+        console.error('Delete associate error:', error);
+        showNotification('Error deleting associate. Please try again.', 'danger');
     });
 }
 

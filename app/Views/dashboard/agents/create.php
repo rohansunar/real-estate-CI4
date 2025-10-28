@@ -6,13 +6,13 @@
 <div class="mb-4">
     <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between">
         <div>
-            <h2 class="h3 fw-bold text-dark mb-1">Create New Agent</h2>
-            <p class="text-muted">Add a new real estate agent to your team</p>
+            <h2 class="h3 fw-bold text-dark mb-1">Create New Associate</h2>
+            <p class="text-muted">Add a new real estate associate to your team</p>
         </div>
         <div class="mt-3 mt-sm-0">
             <a href="<?= base_url('dashboard/agents') ?>" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>
-                Back to Agents
+                Back to Assoicates
             </a>
         </div>
     </div>
@@ -45,7 +45,7 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title mb-0">Agent Information</h5>
+                <h5 class="card-title mb-0">Associate Information</h5>
             </div>
             <div class="card-body">
                 <form action="<?= base_url('dashboard/agents/create') ?>" method="post" enctype="multipart/form-data" id="agentForm">
@@ -131,7 +131,7 @@
                                   id="address"
                                   name="address"
                                   rows="3"
-                                  placeholder="Enter the agent's address..."><?= old('address') ?></textarea>
+                                  placeholder="Enter the assoicate's address..."><?= old('address') ?></textarea>
                         <div class="form-text">Complete address including city, state, and postal code (optional)</div>
                     </div>
 
@@ -140,15 +140,15 @@
                         <div class="card-header bg-transparent border-0 pb-0">
                             <h6 class="card-title mb-0">
                                 <i class="fas fa-id-card text-primary me-2"></i>
-                                Agent IDs & Hierarchy
+                                Assoicate IDs & Hierarchy
                             </h6>
                         </div>
                         <div class="card-body pt-3">
                             <div class="row g-3 mb-3">
                                 <div class="col-md-12">
-                                    <label for="parent_agent_id" class="form-label fw-medium">Parent Agent</label>
+                                    <label for="parent_agent_id" class="form-label fw-medium">Parent Assoicate</label>
                                     <select class="form-select" id="parent_agent_id" name="parent_agent_id">
-                                        <option value="">Select Parent Agent (Optional)</option>
+                                        <option value="">Select Parent Assoicate (Optional)</option>
                                         <?php
                                         $agentModel = new \App\Models\AgentModel();
                                         $allAgents = $agentModel->where('is_active', true)->findAll();
@@ -165,14 +165,14 @@
                                     </select>
                                     <div class="form-text">
                                         <i class="fas fa-info-circle me-1"></i>
-                                        Choose a parent agent to establish the reporting hierarchy. Leave empty for top-level agents.
+                                        Choose a parent associate to establish the reporting hierarchy. Leave empty for top-level associates.
                                     </div>
                                 </div>
                             </div>
 
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>
-                                <strong>Note:</strong> A unique agent ID will be automatically generated when the agent is created.
+                                <strong>Note:</strong> A unique associate ID will be automatically generated when the associate is created.
                             </div>
                         </div>
                     </div>
@@ -196,7 +196,7 @@
                                            placeholder="Enter password">
                                     <div class="form-text">
                                         <i class="fas fa-info-circle me-1"></i>
-                                        Optional. If provided, agent can log in to the system. Minimum 6 characters.
+                                        Optional. If provided, associate can log in to the system. Minimum 6 characters.
                                     </div>
                                 </div>
 
@@ -224,7 +224,7 @@
                         </button>
                         <button type="submit" class="btn btn-primary" id="submitBtn">
                             <i class="fas fa-save me-2"></i>
-                            Create Agent
+                            Create Associate
                         </button>
                     </div>
                 </form>
@@ -238,7 +238,7 @@
             <div class="card-header">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-info-circle text-info me-2"></i>
-                    Agent Requirements
+                    Associate Requirements
                 </h5>
             </div>
             <div class="card-body">
@@ -250,7 +250,7 @@
                     </div>
                     <div class="ms-3">
                         <h6 class="mb-1">Personal Information</h6>
-                        <p class="text-muted small mb-0">Full name, email, and phone number are required for all agents.</p>
+                        <p class="text-muted small mb-0">Full name, email, and phone number are required for all associates.</p>
                     </div>
                 </div>
                 
@@ -262,7 +262,7 @@
                     </div>
                     <div class="ms-3">
                         <h6 class="mb-1">Welcome Email</h6>
-                        <p class="text-muted small mb-0">A welcome email will be automatically sent to the agent's email address.</p>
+                        <p class="text-muted small mb-0">A welcome email will be automatically sent to the associate's email address.</p>
                     </div>
                 </div>
                 
@@ -305,13 +305,13 @@
                     <div class="col-6">
                         <div class="border rounded p-3">
                             <div class="h4 fw-bold text-primary mb-1">0</div>
-                            <div class="small text-muted">Total Agents</div>
+                            <div class="small text-muted">Total Associates</div>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="border rounded p-3">
                             <div class="h4 fw-bold text-success mb-1">0</div>
-                            <div class="small text-muted">Active Agents</div>
+                            <div class="small text-muted">Active Associates</div>
                         </div>
                     </div>
                 </div>
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Form submission handling
     form.addEventListener('submit', function(e) {
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Agent...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Associate...';
         submitBtn.disabled = true;
     });
 });

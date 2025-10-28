@@ -106,9 +106,9 @@
                     <div>
                         <h5 class="card-title mb-1 text-success">
                             <i class="fas fa-user-tie me-2"></i>
-                            Agent Management
+                            Assoicate Management
                         </h5>
-                        <p class="card-text text-muted small mb-0">Manage your real estate agents</p>
+                        <p class="card-text text-muted small mb-0">Manage your real estate associates</p>
                     </div>
                 </div>
             </div>
