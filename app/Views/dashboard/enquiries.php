@@ -105,7 +105,7 @@
                             <i class="fas fa-sort sort-indicator ms-1"></i>
                         </th>
                         <th class="sortable" data-sort="1">
-                            Property Interest
+                            Property Interest In
                             <i class="fas fa-sort sort-indicator ms-1"></i>
                         </th>
                         <th class="sortable" data-sort="2">

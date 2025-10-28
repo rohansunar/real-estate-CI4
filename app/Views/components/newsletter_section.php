@@ -8,7 +8,7 @@
                 <!-- Newsletter Header -->
                 <div class="mb-4">
                     <i class="fas fa-envelope-open fs-1 text-white mb-3 d-block"></i>
-                    <h2 class="display-5 fw-bold mb-3">Stay Updated with Latest Properties</h2>
+                    <h4 class="display-6 fw-bold mb-2">Stay Updated with Latest Properties</h4>
                     <p class="fs-5 text-light mb-4">
                         Get exclusive access to new property listings, market insights, and special offers delivered straight to your inbox.
                     </p>

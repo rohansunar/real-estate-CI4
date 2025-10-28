@@ -73,7 +73,7 @@ Properties Page - Content Modifications Log:
                         <!-- Search Results Hero Content -->
                         <div class="hero-search-content">
                             <!-- Search Context Badge -->
-                            <div class="mb-3">
+                            <div class="mb-5 py-5">
                                 <?php if (!empty($searchParams['location'])): ?>
                                     <span class="badge bg-primary bg-opacity-90 fs-6 px-3 py-2 rounded-pill me-2">
                                         <i class="fas fa-map-marker-alt me-2"></i>
@@ -102,13 +102,13 @@ Properties Page - Content Modifications Log:
                             </h1>
 
                             <!-- Subheadline -->
-                            <p class="fs-5 text-light mb-4 mx-auto" style="max-width: 600px;">
+                            <!-- <p class="fs-5 text-light mb-4 mx-auto" style="max-width: 600px;">
                                 Discover <?= $totalProperties ?> amazing properties that match your search criteria.
                                 Find your perfect home in the best locations.
-                            </p>
+                            </p> -->
 
                             <!-- Action Buttons -->
-                            <div class="hero-actions">
+                            <!-- <div class="hero-actions">
                                 <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
                                     <a href="#search-section" class="btn btn-primary btn-lg px-4 py-3 smooth-scroll">
                                         <i class="fas fa-search me-2"></i>
@@ -120,7 +120,7 @@ Properties Page - Content Modifications Log:
                                     </a>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     <?php else: ?>
                         <!-- Default Hero Content (no search context) -->
                         <div class="hero-default-content">
@@ -138,7 +138,7 @@ Properties Page - Content Modifications Log:
     <div class="hero-scroll-indicator position-absolute bottom-0 start-50 translate-middle-x mb-4">
         <a href="#search-section" class="text-white text-decoration-none smooth-scroll">
             <div class="scroll-indicator-container text-center">
-                <div class="small mb-2 text-light">Explore Properties</div>
+                <!-- <div class="small mb-2 text-light">Explore Properties</div> -->
                 <div class="scroll-arrow">
                     <i class="fas fa-chevron-down fa-lg"></i>
                 </div>
@@ -324,8 +324,8 @@ Properties Page - Content Modifications Log:
             <!-- Properties Grid -->
             <div class="row g-4">
                 <?php foreach ($properties as $index => $property): ?>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card h-100 shadow-sm card-hover animate-on-scroll property-card-clickable"
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <div class="card h-100 shadow-sm card-hover animate-on-scroll property-card-clickable property-card-modern"
                              style="animation-delay: <?= $index * 0.1 ?>s; cursor: pointer;"
                              data-property-url="<?= base_url('properties/' . urlencode($property['location']) . '/' . $property['id']) ?>">
                             <?php

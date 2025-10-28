@@ -375,17 +375,17 @@
 
 /* Modern Card Enhancements */
 .card {
-  border: none;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
   background: white;
   overflow: hidden;
 }
 
 .card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .card-header {
@@ -408,6 +408,26 @@
 
 .card-body {
   padding: 1.5rem;
+}
+
+/* Modern Property Card Design */
+.property-card-modern {
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  background: white;
+  overflow: hidden;
+  position: relative;
+}
+
+.property-card-modern:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.property-card-modern .card-body {
+  padding: 1.25rem;
 }
 
 /* Stats Cards */
