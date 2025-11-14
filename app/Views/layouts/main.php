@@ -12,7 +12,7 @@
     <?= css_link('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css') ?>
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Custom Styles with Automatic Cache-Busting -->
     <?= css_link('assets/css/website.css') ?>
@@ -27,7 +27,7 @@
                     <div class="d-flex align-items-center justify-content-center justify-content-md-start flex-wrap">
                         <div class="d-flex align-items-center me-3 me-md-4">
                             <i class="fas fa-phone me-1 me-md-2"></i>
-                            <span class="small">+91 98765 43210</span>
+                            <span class="small">+91 94342 55059</span>
                         </div>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-envelope me-1 me-md-2"></i>
@@ -435,40 +435,40 @@
                     <ul class="list-unstyled">
                         <li class="mb-2">
                             <a href="<?= base_url('properties') ?>" class="text-light text-decoration-none hover-primary transition-all">
-                                <i class="fas fa-chevron-right me-2 small"></i>Properties
+                                <i class="fas fa-chevron-right me-2"></i>Properties
                             </a>
                         </li>
                         <li class="mb-2">
                             <a href="<?= base_url('blog') ?>" class="text-light text-decoration-none hover-primary transition-all">
-                                <i class="fas fa-chevron-right me-2 small"></i>Blog
+                                <i class="fas fa-chevron-right me-2"></i>Blog
                             </a>
                         </li>
                         <li class="mb-2">
                             <a href="<?= base_url('contact') ?>" class="text-light text-decoration-none hover-primary transition-all">
-                                <i class="fas fa-chevron-right me-2 small"></i>Contact
+                                <i class="fas fa-chevron-right me-2"></i>Contact
                             </a>
                         </li>
                         <li class="mb-2">
                             <a href="#" class="text-light text-decoration-none hover-primary transition-all">
-                                <i class="fas fa-chevron-right me-2 small"></i>About Us
+                                <i class="fas fa-chevron-right me-2"></i>About Us
                             </a>
                         </li>
                         <?php if (!isset($user) || !$user): ?>
                             <li class="mb-2">
                                 <a href="<?= base_url('auth/login') ?>" class="text-light text-decoration-none hover-primary transition-all">
-                                    <i class="fas fa-sign-in-alt me-2 small"></i>Admin Login
+                                    <i class="fas fa-sign-in-alt me-2"></i>Admin Login
                                 </a>
                             </li>
                         <?php else: ?>
                             <li class="mb-2">
                                 <a href="<?= base_url('dashboard') ?>" class="text-light text-decoration-none hover-primary transition-all">
-                                    <i class="fas fa-tachometer-alt me-2 small"></i>Admin Dashboard
+                                    <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
                                 </a>
                             </li>
                         <?php endif; ?>
                         <li class="mb-2">
                             <a href="<?= base_url('agent/login') ?>" class="text-light text-decoration-none hover-primary transition-all">
-                                <i class="fas fa-user-tie me-2 small"></i>Business Associate Login
+                                <i class="fas fa-user-tie me-2"></i>Business Associate Login
                             </a>
                         </li>
                     </ul>
@@ -479,22 +479,24 @@
                     <ul class="list-unstyled">
                         <li class="mb-2">
                             <a href="#" class="text-light text-decoration-none hover-primary transition-all">
-                                <i class="fas fa-chevron-right me-2 small"></i>Houses
+                                <i class="fas fa-chevron-right me-2"></i>Houses
                             </a>
                         </li>
                         <li class="mb-2">
                             <a href="#" class="text-light text-decoration-none hover-primary transition-all">
-                                <i class="fas fa-chevron-right me-2 small"></i>Apartments
+                                <i class="fas fa-chevron-right me-2"></i>Apartments
                             </a>
                         </li>
                         <li class="mb-2">
                             <a href="#" class="text-light text-decoration-none hover-primary transition-all">
-                                <i class="fas fa-chevron-right me-2 small"></i>Villas
+                                <i class="fas fa-chevron-right me-2"></i>Villas
                             </a>
                         </li>
                         <li class="mb-2">
                             <a href="#" class="text-light text-decoration-none hover-primary transition-all">
-                                <i class="fas fa-chevron-right me-2 small"></i>Land
+                                <!-- <i class="fas fa-chevron-right me-2 small"></i> -->
+                                 <i class="fas fa-chevron-right me-2"></i>
+                                Land
                             </a>
                         </li>
                     </ul>
@@ -513,7 +515,7 @@
                         <i class="fas fa-phone text-primary me-3"></i>
                         <div>
                             <div class="fw-semibold">Phone</div>
-                            <div class="text-light small">+91 98765 43210</div>
+                            <div class="text-light small">+91 94342 55059</div>
                         </div>
                     </div>
                     <div class="d-flex align-items-center">
@@ -530,7 +532,7 @@
             <div class="text-center">
                 <p class="text-muted mb-0 small">
                     &copy; <?= date('Y') ?> White Rock Realtor. All rights reserved.
-                    Built with <i class="fas fa-heart text-danger"></i> using CodeIgniter 4 & Bootstrap 5.
+                    <!-- Built with <i class="fas fa-heart text-danger"></i>. -->
                 </p>
             </div>
         </div>

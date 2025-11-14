@@ -3,24 +3,24 @@
 <?= $this->section('content') ?>
 
 <!-- Login Section -->
-<section class="d-flex align-items-center justify-content-center bg-light position-relative py-5" style="margin-top: 76px; min-height: 80vh;">
+<section class="d-flex align-items-center justify-content-center bg-light position-relative py-3" style="margin-top: 20px; min-height: 40vh;">
 
 
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-5 col-md-7">
+            <div class="col-lg-4 col-md-6">
                 <!-- Header -->
                 <div class="text-center mb-4">
                     <div class="bg-primary rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center shadow-lg" style="width: 80px; height: 80px;">
                         <i class="fas fa-building text-white fs-2"></i>
                     </div>
-                    <h2 class="display-6 fw-bold text-dark mb-2">Welcome Back</h2>
+                    <h2 class="display-7 fw-bold text-dark mb-2">Welcome Back</h2>
                     <p class="text-muted">Sign in to your account</p>
                 </div>
 
                 <!-- Login Form -->
-                <div class="card shadow-lg border-0">
-                    <div class="card-body p-5">
+                <div class="card shadow border-0">
+                    <div class="card-body p-4">
                         <?php if (isset($errors) && $errors): ?>
                             <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert">
                                 <div class="d-flex">
@@ -54,23 +54,23 @@
                         <form action="<?= base_url('auth/login') ?>" method="post" id="loginForm">
                             <?= csrf_field() ?>
 
-                            <div class="mb-4">
+                            <div class="mb-2">
                                 <label for="email" class="form-label fw-semibold text-dark">
                                     <i class="fas fa-envelope me-2 text-primary"></i>
                                     Email Address
                                 </label>
-                                <input type="email" id="email" name="email" class="form-control form-control-lg"
+                                <input type="email" id="email" name="email" class="form-control"
                                        placeholder="Enter your email address"
                                        value="<?= old('email') ?>" required>
                             </div>
 
-                            <div class="mb-4">
+                            <div class="mb-2">
                                 <label for="password" class="form-label fw-semibold text-dark">
                                     <i class="fas fa-lock me-2 text-primary"></i>
                                     Password
                                 </label>
                                 <div class="position-relative">
-                                    <input type="password" id="password" name="password" class="form-control form-control-lg pe-5"
+                                    <input type="password" id="password" name="password" class="form-control pe-5"
                                            placeholder="Enter your password" required>
                                     <button type="button" onclick="togglePassword()"
                                             class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted pe-3">
@@ -79,7 +79,7 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div class="form-check">
                                     <input type="checkbox" id="remember" name="remember" class="form-check-input">
                                     <label for="remember" class="form-check-label text-muted">
@@ -91,22 +91,12 @@
                                 </a>
                             </div>
 
-                            <button type="submit" class="btn btn-primary btn-lg w-100 mb-4">
+                            <button type="submit" class="btn btn-primary w-100 mb-3">
                                 <i class="fas fa-sign-in-alt me-2"></i>
                                 Sign In
                             </button>
                         </form>
                     </div>
-                </div>
-
-                <!-- Footer -->
-                <div class="text-center mt-4">
-                    <p class="text-muted small mb-0">
-                        By signing in, you agree to our
-                        <a href="#" class="text-primary text-decoration-none">Terms of Service</a>
-                        and
-                        <a href="#" class="text-primary text-decoration-none">Privacy Policy</a>
-                    </p>
                 </div>
             </div>
         </div>
