@@ -310,23 +310,50 @@ class AgentAuthController extends BaseController
     {
         $agentId = session()->get('agent_id');
 
-        try {
-            // Get validation rules for update
-            $validationRules = $this->agentModel->getUpdateValidationRules($agentId);
+        if (!$agentId) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
 
-            // Custom validation messages
+        $agent = $this->agentModel->find($agentId);
+        if (!$agent) {
+            return redirect()->to('/agent/profile')->with('error', 'Agent not found.');
+        }
+
+        try {
+            // Get validation rules from model (excludes current agent from email uniqueness check)
+            $validationRules = $this->agentModel->getUpdateValidationRules($agentId);
+            $validationRules['profile_image'] = 'permit_empty|is_image[profile_image]|max_size[profile_image,10240]';
+
             $validationMessages = [
-                'name.required' => 'Your name is required.',
-                'email.required' => 'Email address is required.',
-                'email.valid_email' => 'Please enter a valid email address.',
-                'email.is_unique' => 'This email address is already in use.',
-                'phone.required' => 'Phone number is required.',
-                'password.min_length' => 'Password must be at least 6 characters long.'
+                'name' => [
+                    'required' => 'Please enter the associate\'s full name to continue.',
+                    'max_length' => 'Associate name must be 255 characters or less. Please use a shorter name.'
+                ],
+                'email' => [
+                    'required' => 'Email address is required for associate login and notifications.',
+                    'valid_email' => 'Please enter a valid email address (e.g., john.doe@example.com).',
+                    'is_unique' => 'This email address is already registered to another associate. Please use a different email.'
+                ],
+                'phone' => [
+                    'required' => 'Phone number is required for agent contact information.',
+                    'max_length' => 'Phone number must be 20 characters or less. Please use a shorter format.'
+                ],
+                'profile_image' => [
+                    'is_image' => 'Please upload a valid image file (JPG, PNG, GIF). Other file types are not supported.',
+                    'max_size' => 'Profile image must be smaller than 10MB. Please resize or compress your image.'
+                ]
             ];
 
             // Validate the request data
             if (!$this->validate($validationRules, $validationMessages)) {
                 return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            }
+
+            // Handle new profile image upload if any
+            $profileImagePath = $this->handleProfileImageUpload();
+            
+            if (!$profileImagePath) {
+                $profileImagePath = $agent['profile_image']; // Keep existing image
             }
 
             // Prepare data for update
@@ -335,34 +362,80 @@ class AgentAuthController extends BaseController
                 'email' => trim($this->request->getPost('email')),
                 'phone' => trim($this->request->getPost('phone')),
                 'address' => trim($this->request->getPost('address')) ?: null,
-                'qualification' => trim($this->request->getPost('qualification')) ?: null
+                'qualification' => trim($this->request->getPost('qualification')) ?: null,
+                'profile_image' => $profileImagePath,
             ];
 
-            // Handle password update if provided
+             // Handle password update if provided
             $newPassword = trim($this->request->getPost('password'));
             if (!empty($newPassword)) {
                 $data['password'] = $newPassword; // Will be hashed by model callback
             }
 
-            // Update agent profile
+            // Attempt to update the agent (skip model validation since we already validated)
+            $this->agentModel->skipValidation(true);
             if ($this->agentModel->update($agentId, $data)) {
-                // Update session data if name or email changed
-                if ($data['name'] !== session()->get('agent_name')) {
-                    session()->set('agent_name', $data['name']);
-                }
-                if ($data['email'] !== session()->get('agent_email')) {
-                    session()->set('agent_email', $data['email']);
-                }
-
                 return redirect()->to('/agent/profile')->with('success', 'Profile updated successfully!');
             } else {
-                throw new \Exception('Failed to update profile');
+                // Get model errors if available
+                $modelErrors = $this->agentModel->errors();
+                if (!empty($modelErrors)) {
+                    log_message('error', 'Associate update validation failed: ' . json_encode($modelErrors));
+                    return redirect()->back()->withInput()->with('errors', $modelErrors);
+                }
+                throw new \Exception('Database update failed - no specific error returned');
             }
 
         } catch (\Exception $e) {
-            log_message('error', 'Agent profile update failed: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Failed to update profile. Please try again.');
+            // Use centralized error message service
+            $errorService = new \App\Services\ErrorMessageService();
+            $errorService->logTechnicalError($e, 'assoicate_profile', [
+                'user_id' => session()->get('user_id'),
+                'assocaite_id' => $id,
+                'associate_name' => $this->request->getPost('name')
+            ]);
+
+            $userMessage = $errorService->getUserFriendlyMessage($e, 'assoicate_profile');
+            return redirect()->back()->withInput()->with('error', $userMessage);
         }
+    }
+
+    /**
+     * Handle profile image upload
+     *
+     * Uses centralized ImageManagementService for consistent file handling
+     * and unified storage location.
+     */
+    private function handleProfileImageUpload()
+    {
+        $image = $this->request->getFile('profile_image');
+
+        if ($image && $image->isValid() && !$image->hasMoved()) {
+            try {
+                log_message('info', 'Processing profile image upload for agent ' . session()->get('agent_id'));
+
+                // Use centralized image management service
+                $imageService = new \App\Services\ImageManagementService();
+                $uploadResult = $imageService->uploadImage($image, 'agent');
+
+                if ($uploadResult['success']) {
+                    log_message('info', 'Profile image uploaded successfully: ' . $uploadResult['file_path']);
+                    return $uploadResult['file_path'];
+                } else {
+                    log_message('error', 'Profile image upload failed: ' . $uploadResult['message']);
+                    // Set flash error for user feedback
+                    session()->setFlashdata('errors', ['profile_image' => $uploadResult['message']]);
+                    return null;
+                }
+            } catch (\Exception $e) {
+                log_message('error', 'Profile image upload exception: ' . $e->getMessage());
+                session()->setFlashdata('errors', ['profile_image' => 'Failed to upload image. Please try again.']);
+                return null;
+            }
+        }
+
+        log_message('info', 'No profile image uploaded or invalid file');
+        return null;
     }
 
     /**

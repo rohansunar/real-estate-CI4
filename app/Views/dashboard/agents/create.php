@@ -178,7 +178,7 @@
                     </div>
 
                     <!-- Authentication Section -->
-                    <div class="card bg-light border-0 mb-4">
+                    <!-- <div class="card bg-light border-0 mb-4">
                         <div class="card-header bg-transparent border-0 pb-0">
                             <h6 class="card-title mb-0">
                                 <i class="fas fa-key text-warning me-2"></i>
@@ -214,7 +214,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Form Actions -->
                     <div class="d-flex justify-content-between">

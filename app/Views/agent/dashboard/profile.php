@@ -53,7 +53,8 @@
                 </h5>
             </div>
             <div class="card-body">
-                <form action="<?= base_url('agent/profile') ?>" method="post" id="profileForm">
+                <form action="<?= base_url('agent/profile') ?>" method="post" id="profileForm" autocomplete="off"
+                enctype="multipart/form-data">
                     <?= csrf_field() ?>
                     
                     <div class="row g-3">
@@ -85,7 +86,6 @@
                                    id="email" 
                                    name="email" 
                                    value="<?= old('email', esc($agent['email'])) ?>" 
-                                   disabled
                                    required>
                             <?php if (session()->getFlashdata('errors')['email'] ?? false): ?>
                                 <div class="invalid-feedback">
@@ -135,14 +135,40 @@
                             <label for="address" class="form-label fw-semibold">
                                 Address
                             </label>
-                            <textarea class="form-control <?= session()->getFlashdata('errors')['address'] ?? false ? 'is-invalid' : '' ?>" 
-                                      id="address" 
-                                      name="address" 
-                                      rows="3" 
+                            <textarea class="form-control <?= session()->getFlashdata('errors')['address'] ?? false ? 'is-invalid' : '' ?>"
+                                      id="address"
+                                      name="address"
+                                      rows="3"
                                       placeholder="Enter your complete address"><?= old('address', esc($agent['address'])) ?></textarea>
                             <?php if (session()->getFlashdata('errors')['address'] ?? false): ?>
                                 <div class="invalid-feedback">
                                     <?= session()->getFlashdata('errors')['address'] ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Profile Image Upload -->
+                        <div class="col-12">
+                            <label for="profile_image" class="form-label fw-semibold">
+                                Profile Image
+                            </label>
+                            <input type="file"
+                                   class="form-control <?= session()->getFlashdata('errors')['profile_image'] ?? false ? 'is-invalid' : '' ?>"
+                                   id="profile_image"
+                                   name="profile_image"
+                                   accept=".jpg,.jpeg,.png">
+                            <?php if (session()->getFlashdata('errors')['profile_image'] ?? false): ?>
+                                <div class="invalid-feedback">
+                                    <?= session()->getFlashdata('errors')['profile_image'] ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="form-text">
+                                <small>Upload a new profile image (JPEG or PNG only, max 10MB). Leave blank to keep current image.</small>
+                            </div>
+                            <?php if (!empty($agent['profile_image'])): ?>
+                                <div class="mt-2">
+                                    <small class="text-muted">Current image:</small><br>
+                                    <img src="<?= base_url($agent['profile_image']) ?>" alt="Current profile image" class="img-thumbnail" style="max-width: 100px; max-height: 100px;">
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -163,7 +189,8 @@
                                            class="form-control <?= session()->getFlashdata('errors')['password'] ?? false ? 'is-invalid' : '' ?>" 
                                            id="password" 
                                            name="password" 
-                                           placeholder="Leave blank to keep current password">
+                                           placeholder="Leave blank to keep current password"
+                                           autocomplete="new-password">
                                     <?php if (session()->getFlashdata('errors')['password'] ?? false): ?>
                                         <div class="invalid-feedback">
                                             <?= session()->getFlashdata('errors')['password'] ?>
@@ -181,7 +208,8 @@
                                            class="form-control" 
                                            id="password_confirm" 
                                            name="password_confirm" 
-                                           placeholder="Confirm your new password">
+                                           placeholder="Confirm your new password"
+                                           autocomplete="new-password">
                                 </div>
                             </div>
                         </div>

@@ -200,7 +200,7 @@ class AgentController extends BaseController
         try {
             // Get validation rules from model (excludes current agent from email uniqueness check)
             $validationRules = $this->agentModel->getUpdateValidationRules($id);
-            $validationRules['profile_image'] = 'permit_empty|is_image[profile_image]|max_size[profile_image,2048]';
+            $validationRules['profile_image'] = 'permit_empty|is_image[profile_image]|max_size[profile_image,10240]';
 
             $validationMessages = [
                 'name' => [
@@ -218,7 +218,7 @@ class AgentController extends BaseController
                 ],
                 'profile_image' => [
                     'is_image' => 'Please upload a valid image file (JPG, PNG, GIF). Other file types are not supported.',
-                    'max_size' => 'Profile image must be smaller than 2MB. Please resize or compress your image.'
+                    'max_size' => 'Profile image must be smaller than 10MB. Please resize or compress your image.'
                 ]
             ];
 
@@ -243,6 +243,12 @@ class AgentController extends BaseController
                 'profile_image' => $profileImagePath,
                 'parent_agent_id' => $this->request->getPost('parent_agent_id') ?: null
             ];
+
+             // Handle password update if provided
+            $newPassword = trim($this->request->getPost('password'));
+            if (!empty($newPassword)) {
+                $data['password'] = $newPassword; // Will be hashed by model callback
+            }
 
             // Attempt to update the agent (skip model validation since we already validated)
             $this->agentModel->skipValidation(true);

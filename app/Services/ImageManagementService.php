@@ -49,9 +49,9 @@ class ImageManagementService
     private const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     
     /**
-     * Maximum file size in bytes (2MB)
+     * Maximum file size in bytes (10MB for profile images)
      */
-    private const MAX_FILE_SIZE = 2097152;
+    private const MAX_FILE_SIZE = 10485760;
     
     /**
      * Upload an image for a specific entity type
