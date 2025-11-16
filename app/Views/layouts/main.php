@@ -31,7 +31,7 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-envelope me-1 me-md-2"></i>
-                            <span class="small">connect@goldproperties</span>
+                            <span class="small">connect@goldproperties.in</span>
                         </div>
                     </div>
                 </div>
