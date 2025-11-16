@@ -23,7 +23,7 @@ use CodeIgniter\Model;
  * - youtube_video: JSON array of YouTube video URLs
  * - Maintains image optimization features while using simple path storage
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 3.0 - Reverted to simple array format while keeping optimization
  * @since 2025-08-20
  */

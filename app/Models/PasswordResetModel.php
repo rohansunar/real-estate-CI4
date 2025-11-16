@@ -20,7 +20,7 @@ use CodeIgniter\Model;
  * - One-time use tokens
  * - Automatic cleanup of expired tokens
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-04
  */

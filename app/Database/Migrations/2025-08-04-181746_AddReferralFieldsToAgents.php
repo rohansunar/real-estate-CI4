@@ -16,7 +16,7 @@ use CodeIgniter\Database\Migration;
  * - password: Password field for agent authentication
  * - parent_agent_id: Foreign key to support agent hierarchy
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-04
  */

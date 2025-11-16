@@ -18,7 +18,7 @@ use CodeIgniter\Database\Seeder;
  * - Email: user@example.com
  * - Password: user123
  * 
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-04
  */

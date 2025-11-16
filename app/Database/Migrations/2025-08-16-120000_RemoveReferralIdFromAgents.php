@@ -15,7 +15,7 @@ use CodeIgniter\Database\Migration;
  * - Preserves all other agent fields and functionality
  * - Maintains agent hierarchy through parent_agent_id
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-16
  */

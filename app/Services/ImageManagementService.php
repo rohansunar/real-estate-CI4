@@ -23,7 +23,7 @@ namespace App\Services;
  * - public/uploads/blog/ - Blog featured images  
  * - public/uploads/properties/ - Property images with size variants
  * 
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-20
  */

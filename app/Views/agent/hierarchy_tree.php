@@ -308,7 +308,7 @@
  * - Maintains state for expanded nodes
  * - Provides error handling and loading states
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-16
  */

@@ -17,7 +17,7 @@ use CodeIgniter\Database\Seeder;
  * - Sample images and YouTube videos
  * - Different price ranges and features
  * 
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-04
  */

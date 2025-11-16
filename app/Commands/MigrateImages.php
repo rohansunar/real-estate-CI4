@@ -24,7 +24,7 @@ use App\Models\PropertyModel;
  * --dry-run: Show what would be migrated without actually moving files
  * --force: Skip confirmation prompts
  * 
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-20
  */

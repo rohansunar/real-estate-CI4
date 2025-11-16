@@ -16,7 +16,7 @@ namespace App\Services;
  * - Support for different error types (validation, database, file upload, etc.)
  * - Localization support ready
  * 
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-21
  */

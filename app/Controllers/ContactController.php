@@ -10,7 +10,7 @@ use App\Models\ContactModel;
  * Handles contact form submissions and inquiries from website visitors.
  * Supports both traditional form submissions and Ajax requests.
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  */
 class ContactController extends BaseController
@@ -299,8 +299,8 @@ class ContactController extends BaseController
     public function index()
     {
         $data = [
-            'title' => 'Contact Us | White Rock Realtor',
-            'meta_description' => 'Get in touch with White Rock Realtor for all your property needs in Siliguri and surrounding areas.',
+            'title' => 'Contact Us | Gold Properties',
+            'meta_description' => 'Get in touch with Gold Properties for all your property needs in Siliguri and surrounding areas.',
             'canonical_url' => base_url('contact')
         ];
 

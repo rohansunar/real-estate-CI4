@@ -5,7 +5,7 @@ namespace App\Services;
 /**
  * ImageOptimizationService
  * 
- * Comprehensive image optimization service for the White Rock Realtor website.
+ * Comprehensive image optimization service for the Gold Properties website.
  * This service handles automatic image compression, resizing, and format conversion
  * to improve website performance and user experience.
  * 
@@ -23,7 +23,7 @@ namespace App\Services;
  * - Improve page load times and bandwidth usage
  * - Maintain visual quality while optimizing file size
  * 
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0 - Initial implementation with GD library
  * @since 2025-08-20
  */

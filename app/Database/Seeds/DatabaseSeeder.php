@@ -20,7 +20,7 @@ use CodeIgniter\Database\Seeder;
  * Usage:
  * php spark db:seed DatabaseSeeder
  * 
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-04
  */
@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         echo "\n" . str_repeat("=", 60) . "\n";
-        echo "🏠 WHITE ROCK REALTOR DATABASE SEEDER\n";
+        echo "🏠 Gold Properties DATABASE SEEDER\n";
         echo str_repeat("=", 60) . "\n\n";
 
         echo "Starting database seeding process...\n\n";

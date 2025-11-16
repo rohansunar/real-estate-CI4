@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= isset($title) ? esc($title) : 'Dashboard' ?> | White Rock Realtor Admin</title>
+    <title><?= isset($title) ? esc($title) : 'Dashboard' ?> | Gold Properties Admin</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?= base_url('favicon.ico') ?>">

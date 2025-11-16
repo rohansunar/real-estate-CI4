@@ -21,12 +21,12 @@ class Resend extends BaseConfig
     /**
      * Default sender name
      */
-    public string $fromName = 'White Rock Realtor';
+    public string $fromName = 'Gold Properties';
 
     /**
      * Admin email address for notifications
      */
-    public string $adminEmail = 'admin@whiterockrealtor.com';
+    public string $adminEmail = 'connect@goldproperties.in';
 
     /**
      * Resend API endpoint (used only for cURL fallback)
@@ -38,7 +38,7 @@ class Resend extends BaseConfig
      */
     public array $templates = [
         'agent_welcome' => [
-            'subject' => 'Welcome to Our White Rock Realtor Team!',
+            'subject' => 'Welcome to Our Gold Properties Team!',
             'template' => 'emails/agent_welcome'
         ],
         'contact_notification' => [

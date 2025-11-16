@@ -33,7 +33,7 @@ use App\Models\AgentModel;
  * - Input sanitization and validation
  * - Session-based authentication with activity checks
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 2.0 - Enhanced with complete CRUD operations and security features
  * @since 2025-08-04
  * @updated 2025-08-08
@@ -60,7 +60,7 @@ class AgentAuthController extends BaseController
         }
 
         $data = [
-            'title' => 'Business Associate Login | White Rock Realtor'
+            'title' => 'Business Associate Login | Gold Properties'
         ];
 
         return view('agent/auth/login', $data);
@@ -77,7 +77,7 @@ class AgentAuthController extends BaseController
         }
 
         $data = [
-            'title' => 'Associate Forgot Password | White Rock Realtor'
+            'title' => 'Associate Forgot Password | Gold Properties'
         ];
         return view('agent/auth/forgot_password', $data);
     }
@@ -131,7 +131,7 @@ class AgentAuthController extends BaseController
         }
 
         $data = [
-            'title' => 'Agent Reset Password | White Rock Realtor',
+            'title' => 'Agent Reset Password | Gold Properties',
             'token' => $token,
             'email' => $email,
         ];
@@ -272,7 +272,7 @@ class AgentAuthController extends BaseController
 
 
         $data = [
-            'title' => 'Associate Dashboard | White Rock Realtor',
+            'title' => 'Associate Dashboard | Gold Properties',
             'agent' => $agent,
             'hierarchyPosition' => $hierarchyPosition,
             'directSubAgents' => $directSubAgents,

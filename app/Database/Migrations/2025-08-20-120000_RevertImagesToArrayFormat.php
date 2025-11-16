@@ -15,7 +15,7 @@ use CodeIgniter\Database\Migration;
  * 3. Preserves all image files and optimization features
  * 4. Uses the first available optimized image (preferring medium size)
  * 
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-20
  */

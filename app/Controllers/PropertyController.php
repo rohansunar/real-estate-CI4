@@ -21,7 +21,7 @@ use App\Models\PropertyModel;
  * - Lightbox with video playback support
  * - Mobile-first responsive design
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 2.0 - Enhanced with multiple media support
  * @since 2025-08-02
  */
@@ -107,7 +107,7 @@ class PropertyController extends BaseController
         $searchQuery = !empty($searchParams) ? '&' . http_build_query($searchParams) : '';
 
         $data = [
-            'title' => 'Properties | White Rock Realtor',
+            'title' => 'Properties | Gold Properties',
             'properties' => $properties,
             'currentPage' => $page,
             'totalPages' => ceil($totalProperties / $perPage),
@@ -182,7 +182,7 @@ class PropertyController extends BaseController
         $searchQuery = !empty($searchParams) ? '&' . http_build_query($searchParams) : '';
 
         $data = [
-            'title' => 'Search Results | Properties | White Rock Realtor',
+            'title' => 'Search Results | Properties | Gold Properties',
             'properties' => $properties,
             'currentPage' => $page,
             'totalPages' => ceil($totalProperties / $perPage),
@@ -215,7 +215,7 @@ class PropertyController extends BaseController
         $similarProperties = $this->propertyModel->getByLocation($place, 6, $id);
 
         $data = [
-            'title' => $property['title'] . ' | White Rock Realtor',
+            'title' => $property['title'] . ' | Gold Properties',
             'property' => $property,
             'similarProperties' => $similarProperties
         ];
@@ -247,7 +247,7 @@ class PropertyController extends BaseController
     public function create()
     {
         $data = [
-            'title' => 'Create Property | White Rock Realtor',
+            'title' => 'Create Property | Gold Properties',
             'locations' => $this->getLocations()
         ];
 
@@ -586,7 +586,7 @@ class PropertyController extends BaseController
 
         // Show sale form
         $data = [
-            'title' => 'Process Property Sale | White Rock Realtor',
+            'title' => 'Process Property Sale | Gold Properties',
             'property' => $property,
             'agents' => $this->getActiveAgents()
         ];

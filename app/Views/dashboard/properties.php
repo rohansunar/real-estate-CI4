@@ -16,7 +16,7 @@
  * - Optimized image display and content truncation
  * - Accessible navigation and interaction elements
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 2.0 - Enhanced with mobile responsiveness and improved UX
  * @since 2025-08-20
  */

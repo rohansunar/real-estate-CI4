@@ -16,7 +16,7 @@ use CodeIgniter\Database\Seeder;
  * - Different inquiry statuses (read/unread)
  * - Newsletter subscriptions
  * 
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-04
  */

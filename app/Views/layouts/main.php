@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'White Rock Realtor' ?></title>
+    <title><?= $title ?? 'Gold Properties' ?></title>
 
     <!-- Bootstrap 5 CSS with Cache-Busting -->
     <?= css_link('https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css') ?>
@@ -31,7 +31,7 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-envelope me-1 me-md-2"></i>
-                            <span class="small">info@whiterockrealtor.in</span>
+                            <span class="small">connect@goldproperties</span>
                         </div>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
         <div class="mobile-menu-header">
             <div class="mobile-menu-brand">
                 <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo" class="clip-img" width="130" height="60">
-                <!-- <span>White Rock Realtor</span> -->
+                <!-- <span>Gold Properties</span> -->
             </div>
             <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">
                 <i class="fas fa-times"></i>
@@ -129,7 +129,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold text-primary" href="<?= base_url() ?>">
                 <img src="<?= base_url('assets/images/logo.png') ?>" class="clip-img" alt="Logo" width="130" height="60">
-                <!-- White Rock Realtor -->
+                <!-- Gold Properties -->
             </a>
 
             <!-- Modern Mobile Menu Toggle -->
@@ -409,7 +409,7 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="d-flex align-items-center mb-4">
                        <img src="<?= base_url('assets/images/logo.png') ?>" class="clip-img" alt="Logo" width="130" height="60">
-                        <!-- <h3 class="h4 mb-0 fw-bold">White Rock Realtor</h3> -->
+                        <!-- <h3 class="h4 mb-0 fw-bold">Gold Properties</h3> -->
                     </div>
                     <p class="text-light mb-4">
                         Your trusted partner in finding the perfect property. We help you discover your dream home with personalized service and expert guidance.
@@ -531,7 +531,7 @@
             <hr class="border-secondary my-4">
             <div class="text-center">
                 <p class="text-muted mb-0 small">
-                    &copy; <?= date('Y') ?> White Rock Realtor. All rights reserved.
+                    &copy; <?= date('Y') ?> Gold Properties. All rights reserved.
                     <!-- Built with <i class="fas fa-heart text-danger"></i>. -->
                 </p>
             </div>

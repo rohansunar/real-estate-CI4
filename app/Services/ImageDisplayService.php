@@ -5,7 +5,7 @@ namespace App\Services;
 /**
  * ImageDisplayService
  *
- * Service for handling optimized image display logic throughout the White Rock Realtor website.
+ * Service for handling optimized image display logic throughout the Gold Properties website.
  * This service works with simple array format while maintaining optimization features through
  * intelligent file detection and format selection.
  *
@@ -24,7 +24,7 @@ namespace App\Services;
  * - Hero sections and featured displays (large size)
  * - Mobile-optimized displays (appropriate sizes)
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 2.0 - Updated for simple array format with optimization detection
  * @since 2025-08-20
  */

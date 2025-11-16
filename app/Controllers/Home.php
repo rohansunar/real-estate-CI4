@@ -5,7 +5,7 @@ namespace App\Controllers;
 /**
  * Home Controller
  *
- * Handles the main homepage and public pages of the White Rock Realtor website.
+ * Handles the main homepage and public pages of the Gold Properties website.
  * This controller manages the display of featured properties, property types,
  * and provides the main entry point for visitors.
  *
@@ -15,7 +15,7 @@ namespace App\Controllers;
  * - SEO-optimized page titles and meta data
  * - Mobile-first responsive design support
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 2.0 - Enhanced with comprehensive property display
  * @since 2025-08-20
  */
@@ -57,7 +57,7 @@ class Home extends BaseController
 
         // Prepare data array for view rendering
         $data = [
-            'title' => 'Find Your Dream Home | White Rock Realtor', // SEO-optimized title
+            'title' => 'Find Your Dream Home | Gold Properties', // SEO-optimized title
             'featuredProperties' => $featuredProperties,
             'featuredPropertiesSection' => $featuredPropertiesSection,
             'propertiesByType' => $propertiesByType
@@ -69,7 +69,7 @@ class Home extends BaseController
     public function about(): string
     {
         $data = [
-            'title' => 'About Us | White Rock Realtor'
+            'title' => 'About Us | Gold Properties'
         ];
 
         return view('home/about', $data);

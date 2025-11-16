@@ -21,7 +21,7 @@ use CodeIgniter\HTTP\ResponseInterface;
  *
  * All methods in this controller require authentication via the 'auth' filter.
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 2.0 - Enhanced with pagination and real-time enquiry data
  * @since 2025-08-02
  */
@@ -52,7 +52,7 @@ class DashboardController extends BaseController
 
             // Ensure all required variables are properly set with fallback values
             $data = [
-                'title' => 'Dashboard | White Rock Realtor',
+                'title' => 'Dashboard | Gold Properties',
                 'totalProperties' => $this->propertyModel->countAllResults() ?? 0,
                 'totalContacts' => $this->contactModel->countAllResults() ?? 0,
                 'unreadContacts' => $this->contactModel->getCountByStatus(false) ?? 0,
@@ -72,7 +72,7 @@ class DashboardController extends BaseController
 
             // Provide fallback data to prevent crashes
             $data = [
-                'title' => 'Dashboard | White Rock Realtor',
+                'title' => 'Dashboard | Gold Properties',
                 'totalProperties' => 0,
                 'totalContacts' => 0,
                 'unreadContacts' => 0,

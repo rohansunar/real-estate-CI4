@@ -16,7 +16,7 @@ use CodeIgniter\Database\Migration;
  * - Email and unique ID lookup optimization
  * - Hierarchy depth calculation support
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-08
  */

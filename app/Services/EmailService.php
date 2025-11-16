@@ -7,7 +7,7 @@ use Config\Resend;
 /**
  * EmailService
  *
- * Comprehensive email service for the White Rock Realtor application.
+ * Comprehensive email service for the Gold Properties application.
  * This service handles all email communications including:
  * - Agent welcome emails with login credentials
  * - Contact form notifications (dual email system)
@@ -30,7 +30,7 @@ use Config\Resend;
  * - newsletter_welcome: Welcome email for newsletter subscribers
  * - password_reset: Secure password reset emails with tokens
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 2.0 - Enhanced with dual email system and comprehensive templates
  * @since 2025-08-04
  */
@@ -77,7 +77,7 @@ class EmailService
     public function sendAgentWelcomeEmail(array $agentData): bool
     {
         try {
-            $template = $this->config->templates['agent_welcome'] ?? ['subject' => 'Welcome to Our White Rock Realtor Team!'];
+            $template = $this->config->templates['agent_welcome'] ?? ['subject' => 'Welcome to Our Gold Properties Team!'];
 
             $emailData = [
                 'from' => $this->config->fromName . ' <' . $this->config->fromEmail . '>',
@@ -141,7 +141,7 @@ class EmailService
     public function sendContactConfirmation(array $contactData): bool
     {
         try {
-            $template = $this->config->templates['contact_confirmation'] ?? ['subject' => 'Thank you for contacting White Rock Realtor'];
+            $template = $this->config->templates['contact_confirmation'] ?? ['subject' => 'Thank you for contacting Gold Properties'];
 
             $emailData = [
                 'from' => $this->config->fromName . ' <' . $this->config->fromEmail . '>',
@@ -441,7 +441,7 @@ class EmailService
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🎉 Welcome to White Rock Realtor Team!</h1>
+                    <h1>🎉 Welcome to Gold Properties Team!</h1>
                 </div>
                 <div class="content">
                     <h2>Hello ' . esc($data['name']) . ',</h2>
@@ -503,10 +503,10 @@ class EmailService
                     <p>Welcome aboard and we look forward to your success!</p>
 
                     <p>Best regards,<br>
-                    <strong>The White Rock Realtor Team</strong></p>
+                    <strong>The Gold Properties Team</strong></p>
                 </div>
                 <div class="footer">
-                    <p>&copy; ' . date('Y') . ' White Rock Realtor Company. All rights reserved.</p>
+                    <p>&copy; ' . date('Y') . ' Gold Properties Company. All rights reserved.</p>
                     <p style="color: #6c757d; font-size: 12px; margin-top: 10px;">This email contains sensitive login information. Please keep it secure.</p>
                 </div>
             </div>
@@ -560,7 +560,7 @@ class EmailService
                     <p>Please respond to this inquiry as soon as possible to provide excellent customer service.</p>
                 </div>
                 <div class="footer">
-                    <p>&copy; ' . date('Y') . ' White Rock Realtor Company. All rights reserved.</p>
+                    <p>&copy; ' . date('Y') . ' Gold Properties Company. All rights reserved.</p>
                 </div>
             </div>
         </body>
@@ -604,7 +604,7 @@ class EmailService
                     <p class="muted">If you did not request a password reset, you can safely ignore this email.</p>
                 </div>
                 <div class="footer">
-                    <p>&copy; ' . date('Y') . ' White Rock Realtor Company. All rights reserved.</p>
+                    <p>&copy; ' . date('Y') . ' Gold Properties Company. All rights reserved.</p>
                 </div>
             </div>
         </body>
@@ -704,7 +704,7 @@ class EmailService
                 </div>
                 <div class="content">
                     <h2>Dear ' . $name . ',</h2>
-                    <p>Thank you for reaching out to <strong>White Rock Realtor</strong>! We have received your inquiry about properties in <span class="highlight">' . $location . '</span> and appreciate your interest in our services.</p>
+                    <p>Thank you for reaching out to <strong>Gold Properties</strong>! We have received your inquiry about properties in <span class="highlight">' . $location . '</span> and appreciate your interest in our services.</p>
 
                     <div class="inquiry-details">
                         <h3>📋 Your Inquiry Summary:</h3>
@@ -726,16 +726,16 @@ class EmailService
                         <h3>📞 Need Immediate Assistance?</h3>
                         <p>Feel free to contact us directly:</p>
                         <p><strong>Phone:</strong> +91 97498 36565<br>
-                        <strong>Email:</strong> info@whiterockrealtor.in<br>
+                        <strong>Email:</strong> connect@goldproperties.in<br>
                         <strong>Office Hours:</strong> Monday - Saturday, 9:00 AM - 7:00 PM</p>
                     </div>
 
                     <p>We look forward to helping you find your perfect property!</p>
                     <p>Best regards,<br>
-                    <strong>The White Rock Realtor Team</strong></p>
+                    <strong>The Gold Properties Team</strong></p>
                 </div>
                 <div class="footer">
-                    <p>&copy; ' . date('Y') . ' White Rock Realtor Company. All rights reserved.</p>
+                    <p>&copy; ' . date('Y') . ' Gold Properties Company. All rights reserved.</p>
                     <p class="muted">This is an automated confirmation email. Please do not reply to this email.</p>
                 </div>
             </div>

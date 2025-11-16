@@ -39,7 +39,7 @@ use CodeIgniter\Model;
  * - is_active: Status flag (boolean, default true)
  * - created_at/updated_at: Timestamps
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 3.0 - Enhanced with authentication and hierarchy system
  * @since 2025-08-04
  */

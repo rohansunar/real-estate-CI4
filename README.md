@@ -1,4 +1,4 @@
-# White Rock Realtor Website - Enhanced Media Gallery
+# Gold Properties Website - Enhanced Media Gallery
 
 A modern, responsive real estate website built with CodeIgniter 4, featuring an enhanced media gallery system with multiple image and video support.
 

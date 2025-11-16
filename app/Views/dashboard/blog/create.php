@@ -427,7 +427,7 @@ if (initialContent) {
  * Key Fix: Replaced e.submitter (not supported in all browsers) with
  * manual button tracking for better compatibility.
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 3.0 - Enhanced browser compatibility and user experience
  * @since 2025-08-26
  */

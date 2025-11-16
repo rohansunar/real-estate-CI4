@@ -23,7 +23,7 @@ use Exception;
  * - agent_tree: Closure table for hierarchy relationships
  * - commission_transactions: Commission tracking and distribution
  *
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-16
  */

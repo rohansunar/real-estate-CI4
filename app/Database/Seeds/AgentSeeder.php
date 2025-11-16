@@ -16,7 +16,7 @@ use CodeIgniter\Database\Seeder;
  * - Qualifications and specializations
  * - Active status for all agents
  * 
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0
  * @since 2025-08-04
  */

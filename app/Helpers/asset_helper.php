@@ -13,7 +13,7 @@
  * - Environment-aware versioning
  * - Memory-efficient file checking
  * 
- * @author White Rock Realtor Team
+ * @author Gold Properties Team
  * @version 1.0 - Initial cache-busting implementation
  * @since 2025-08-26
  */
