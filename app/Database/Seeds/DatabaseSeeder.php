@@ -112,7 +112,7 @@ class DatabaseSeeder extends Seeder
 
         echo "🔐 DEFAULT LOGIN CREDENTIALS:\n";
         echo "Admin Dashboard:\n";
-        echo "  📧 Email: admin@whiterockrealtor.com\n";
+        echo "  📧 Email: admin@goldproperties.in\n";
         echo "  🔑 Password: admin123\n\n";
         echo "Test User Account:\n";
         echo "  📧 Email: user@example.com\n";

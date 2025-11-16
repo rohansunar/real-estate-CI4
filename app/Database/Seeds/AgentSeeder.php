@@ -28,7 +28,7 @@ class AgentSeeder extends Seeder
             [
                 'profile_image' => 'assets/images/agents/agent1.jpg',
                 'name' => 'Rajesh Kumar',
-                'email' => 'rajesh@whiterockrealtor.com',
+                'email' => 'rajesh@goldproperties.in',
                 'phone' => '+91 98765 43210',
                 'address' => 'Siliguri, West Bengal, India',
                 'qualification' => 'MBA in Real Estate, 8+ years experience',
@@ -72,7 +72,7 @@ class AgentSeeder extends Seeder
             [
                 'profile_image' => 'assets/images/agents/agent5.jpg',
                 'name' => 'Vikash Gupta',
-                'email' => 'vikash@whiterockrealtor.com',
+                'email' => 'vikash@goldproperties.in',
                 'phone' => '+91 98765 43214',
                 'address' => 'Milan More, Siliguri, West Bengal',
                 'qualification' => 'BBA, Property Investment Advisor, 7+ years experience',
@@ -83,7 +83,7 @@ class AgentSeeder extends Seeder
             [
                 'profile_image' => 'assets/images/agents/agent6.jpg',
                 'name' => 'Anita Bhattacharya',
-                'email' => 'anita@whiterockrealtor.com',
+                'email' => 'anita@goldproperties.in',
                 'phone' => '+91 98765 43215',
                 'address' => 'Jalpaiguri, West Bengal',
                 'qualification' => 'M.Com, Certified Real Estate Broker, 9+ years experience',
@@ -94,7 +94,7 @@ class AgentSeeder extends Seeder
             [
                 'profile_image' => 'assets/images/agents/agent7.jpg',
                 'name' => 'Suresh Agarwal',
-                'email' => 'suresh@whiterockrealtor.com',
+                'email' => 'suresh@goldproperties.in',
                 'phone' => '+91 98765 43216',
                 'address' => 'Khaprail, Siliguri, West Bengal',
                 'qualification' => 'B.Sc, Real Estate Sales Expert, 3+ years experience',
@@ -105,7 +105,7 @@ class AgentSeeder extends Seeder
             [
                 'profile_image' => 'assets/images/agents/agent8.jpg',
                 'name' => 'Meera Joshi',
-                'email' => 'meera@whiterockrealtor.com',
+                'email' => 'meera@goldproperties.in',
                 'phone' => '+91 98765 43217',
                 'address' => 'Siliguri, West Bengal',
                 'qualification' => 'MBA Finance, Property Valuation Expert, 6+ years experience',

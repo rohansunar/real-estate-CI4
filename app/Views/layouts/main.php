@@ -449,7 +449,7 @@
                             </a>
                         </li>
                         <li class="mb-2">
-                            <a href="#" class="text-light text-decoration-none hover-primary transition-all">
+                            <a href="/about" class="text-light text-decoration-none hover-primary transition-all">
                                 <i class="fas fa-chevron-right me-2"></i>About Us
                             </a>
                         </li>
@@ -522,7 +522,7 @@
                         <i class="fas fa-envelope text-primary me-3"></i>
                         <div>
                             <div class="fw-semibold">Email</div>
-                            <div class="text-light small">info@whiterockrealtor.com</div>
+                            <div class="text-light small">connect@goldproperties.in</div>
                         </div>
                     </div>
                 </div>

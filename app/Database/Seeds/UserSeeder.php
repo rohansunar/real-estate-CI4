@@ -11,7 +11,7 @@ use CodeIgniter\Database\Seeder;
  * Creates default admin account and several test users for development.
  * 
  * Default Admin Credentials:
- * - Email: admin@whiterockrealtor.com
+ * - Email: admin@goldproperties.in
  * - Password: admin123
  * 
  * Test User Credentials:
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             // Default Admin User
             [
                 'name' => 'Admin User',
-                'email' => 'admin@whiterockrealtor.com',
+                'email' => 'admin@goldproperties.in',
                 'password' => password_hash('admin123', PASSWORD_DEFAULT),
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
@@ -119,7 +119,7 @@ class UserSeeder extends Seeder
         echo "Successfully inserted " . count($users) . " users into the database.\n";
         echo "\n=== DEFAULT LOGIN CREDENTIALS ===\n";
         echo "Admin Account:\n";
-        echo "  Email: admin@whiterockrealtor.com\n";
+        echo "  Email: admin@goldproperties.in\n";
         echo "  Password: admin123\n\n";
         echo "Test User Account:\n";
         echo "  Email: user@example.com\n";

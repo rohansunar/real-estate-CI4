@@ -498,7 +498,7 @@ class EmailService
                         <li>Start managing your real estate business!</li>
                     </ol>
 
-                    <p>If you have any questions or need assistance, please don\'t hesitate to contact our admin team at <span class="highlight">admin@whiterockrealtor.com</span> or call us at <span class="highlight">+91 XXXXX XXXXX</span>.</p>
+                    <p>If you have any questions or need assistance, please don\'t hesitate to contact our admin team at <span class="highlight">connect@goldproperties.in</span> or call us at <span class="highlight">+91 94342 55059</span>.</p>
 
                     <p>Welcome aboard and we look forward to your success!</p>
 

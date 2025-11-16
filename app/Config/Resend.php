@@ -16,7 +16,7 @@ class Resend extends BaseConfig
      * Default sender email address
      * Must be a verified domain in your Resend account
      */
-    public string $fromEmail = 'onboarding@whiterockrealtor.com';
+    public string $fromEmail = 'connect@goldproperties.in';
 
     /**
      * Default sender name
